@@ -432,7 +432,13 @@ class FlagsofWorld {
     }
 }
 
-// Initialize the game once the DOM is fully loaded
+// Initialize the game once the DOM is fully loaded, but only if we're on the game page
 window.addEventListener('DOMContentLoaded', () => {
-    new FlagsofWorld();
+    // Check if we're on the game page by looking for a key game element
+    const gameBoard = document.getElementById('game-board');
+
+    // Only initialize the game if the game board element exists
+    if (gameBoard) {
+        new FlagsofWorld();
+    }
 });

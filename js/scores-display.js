@@ -4,29 +4,28 @@
  * If no scores are found, it shows a message indicating that.
  */
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if we're on the scores page by looking for the high scores list element
     const highScoresList = document.getElementById('high-scores-list');
     const noScoresContainer = document.getElementById('no-scores-container');
 
-    // Ensure the necessary elements are on the page before proceeding
-    if (!highScoresList || !noScoresContainer) {
-        console.error("Required elements for scores display not found.");
-        return;
-    }
+    // Only run if we're on the scores page (elements exist)
+    if (highScoresList && noScoresContainer) {
+        // Retrieve high scores from local storage, defaulting to an empty array
+        const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
 
-    // Retrieve high scores from local storage, defaulting to an empty array
-    const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
-
-    if (highScores.length > 0) {
-        // If scores exist, display the list and hide the 'no scores' message
-        highScoresList.style.display = 'block';
-        noScoresContainer.style.display = 'none';
-        // Populate the list with score items
-        highScoresList.innerHTML = highScores.map(createScoreListItem).join('');
-    } else {
-        // If no scores exist, hide the list and show the 'no scores' message
-        highScoresList.style.display = 'none';
-        noScoresContainer.style.display = 'block';
+        if (highScores.length > 0) {
+            // If scores exist, display the list and hide the 'no scores' message
+            highScoresList.style.display = 'block';
+            noScoresContainer.style.display = 'none';
+            // Populate the list with score items
+            highScoresList.innerHTML = highScores.map(createScoreListItem).join('');
+        } else {
+            // If no scores exist, hide the list and show the 'no scores' message
+            highScoresList.style.display = 'none';
+            noScoresContainer.style.display = 'block';
+        }
     }
+    // If we're not on the scores page, simply don't run the script (no error message)
 });
 
 /**
