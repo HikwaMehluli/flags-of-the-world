@@ -493,7 +493,7 @@ class FlagsofWorld {
     }
 
     /**
-     * Populates the country dropdown with countries from the current game.
+     * Populates the country dropdown with ALL countries from all 4 continents.
      */
     async populateCountryDropdown() {
         if (!this.playerCountrySelect) return;
@@ -502,10 +502,39 @@ class FlagsofWorld {
         this.playerCountrySelect.innerHTML = '<option value="">Select your country</option>';
 
         try {
-            const flags = await this.getFlags();
-            const uniqueCountries = [...new Set(flags.map(flag => flag.country))];
+            // Fetch ALL flags from all 4 continents
+            const flagFiles = {
+                africa: 'dist/flags_africa.json',
+                europe: 'dist/flags_europe.json',
+                asia: 'dist/flags_asia.json',
+                america: 'dist/flags_america.json'
+            };
 
-            uniqueCountries.forEach(country => {
+            let allCountries = [];
+
+            // Loop through all continents and collect all countries
+            for (const continent in flagFiles) {
+                const fileName = flagFiles[continent];
+
+                if (!fileName) continue;
+
+                const response = await fetch(fileName);
+                const allFlagsData = await response.json();
+
+                // Extract all countries from all regions in this continent
+                for (const regionKey in allFlagsData) {
+                    allFlagsData[regionKey].forEach(flag => {
+                        if (!allCountries.includes(flag.country)) {
+                            allCountries.push(flag.country);
+                        }
+                    });
+                }
+            }
+
+            // Sort countries alphabetically for better UX
+            allCountries.sort();
+
+            allCountries.forEach(country => {
                 const option = document.createElement('option');
                 option.value = country;
                 option.textContent = country;
