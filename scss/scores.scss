@@ -9,7 +9,7 @@
     margin: 0;
 
     li {
-        padding: 15px 10px;
+        padding: 15px 0;
         border-bottom: 1px solid var(--secondary-color);
         display: flex;
         flex-direction: column;
@@ -22,7 +22,6 @@
         .player-name {
             font-weight: bold;
             font-size: 1.2rem;
-            color: var(--secondary-color);
         }
 
         .score-details {
@@ -30,9 +29,17 @@
         }
 
         .game-level {
-            font-size: 0.9rem;
-            color: var(--secondary-color);
+            font-size: 1rem;
             text-transform: capitalize;
+        }
+
+        .player-country-flag {
+            align-self: flex-start;
+
+            .fi {
+                width: 2.5rem;
+                height: 1.5rem;
+            }
         }
     }
 }
@@ -64,5 +71,3 @@
         }
     }
 }
-
-

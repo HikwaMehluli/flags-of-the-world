@@ -29,6 +29,8 @@ class FlagsofWorld {
         this.nameForm = document.getElementById('name-form');
         // Input field for player's name
         this.playerNameInput = document.getElementById('player-name');
+        // Dropdown for player's country
+        this.playerCountrySelect = document.getElementById('player-country');
         // Displays final moves in the modal
         this.modalFinalMoves = document.getElementById('modal-final-moves');
         // Displays final time in the modal
@@ -92,10 +94,14 @@ class FlagsofWorld {
             this.nameForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const playerName = this.playerNameInput.value.trim();
+                const playerCountry = this.playerCountrySelect ? this.playerCountrySelect.value : '';
                 if (playerName) {
-                    this.saveScore(playerName, this.moves, this.timeElement.textContent, this.difficulty, this.region);
+                    this.saveScore(playerName, this.moves, this.timeElement.textContent, this.difficulty, this.region, playerCountry);
                     this.nameModal.style.display = 'none';
                     this.playerNameInput.value = '';
+                    if (this.playerCountrySelect) {
+                        this.playerCountrySelect.value = '';
+                    }
                 }
             });
         }
@@ -376,7 +382,32 @@ class FlagsofWorld {
         if (this.nameModal) {
             this.modalFinalMoves.textContent = this.moves;
             this.modalFinalTime.textContent = finalTime;
+            this.populateCountryDropdown();
             this.nameModal.style.display = 'block';
+        }
+    }
+
+    /**
+     * Populates the country dropdown with countries from the current game.
+     */
+    async populateCountryDropdown() {
+        if (!this.playerCountrySelect) return;
+
+        // Clear existing options except the first one
+        this.playerCountrySelect.innerHTML = '<option value="">Select your country</option>';
+
+        try {
+            const flags = await this.getFlags();
+            const uniqueCountries = [...new Set(flags.map(flag => flag.country))];
+
+            uniqueCountries.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                this.playerCountrySelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error populating country dropdown:', error);
         }
     }
 
@@ -387,9 +418,17 @@ class FlagsofWorld {
      * @param {string} time Final time.
      * @param {string} difficulty Game difficulty.
      * @param {string} region Game region.
+     * @param {string} playerCountry Player's selected country.
      */
-    saveScore(name, moves, time, difficulty, region) {
-        const newScore = { name, moves, time, difficulty, region: `${this.continent} - ${region}` };
+    saveScore(name, moves, time, difficulty, region, playerCountry) {
+        const newScore = {
+            name,
+            moves,
+            time,
+            difficulty,
+            region: `${this.continent} - ${region}`,
+            playerCountry
+        };
         const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
         highScores.push(newScore);
         // Sort scores by moves, then by time

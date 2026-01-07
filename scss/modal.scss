@@ -56,7 +56,8 @@
     flex-direction: column;
 }
 
-.modal-content #player-name {
+.modal-content #player-name,
+.modal-content #player-country {
     padding: 10px;
     margin-bottom: 15px;
     border: 1px solid var(--border-color);
