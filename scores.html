@@ -72,11 +72,44 @@
             <p class="game-description">Can you beat them?</p>
         </section>
 
-        <section>
-            <ol id="high-scores-list"></ol>
-            <div id="no-scores-container" style="display: none;">
-                <p>No scores yet. Play a game to see your score here!</p>
-                <a href="index.html" class="btn-play-game">Play Now</a>
+        <section class="tabs-container">
+            <div class="tab-nav">
+                <button class="tab-button active" data-tab="africa">Africa</button>
+                <button class="tab-button" data-tab="america">America</button>
+                <button class="tab-button" data-tab="asia">Asia</button>
+                <button class="tab-button" data-tab="europe">Europe</button>
+            </div>
+
+            <div class="tab-content" id="africa-tab">
+                <ol class="continent-scores-list" data-continent="africa"></ol>
+                <div class="no-scores-container" data-continent="africa" style="display: none;">
+                    <p>No scores yet for Africa. Play a game to see your score here!</p>
+                    <a href="index.html" class="btn-play-game">Play Now</a>
+                </div>
+            </div>
+
+            <div class="tab-content" id="america-tab" style="display: none;">
+                <ol class="continent-scores-list" data-continent="america"></ol>
+                <div class="no-scores-container" data-continent="america" style="display: none;">
+                    <p>No scores yet for America. Play a game to see your score here!</p>
+                    <a href="index.html" class="btn-play-game">Play Now</a>
+                </div>
+            </div>
+
+            <div class="tab-content" id="asia-tab" style="display: none;">
+                <ol class="continent-scores-list" data-continent="asia"></ol>
+                <div class="no-scores-container" data-continent="asia" style="display: none;">
+                    <p>No scores yet for Asia. Play a game to see your score here!</p>
+                    <a href="index.html" class="btn-play-game">Play Now</a>
+                </div>
+            </div>
+
+            <div class="tab-content" id="europe-tab" style="display: none;">
+                <ol class="continent-scores-list" data-continent="europe"></ol>
+                <div class="no-scores-container" data-continent="europe" style="display: none;">
+                    <p>No scores yet for Europe. Play a game to see your score here!</p>
+                    <a href="index.html" class="btn-play-game">Play Now</a>
+                </div>
             </div>
         </section>
 

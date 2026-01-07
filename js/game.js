@@ -563,12 +563,18 @@ class FlagsofWorld {
             region: `${this.continent} - ${region}`,
             playerCountry
         };
-        const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
-        highScores.push(newScore);
+
+        // Load existing scores for this continent
+        const continentScoresKey = `highScores_${this.continent}`;
+        const continentScores = JSON.parse(localStorage.getItem(continentScoresKey)) || [];
+        continentScores.push(newScore);
+
         // Sort scores by moves, then by time
-        highScores.sort((a, b) => a.moves - b.moves || a.time.localeCompare(b.time));
-        highScores.splice(10); // Keep only top 10
-        localStorage.setItem('highScores', JSON.stringify(highScores));
+        continentScores.sort((a, b) => a.moves - b.moves || a.time.localeCompare(b.time));
+        continentScores.splice(10); // Keep only top 10 for this continent
+
+        // Save the updated continent-specific scores
+        localStorage.setItem(continentScoresKey, JSON.stringify(continentScores));
     }
 
     /**

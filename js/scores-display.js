@@ -1,35 +1,73 @@
 /**
  * This script runs on the scores page when the DOM is fully loaded.
- * It retrieves high scores from local storage and displays them in a list.
- * If no scores are found, it shows a message indicating that.
+ * It retrieves high scores from local storage and displays them in a list by continent.
+ * If no scores are found for a continent, it shows a message indicating that.
  */
 document.addEventListener('DOMContentLoaded', async () => {
-    // Check if we're on the scores page by looking for the high scores list element
-    const highScoresList = document.getElementById('high-scores-list');
-    const noScoresContainer = document.getElementById('no-scores-container');
+    // Check if we're on the scores page by looking for the tab elements
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const continentScoreLists = document.querySelectorAll('.continent-scores-list');
+    const noScoresContainers = document.querySelectorAll('.no-scores-container');
 
     // Only run if we're on the scores page (elements exist)
-    if (highScoresList && noScoresContainer) {
+    if (tabButtons.length > 0 && continentScoreLists.length > 0) {
         // Preload all flag data for quick lookup
         await preloadFlagData();
 
-        // Retrieve high scores from local storage, defaulting to an empty array
-        const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+        // Display scores for each continent
+        await displayScoresByContinent();
 
-        if (highScores.length > 0) {
-            // If scores exist, display the list and hide the 'no scores' message
-            highScoresList.style.display = 'block';
-            noScoresContainer.style.display = 'none';
-            // Populate the list with score items
-            highScoresList.innerHTML = highScores.map(createScoreListItem).join('');
-        } else {
-            // If no scores exist, hide the list and show the 'no scores' message
-            highScoresList.style.display = 'none';
-            noScoresContainer.style.display = 'block';
-        }
+        // Add event listeners to tab buttons
+        tabButtons.forEach(button => {
+            button.addEventListener('click', async () => {
+                // Remove active class from all buttons
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                button.classList.add('active');
+
+                // Hide all tab contents
+                tabContents.forEach(content => {
+                    content.style.display = 'none';
+                });
+
+                // Show the selected tab content
+                const continent = button.getAttribute('data-tab');
+                document.getElementById(`${continent}-tab`).style.display = 'block';
+            });
+        });
     }
     // If we're not on the scores page, simply don't run the script (no error message)
 });
+
+/**
+ * Displays scores for each continent from continent-specific storage
+ */
+async function displayScoresByContinent() {
+    const continents = ['africa', 'america', 'asia', 'europe'];
+
+    for (const continent of continents) {
+        // Load scores for this specific continent
+        const continentScoresKey = `highScores_${continent}`;
+        const continentScores = JSON.parse(localStorage.getItem(continentScoresKey)) || [];
+
+        // Get the score list and no scores container for this continent
+        const scoreList = document.querySelector(`.continent-scores-list[data-continent="${continent}"]`);
+        const noScoresContainer = document.querySelector(`.no-scores-container[data-continent="${continent}"]`);
+
+        if (continentScores.length > 0) {
+            // If scores exist, display the list and hide the 'no scores' message
+            scoreList.style.display = 'block';
+            noScoresContainer.style.display = 'none';
+            // Populate the list with score items
+            scoreList.innerHTML = continentScores.map(createScoreListItem).join('');
+        } else {
+            // If no scores exist, hide the list and show the 'no scores' message
+            scoreList.style.display = 'none';
+            noScoresContainer.style.display = 'block';
+        }
+    }
+}
 
 /**
  * Creates an HTML list item string for a given score object.
@@ -43,8 +81,11 @@ document.addEventListener('DOMContentLoaded', async () => {
  * @returns {string} The HTML string for the list item.
  */
 function createScoreListItem(score) {
-    // Format the region text for display
-    const regionText = formatRegion(score.region);
+    // Format the region text for display, showing only the region part since continent is indicated by tab
+    // - When showContinent is true(default ), it displays the full format(e.g., "Africa - Southern Africa")
+    // - When showContinent is false, it displays only the region part(e.g., "Southern Africa")
+    const regionText = formatRegion(score.region, false);
+    
     // Get the flag SVG for the player's country if available
     const playerCountryFlag = score.playerCountry ? getCountryFlagSync(score.playerCountry) : '';
 
@@ -58,7 +99,7 @@ function createScoreListItem(score) {
             </span>
             <span class="score-details">
                 Time: ${score.time}, in ${score.moves} moves
-            </span>            
+            </span>
         </li>
     `;
 }
@@ -111,19 +152,27 @@ async function preloadFlagData() {
 
 /**
  * Formats the region string for better readability.
- * Example: "africa - southern" becomes "Africa - Southern"
- * Example: "europe - all" becomes "Europe - All"
+ * Example: "africa - southern" becomes "Africa - Southern" (when showContinent=true)
+ * Example: "africa - southern" becomes "Southern" (when showContinent=false)
+ * Example: "europe - all" becomes "Europe - All" (when showContinent=true)
+ * Example: "europe - all" becomes "All" (when showContinent=false)
  * @param {string} regionString - The region string from the score object.
+ * @param {boolean} showContinent - Whether to include the continent in the formatted string (default: true).
  * @returns {string} The formatted region string.
  */
-function formatRegion(regionString) {
+function formatRegion(regionString, showContinent = true) {
     if (typeof regionString !== 'string' || !regionString) {
         return 'Unknown Region';
     }
 
     // Split the string by the delimiter and capitalize each part
-    return regionString
-        .split(' - ')
-        .map(part => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(' - ');
+    const parts = regionString.split(' - ').map(part => part.charAt(0).toUpperCase() + part.slice(1));
+
+    if (showContinent) {
+        // Return both continent and region parts
+        return parts.join(' - ');
+    } else {
+        // Return only the region part (skip the continent)
+        return parts.length > 1 ? parts[1] : parts[0];
+    }
 }
