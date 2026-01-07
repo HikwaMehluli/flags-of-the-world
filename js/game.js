@@ -376,13 +376,13 @@ class FlagsofWorld {
     /**
      * Called when the game is won. Stops the timer and shows the name input modal.
      */
-    gameWon() {
+    async gameWon() {
         this.stopTimer();
         const finalTime = this.timeElement.textContent;
         if (this.nameModal) {
             this.modalFinalMoves.textContent = this.moves;
             this.modalFinalTime.textContent = finalTime;
-            this.populateCountryDropdown();
+            await this.populateCountryDropdown();
             this.nameModal.style.display = 'block';
         }
     }
