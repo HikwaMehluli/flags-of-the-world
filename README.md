@@ -15,6 +15,10 @@ This memory game is more than just a game; it's an adventure that will test your
 -   💻 **JavaScript:** Powers the game's logic and interactivity.
 -   🗂️ **JSON:** Manages the flag and country data for easy updates.
 
+## 🎲 Game Play + Extras
+
+When playing on regions with fewer countries than the selected difficulty level expects, the game intelligently supplements with flags from other regions within the same continent to ensure game completion. For example, if you select "North America" (which has only 5 countries) on "Hard" difficulty (which expects 10 pairs), the game will combine flags from North America with flags from other American regions to create the required 10 pairs. A notification will appear to inform you when flags from multiple regions are being combined. This ensures that you can enjoy the game on any continent or region, regardless of the number of countries available in that specific region.
+
 ## 📚 Libraries & Frameworks
 
 -   🚩 **Flag Icons:** A fantastic collection of SVG flags from [Flag Icons](https://flagicons.lipis.dev/).

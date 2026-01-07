@@ -234,6 +234,20 @@ class FlagsofWorld {
     async generateCards() {
         const { pairs } = this.getDifficultySettings();
         let availableFlags = await this.getFlags();
+
+        // SOLUTION FOR ISSUE: When regions have fewer countries than expected by the difficulty setting,
+        // we supplement with flags from other regions within the same continent to ensure the game can complete.
+        // If there are not enough flags in the selected region, we fetch additional flags from other regions
+        // in the same continent to meet the required number of pairs for the difficulty level.
+        if (availableFlags.length < pairs) {
+            // Show a notification to the user about mixed regions
+            this.showRegionMixNotification();
+
+            // Get additional flags from other regions in the same continent
+            const additionalFlags = await this.getAdditionalFlagsFromContinent(pairs * 2 - availableFlags.length);
+            availableFlags = [...availableFlags, ...additionalFlags];
+        }
+
         availableFlags = this.shuffleArray(availableFlags);
 
         const cardPairs = [];
@@ -243,6 +257,97 @@ class FlagsofWorld {
             cardPairs.push(flag, flag); // Create pairs
         }
         return this.shuffleArray(cardPairs);
+    }
+
+    /**
+     * Shows a notification to the user when flags from multiple regions are combined.
+     */
+    showRegionMixNotification() {
+        // Create a temporary notification element
+        const notification = document.createElement('div');
+        notification.id = 'region-mix-notification';
+        notification.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            padding: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            z-index: 1000;
+            text-align: center;
+            font-size: 1.2em;
+            max-width: 80%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        `;
+        notification.innerHTML = `
+            <p>Combining flags from multiple regions in this continent to ensure game completion.</p>
+            <button id="notification-close-btn" style="
+                margin-top: 15px;
+                padding: 10px 20px;
+                background-color: var(--primary-color);
+                color: var(--secondary-color);
+                border: 1px solid var(--secondary-color);
+                cursor: pointer;
+                border-radius: 5px;
+            ">Continue</button>
+        `;
+
+        document.body.appendChild(notification);
+
+        // Close the notification when the button is clicked
+        document.getElementById('notification-close-btn').addEventListener('click', () => {
+            document.body.removeChild(notification);
+        });
+
+        // Also close after 5 seconds automatically
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 5000);
+    }
+
+    /**
+     * Gets additional flags from other regions within the same continent.
+     * @param {number} neededCount - The number of additional flags needed.
+     * @returns {Promise<Array>} A promise that resolves to an array of additional flag objects.
+     */
+    async getAdditionalFlagsFromContinent(neededCount) {
+        const flagFiles = {
+            africa: 'dist/flags_africa.json',
+            europe: 'dist/flags_europe.json',
+            asia: 'dist/flags_asia.json',
+            america: 'dist/flags_america.json'
+        };
+        const fileName = flagFiles[this.continent];
+
+        if (!fileName) return [];
+
+        try {
+            const response = await fetch(fileName);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const allFlagsData = await response.json();
+
+            // Collect all flags from all regions except the currently selected one
+            let allOtherFlags = [];
+            for (const regionKey in allFlagsData) {
+                if (regionKey !== this.region) {
+                    allOtherFlags = [...allOtherFlags, ...allFlagsData[regionKey]];
+                }
+            }
+
+            // Shuffle and return the needed number of flags
+            const shuffledFlags = this.shuffleArray(allOtherFlags);
+            return shuffledFlags.slice(0, neededCount);
+        } catch (error) {
+            console.error(`Error loading additional flags for ${this.continent}:`, error);
+            return [];
+        }
     }
 
     /**
