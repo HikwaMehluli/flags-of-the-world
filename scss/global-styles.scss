@@ -1,12 +1,14 @@
 :root {
     --primary-color: #e8e5f2;
     --secondary-color: #0d0334;
+    --gray-color: #f9f9f9;
     --transition: all 0.5s ease-in-out;
 }
 
 .dark-mode {
     --primary-color: #0d0334;
     --secondary-color: #e8e5f2;
+    --gray-color: #322077;
 }
 
 body {   
