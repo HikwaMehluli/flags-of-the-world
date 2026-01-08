@@ -263,49 +263,40 @@ class FlagsofWorld {
      * Shows a notification to the user when flags from multiple regions are combined.
      */
     showRegionMixNotification() {
-        // Create a temporary notification element
-        const notification = document.createElement('div');
-        notification.id = 'region-mix-notification';
-        notification.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: var(--secondary-color);
-            color: var(--primary-color);
-            padding: 20px;
-            border: 2px solid var(--primary-color);
-            border-radius: 10px;
-            z-index: 1000;
-            text-align: center;
-            font-size: 1.2em;
-            max-width: 80%;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        `;
-        notification.innerHTML = `
-            <p>Combining flags from multiple regions in this continent to ensure game completion.</p>
-            <button id="notification-close-btn" style="
-                margin-top: 15px;
-                padding: 10px 20px;
-                background-color: var(--primary-color);
-                color: var(--secondary-color);
-                border: 1px solid var(--secondary-color);
-                cursor: pointer;
-                border-radius: 5px;
-            ">Continue</button>
+        // Create a modal overlay element
+        const modalOverlay = document.createElement('div');
+        modalOverlay.id = 'region-mix-notification';
+        modalOverlay.className = 'modal-overlay';
+        modalOverlay.style.display = 'block';
+        modalOverlay.innerHTML = `
+            <div class="modal-content">
+                <p>Combining flags from multiple regions in this continent to ensure game completion.</p>
+                <button id="notification-close-btn">Continue</button>
+            </div>
         `;
 
-        document.body.appendChild(notification);
+        document.body.appendChild(modalOverlay);
 
-        // Close the notification when the button is clicked
-        document.getElementById('notification-close-btn').addEventListener('click', () => {
-            document.body.removeChild(notification);
+        // Close the notification when the Contine button is clicked
+        const notificationCloseBtn = modalOverlay.querySelector('#notification-close-btn');
+
+        const closeNotification = () => {
+            document.body.removeChild(modalOverlay);
+        };
+        
+        notificationCloseBtn.addEventListener('click', closeNotification);
+
+        // Also close when clicking on the overlay background
+        modalOverlay.addEventListener('click', (event) => {
+            if (event.target === modalOverlay) {
+                closeNotification();
+            }
         });
 
         // Also close after 10 seconds automatically
         setTimeout(() => {
-            if (document.body.contains(notification)) {
-                document.body.removeChild(notification);
+            if (document.body.contains(modalOverlay)) {
+                closeNotification();
             }
         }, 10000);
     }
