@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DH8L3Z163V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-DH8L3Z163V');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Fun Facts | Flags of the World</title>
+
+    <meta name="description" content="Discover interesting and educational facts about the flags of nations and regions from around the world. Learn fascinating details about flag designs, colors, symbols, and their meanings.">
+    <meta name="author" content="HikwaMehluli">
+    <meta name="keywords" content="Fun facts, flag facts, flag meanings, flag symbols, flag colors, world flags, educational facts, geography facts, flag history, flag design, African flags, European flags, American flags, Asian flags">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./img/favicon.png">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Fun Facts | Flags of the World">
+    <meta property="og:description" content="Discover interesting and educational facts about the flags of nations and regions from around the world. Learn fascinating details about flag designs, colors, symbols, and their meanings.">
+    <meta property="og:image" content="https://hikwamehluli.github.io/flags-of-africa/img/seo-image.jpg">
+    <meta property="og:url" content="https://hikwamehluli.github.io/flags-of-africa/">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Fun Facts | Flags of the World">
+    <meta name="twitter:description" content="Discover interesting and educational facts about the flags of nations and regions from around the world. Learn fascinating details about flag designs, colors, symbols, and their meanings.">
+    <meta name="twitter:image" content="https://hikwamehluli.github.io/flags-of-africa/img/seo-image.jpg">
+    <meta name="twitter:site" content="@HikwaMehluli">
+    <meta name="twitter:creator" content="@HikwaMehluli">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./dist/app.css">
+</head>
+
+<body>
+    <header>
+        <div class="menu-icon" id="menu-icon"><span class="menu-text">MENU</span></div>
+        <div class="theme-switcher" title="Toggle Theme">
+            <button id="theme-toggle" aria-label="Toggle theme">
+                <span class="icon"></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li>
+                <a href="index.html">Game</a>
+            </li>
+            <li>
+                <a href="scores.html">Scores</a>
+            </li>
+            <li>
+                <a class="active" href="fun-facts.html">Fun Facts</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <main class="game-container">
+        <section class="game-header">
+            <h1 class="game-title">Fun Facts</h1>
+            <p class="game-description">Discover interesting facts about world flags!</p>
+        </section>
+
+        <section class="facts-container">
+            <div class="fact-card">
+                <h3>The Only Country with a Square Flag</h3>
+                <p>Switzerland and the Vatican City are the only two countries in the world with square flags. Most national flags have a rectangular shape with specific proportions.</p>
+            </div>
+
+            <div class="fact-card">
+                <h3>The Flag with the Most Colors</h3>
+                <p>Belize's flag contains the most colors of any national flag, with 12 different colors including a complex coat of arms in the center.</p>
+            </div>
+
+            <div class="fact-card">
+                <h3>Flags That Are Perfectly Symmetrical</h3>
+                <p>Some flags like those of Germany, Belgium, and Chad look the same when flipped horizontally, while others like the flag of Saudi Arabia are designed to be viewed from a specific orientation.</p>
+            </div>
+
+            <div class="fact-card">
+                <h3>The Color Blue Dominates</h3>
+                <p>Blue is the most commonly used color in national flags, appearing in over 75% of all world flags. Red and white are also very common colors.</p>
+            </div>
+
+            <div class="fact-card">
+                <h3>Flags with Only Two Colors</h3>
+                <p>Libya's flag from 1977-2011 was a simple rectangle of green color, making it the only national flag with just one color and no design elements.</p>
+            </div>
+
+            <div class="fact-card">
+                <h3>Evolution of the American Flag</h3>
+                <p>The American flag has had 27 different versions throughout history, changing each time a new state was added. The current version has been in use since 1960.</p>
+            </div>
+
+            <div class="fact-card">
+                <h3>The Nordic Cross</h3>
+                <p>Five countries (Denmark, Sweden, Norway, Finland, and Iceland) have flags featuring the Nordic Cross, symbolizing their shared cultural heritage.</p>
+            </div>
+
+            <div class="fact-card">
+                <h3>Flags That Changed Due to Political Events</h3>
+                <p>Many flags have changed due to political events. For example, South Sudan's flag was adopted in 2011 after it became the world's newest country.</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>
+                Created by <a href="http://instagram.com/thatafro" target="_blank" rel="noopener noreferrer">@thatafro</a>
+            </p>
+            <p>
+                © <span id="year">1986</span> Flags of the World. All rights reserved.
+                <script>
+                    const year = new Date().getFullYear();
+                    document.getElementById("year").innerHTML = year;
+                </script>
+            </p>
+        </footer>
+    </main>
+
+    <script src="./dist/app.js" defer></script>
+</body>
+</html>
