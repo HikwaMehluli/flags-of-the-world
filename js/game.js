@@ -302,12 +302,12 @@ class FlagsofWorld {
             document.body.removeChild(notification);
         });
 
-        // Also close after 5 seconds automatically
+        // Also close after 10 seconds automatically
         setTimeout(() => {
             if (document.body.contains(notification)) {
                 document.body.removeChild(notification);
             }
-        }, 5000);
+        }, 10000);
     }
 
     /**
