@@ -27,12 +27,13 @@ To set up the development environment, you'll need to install the following depe
 -   **Sass:** A CSS pre-processor.
 -   **Webpack:** A module bundler.
 -   **Webpack-CLI:** Command line interface for Webpack.
+-   **dotenv-webpack:** Plugin to handle environment variables in Webpack (optional, for Google Analytics).
 
 You can install them using npm:
 
 ```bash
 # Install development dependencies
-npm install --save-dev sass webpack webpack-cli
+npm install --save-dev sass webpack webpack-cli dotenv-webpack
 ```
 
 Once installed, you can run the following commands to build the CSS and JavaScript:
@@ -44,6 +45,23 @@ npm run css-build
 # Build JavaScript
 npm run js-build
 ```
+
+### 📊 Google Analytics Setup (Optional)
+To enable Google Analytics tracking for your deployment:
+
+1. Create a `.env` file in the project root (this file is gitignored):
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Replace `M-EHLULI2025D` in your `.env` file with your actual Google Analytics Measurement ID.
+
+3. Rebuild the JavaScript bundle:
+   ```bash
+   npm run js-build
+   ```
+
+The Google Analytics tracking code will only be loaded if a valid Measurement ID is provided in your `.env` file. If no ID is provided, the application will run normally without analytics tracking.
 
 ## 🗺️ Regions Included
 The game includes flags from various continents: Africa, Europe, Asia, and the Americas.
