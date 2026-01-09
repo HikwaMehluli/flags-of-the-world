@@ -148,29 +148,47 @@ header {
     z-index: 8;
     
     button {
-        background-color: transparent;
+        background-color: var(--primary-color);
         border: 2px solid var(--secondary-color);
         cursor: pointer;
         width: 45px;
         height: 45px;
-        // padding: 5px;
-
+        transition: var(--transition);
+        
         .icon {
             display: block;
             width: 32px;
             height: 32px;
             background-repeat: no-repeat;
             background-size: contain;
+            transition: var(--transition);
+        }
+
+        &:hover {
+            background-color: var(--secondary-color);
+            border: 2px solid var(--secondary-color);
+
+            .icon {
+                filter: invert(1);
+            }
         }
     }
 }
 
-.theme-switcher .icon {
+.theme-switcher button .icon {
     background-image: url('../icons/svg/light-mode.svg');
     filter: invert(0);
+    transition: var(--transition);
 }
 
-.dark-mode .theme-switcher .icon {
-    background-image: url('../icons/svg/dark-mode.svg');
-    filter: invert(1);
+.dark-mode .theme-switcher button {
+    .icon {
+        background-image: url('../icons/svg/dark-mode.svg');
+        filter: invert(1);
+        transition: var(--transition);
+    }
+
+    &:hover .icon {
+        filter: invert(0);
+    }
 }

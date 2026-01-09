@@ -11,6 +11,16 @@
     --gray-color: #322077;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 body {   
     background-color: var(--primary-color);
     color: var(--secondary-color);
