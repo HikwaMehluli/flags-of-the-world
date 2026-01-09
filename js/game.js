@@ -484,7 +484,7 @@ class FlagsofWorld {
     }
 
     /**
-     * Populates the country dropdown with ALL countries from all 4 continents.
+     * Populates the country dropdown with all from all 4 continents.
      */
     async populateCountryDropdown() {
         if (!this.playerCountrySelect) return;
@@ -503,7 +503,7 @@ class FlagsofWorld {
 
             let allCountries = [];
 
-            // Loop through all continents and collect all countries
+            // Loop through all continents and collect all
             for (const continent in flagFiles) {
                 const fileName = flagFiles[continent];
 
@@ -512,7 +512,7 @@ class FlagsofWorld {
                 const response = await fetch(fileName);
                 const allFlagsData = await response.json();
 
-                // Extract all countries from all regions in this continent
+                // Extract all from all regions in this continent
                 for (const regionKey in allFlagsData) {
                     allFlagsData[regionKey].forEach(flag => {
                         if (!allCountries.includes(flag.country)) {
