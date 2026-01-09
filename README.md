@@ -54,7 +54,7 @@ To enable Google Analytics tracking for your deployment:
    cp .env.example .env
    ```
 
-2. Replace `M-EHLULI2025D` in your `.env` file with your actual Google Analytics Measurement ID.
+2. Replace `M-EHLULI2026D` in your `.env` file with your actual Google Analytics Measurement ID.
 
 3. Rebuild the JavaScript bundle:
    ```bash
