@@ -13,6 +13,8 @@ function gtag(...args) {
     if (GA_MEASUREMENT_ID && GA_MEASUREMENT_ID !== '') {
         // If GA is configured, push to dataLayer
         window.dataLayer.push(args);
+
+        // console.debug('This app uses Google Analytics');
     } else {
         // If no GA is configured, log debug info
         console.debug('Google Analytics not configured. gtag called with:', args);
