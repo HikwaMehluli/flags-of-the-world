@@ -1,0 +1,52 @@
+.content-section {
+    // max-width: 800px;
+    // margin: 2rem auto;
+    padding: 0 1rem;
+    line-height: 1.6;
+}
+
+.content-section h1 {
+    margin-bottom: 0;
+}
+
+.content-section h2 {
+    color: #3498db;
+    margin-top: 2rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+.content-section p {
+    margin-bottom: 1rem;
+}
+
+.content-section ul {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+.content-section li {
+    margin-bottom: 0.5rem;
+}
+
+// date on the privacy policy page
+.last-updated {
+    color: gray;
+    font-style: italic;
+    margin-top: 0;
+    margin-bottom: 2rem;
+}
+
+
+.fact-card {
+    background-color: var(--gray-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin: 15px 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    h3 {
+        margin-top: 0;
+    }
+}

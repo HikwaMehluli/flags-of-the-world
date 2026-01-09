@@ -24,11 +24,11 @@
             <li>
                 <a href="scores.html">Scores</a>
             </li>
+            <!-- <li>
+                <a href="profile.html">Profile</a>
+            </li> -->
             <li>
                 <a href="fun-facts.html">Fun Facts</a>
-            </li>
-            <li>
-                <a href="profile.html">Profile</a>
             </li>
             <li>
                 <a class="active" href="privacy-policy.html">Privacy Policy</a>
@@ -39,7 +39,7 @@
     <div class="overlay" id="overlay"></div>
 
     <main class="game-container">
-        <div class="privacy-policy">
+        <section class="content-section">
             <h1>Privacy Policy</h1>
             <p class="last-updated">Last Updated: January 9, 2026</p>
             
@@ -137,13 +137,27 @@
             </ul>
             <p>We do not use third-party cookies for advertising or tracking purposes.</p>
             
-            <h2>Contact Us</h2>
+            <!-- <h2>Contact Us</h2>
             <p>If you have any questions about this Privacy Policy, please contact us:</p>
             <ul>
                 <li>By visiting this page on our website: https://hikwamehluli.github.io/flags-of-africa/</li>
-                <li>By sending an email to: admin@flagsoftheworld.com</li>
-            </ul>
-        </div>
+                <li>By sending an email to: digitalafros@gmail.com</li>
+            </ul> -->
+        </section>
+
+        <footer>
+            <p>
+                <a href="privacy-policy.html">Privacy Policy</a> |
+                Created by <a href="https://thatafro.netlify.app" target="_blank" rel="noopener noreferrer">@thatafro</a>
+            </p>
+            <p>
+                © <span id="year">1986</span> Flags of the World. All rights reserved.
+                <script>
+                    const year = new Date().getFullYear();
+                    document.getElementById("year").innerHTML = year;
+                </script>
+            </p>
+        </footer>
     </main>
 
     <script src="./dist/app.js" defer></script>
