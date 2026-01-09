@@ -9,9 +9,11 @@
     "js-build": "webpack --watch --config-name app"
   },
   "devDependencies": {
+    "css-loader": "^7.1.2",
     "dotenv-webpack": "^8.1.1",
     "http-server": "^14.1.1",
     "sass": "^1.90.0",
+    "style-loader": "^4.0.0",
     "webpack": "^5.101.0",
     "webpack-cli": "^6.0.1"
   },

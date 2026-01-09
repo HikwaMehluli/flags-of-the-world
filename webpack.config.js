@@ -1,6 +1,3 @@
-
-// TODO: Bundle JS files.
-
 const path = require('path');
 const Dotenv = require('dotenv-webpack');
 
@@ -12,6 +9,14 @@ const createConfig = (entryFile, outputFilename, name) => ({
     output: {
         filename: outputFilename,
         path: commonOutputPath,
+    },
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader'],
+            },
+        ],
     },
     plugins: [
         new Dotenv({
