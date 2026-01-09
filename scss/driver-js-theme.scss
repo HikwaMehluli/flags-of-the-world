@@ -1,6 +1,6 @@
 .driver-popover.driverjs-theme {
-    background-color: #fde047;
-    color: #000;
+    background-color: #322077;
+    color: #0d0334;
 }
 
 .driver-popover.driverjs-theme .driver-popover-title {
@@ -10,29 +10,35 @@
 .driver-popover.driverjs-theme .driver-popover-title,
 .driver-popover.driverjs-theme .driver-popover-description,
 .driver-popover.driverjs-theme .driver-popover-progress-text {
-    color: #000;
+    color: white;
+}
+
+.driver-popover.driverjs-theme .driver-popover-progress-text {
+    margin: 0 20px 0 0;
 }
 
 .driver-popover.driverjs-theme button {
     flex: 1;
     text-align: center;
-    background-color: #000;
-    color: #ffffff;
-    border: 2px solid #000;
+    background-color: #0d0334;
+    color: white;
+    border: 2px solid #0d0334;
     text-shadow: none;
     font-size: 14px;
-    padding: 5px 8px;
+    // padding: 0;
+    margin: 5px 5px 0 0;
     border-radius: 6px;
+    transition: var(--transition);
 }
 
 .driver-popover.driverjs-theme button:hover {
-    background-color: #000;
-    color: #ffffff;
+    background-color: white;
+    color: #0d0334;
 }
 
 .driver-popover.driverjs-theme .driver-popover-navigation-btns {
     justify-content: space-between;
-    gap: 3px;
+    gap: 2px;
 }
 
 .driver-popover.driverjs-theme .driver-popover-close-btn {
@@ -43,18 +49,21 @@
     color: #000;
 }
 
+// 
+// Arrows
+// 
 .driver-popover.driverjs-theme .driver-popover-arrow-side-left.driver-popover-arrow {
-    border-left-color: #fde047;
+    border-left-color: white;
 }
 
 .driver-popover.driverjs-theme .driver-popover-arrow-side-right.driver-popover-arrow {
-    border-right-color: #fde047;
+    border-right-color: white;
 }
 
 .driver-popover.driverjs-theme .driver-popover-arrow-side-top.driver-popover-arrow {
-    border-top-color: #fde047;
+    border-top-color: white;
 }
 
 .driver-popover.driverjs-theme .driver-popover-arrow-side-bottom.driver-popover-arrow {
-    border-bottom-color: #fde047;
+    border-bottom-color: white;
 }

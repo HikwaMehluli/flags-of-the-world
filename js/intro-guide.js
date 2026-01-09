@@ -3,6 +3,9 @@ import "driver.js/dist/driver.css";
 
 const driverObj = driver({
     popoverClass: 'driverjs-theme',
+    prevBtnText: "Back",
+    nextBtnText: "Next",
+    closeBtnText: "Close",
     showProgress: true,
     steps: [
         { element: '.intro-menu', popover: { title: 'Navigation', description: 'This is where you can access the main menu navigation.' } },
