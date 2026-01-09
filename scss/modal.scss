@@ -9,6 +9,7 @@
     height: 100%;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(0.7px);
     padding-top: 100px;
 }
 
