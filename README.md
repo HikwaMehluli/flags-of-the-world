@@ -4,28 +4,25 @@
 
 ## An exciting and educational journey across the globe!
 
-This project was born out of a desire to make learning about the world's diverse cultures an engaging experience for everyone.
+This project was born out of a desire to make learning about the world's diverse cultures and engaging experience's for ever being.
 
-This memory game is more than just a game; it's an adventure that will test your knowledge and teach you about the beautiful flags of countries and regions from different continents. Get ready to challenge your memory, learn some geography, and have a blast doing it!
+This memory game is more than just a game; it's an adventure that will test your knowledge and teach you about the beautiful flags of countries and regions from different continents. Get ready to challenge your memory, learn some geography, and have a blast doing it! - Hikwa Mehluli
 
 ## ✨ Features & Tech Stack
-
 -   🎮 **Interactive Gameplay:** A classic memory game with a modern twist. 3 difficulty levels. Top 10 Scores.
 -   🌐 **HTML5 & CSS3:** No bloated ~~CSS Frameworks~~ this is purely custom built with the latest web standards for a smooth and responsive experience.
 -   💻 **JavaScript:** Powers the game's logic and interactivity.
 -   🗂️ **JSON:** Manages the flag and country data for easy updates.
 
 ## 🎲 Game Play + Extras
+Each continent (Africa, America, Asia, Europe) has its own leaderboard with the top 10 scores. When playing on regions with fewer countries than the difficulty level expects, the game intelligently adds flags from other regions within the same continent. For example, if you select "North America" (which has only 10 countries) on "Easy" difficulty (which the app expects a minium of 12  pairs), the game will combine flags from North America with flags from other American regions. A notification will appear notificatining you of flags from other regions being combined/added.
 
-Each continent tab (Africa, America, Asia, Europe) has its own separate leaderboard with the top 10 scores are maintained per continent rather than globally. When playing on regions with fewer countries than the selected difficulty level expects, the game intelligently supplements with flags from other regions within the same continent to ensure game completion. For example, if you select "North America" (which has only 5 countries) on "Hard" difficulty (which expects 10 pairs), the game will combine flags from North America with flags from other American regions to create the required 10 pairs. A notification will appear to inform you when flags from multiple regions are being combined. This ensures that you can enjoy the game on any continent or region, regardless of the number of countries available in that specific region.
-
-## 📚 Libraries & Frameworks
-
+## 📚 Libraries & Framework
 -   🚩 **Flag Icons:** A fantastic collection of SVG flags from [Flag Icons](https://flagicons.lipis.dev/).
--   💡 **Tippy.js:** For beautiful and accessible tooltips. [Tippy.JS](https://atomiks.github.io/tippyjs)
+-   💡 **Tippy.js:** For beautiful and accessible tooltips tool. [Tippy.JS](https://atomiks.github.io/tippyjs)
+-   🎨 **SCSS/CSS:** Custom-built styling without heavy frameworks. Crafted with modern CSS practices for optimal performance and maintainability. 
 
 ### 💻 Development Dependencies
-
 To set up the development environment, you'll need to install the following dependencies:
 
 -   **Sass:** A CSS pre-processor.
@@ -54,42 +51,38 @@ npm run js-build
 The game includes flags from various continents: Africa, Europe, Asia, and the Americas.
 
 ### Africa
+Based on the official [Regions of the African Union](https://au.int/en/member_states/countryprofiles2). The African Union has 55 Member States divided into five geographic regions.
 
-The countries and their flags are based on the official [Regions of the African Union](https://au.int/en/member_states/countryprofiles2). The African Union (AU) is made up of 55 Member States which represent all the countries on the African continent. AU Member States are divided into five geographic regions.
-
--   **North Africa:** Egypt (eg), Libya (ly), Tunisia (tn), Algeria (dz), Morocco (ma), Sudan (sd)
--   **Southern Africa:** South Africa (za), Zimbabwe (zw), Botswana (bw), Namibia (na), Zambia (zm), Lesotho (ls), Eswatini (sz), Malawi (mw)
--   **East Africa:** Kenya (ke), Ethiopia (et), Tanzania (tz), Uganda (ug), Rwanda (rw), Burundi (bi), Somalia (so), Djibouti (dj)
--   **West Africa:** Nigeria (ng), Ghana (gh), Senegal (sn), Mali (ml), Burkina Faso (bf), Ivory Coast (ci), Guinea (gn), Sierra Leone (sl), Liberia (lr), Togo (tg), Benin (bj)
--   **Central Africa:** Cameroon (cm), Chad (td), Central African Republic (cf), Gabon (ga), Equatorial Guinea (gq), Republic of Congo (cg), Democratic Republic of Congo (cd), Angola (ao)
+-   **North Africa:** Egypt, Libya, Tunisia, Algeria, Morocco, Sudan
+-   **Southern Africa:** South Africa, Zimbabwe, Botswana, Namibia, Zambia, Lesotho, Eswatini, Malawi
+-   **East Africa:** Kenya, Ethiopia, Tanzania, Uganda, Rwanda, Burundi, Somalia, Djibouti
+-   **West Africa:** Nigeria, Ghana, Senegal, Mali, Burkina Faso, Ivory Coast, Guinea, Sierra Leone, Liberia, Togo, Benin
+-   **Central Africa:** Cameroon, Chad, Central African Republic, Gabon, Equatorial Guinea, Republic of Congo, Democratic Republic of Congo, Angola
 
 ### Europe
+Countries and regions across the European continent.
 
-Includes countries and regions across the European continent.
-
--   **Northern Europe:** Aland Islands (ax), Denmark (dk), Estonia (ee), Faroe Islands (fo), Finland (fi), Guernsey (gg), Iceland (is), Ireland (ie), Isle of Man (im), Jersey (je), Latvia (lv), Lithuania (lt), Norway (no), Svalbard and Jan Mayen (sj), Sweden (se), United Kingdom (gb)
--   **Western Europe:** Austria (at), Belgium (be), France (fr), Germany (de), Liechtenstein (li), Luxembourg (lu), Monaco (mc), Netherlands (nl), Switzerland (ch)
--   **Southern Europe:** Albania (al), Andorra (ad), Bosnia and Herzegovina (ba), Croatia (hr), Cyprus (cy), Gibraltar (gi), Greece (gr), Holy See (va), Italy (it), Malta (mt), Montenegro (me), North Macedonia (mk), Portugal (pt), San Marino (sm), Serbia (rs), Slovenia (si), Spain (es), Türkiye (tr)
--   **Eastern Europe:** Belarus (by), Bulgaria (bg), Czech Republic (cz), Hungary (hu), Kosovo (xk), Moldova (md), Poland (pl), Romania (ro), Russia (ru), Slovakia (sk), Ukraine (ua)
+-   **Northern Europe:** Denmark, Estonia, Finland, Iceland, Ireland, Latvia, Lithuania, Norway, Sweden, United Kingdom
+-   **Western Europe:** Austria, Belgium, France, Germany, Liechtenstein, Luxembourg, Monaco, Netherlands, Switzerland
+-   **Southern Europe:** Albania, Andorra, Bosnia and Herzegovina, Croatia, Cyprus, Greece, Italy, Malta, Montenegro, North Macedonia, Portugal, Serbia, Slovenia, Spain
+-   **Eastern Europe:** Belarus, Bulgaria, Czech Republic, Hungary, Moldova, Poland, Romania, Slovakia, Ukraine
 
 ### Asia
+Countries and regions across the Asian continent.
 
-Includes countries and regions across the Asian continent.
-
--   **Central Asia:** Kazakhstan (kz), Kyrgyzstan (kg), Tajikistan (tj), Turkmenistan (tm), Uzbekistan (uz)
--   **Eastern Asia:** China (cn), Hong Kong (hk), Macao (mo), Japan (jp), Mongolia (mn), North Korea (kp), South Korea (kr), Taiwan (tw)
--   **South-Eastern Asia:** Brunei (bn), Cambodia (kh), Indonesia (id), Laos (la), Malaysia (my), Myanmar (mm), Philippines (ph), Singapore (sg), Thailand (th), Timor-Leste (tl), Vietnam (vn)
--   **Southern Asia:** Afghanistan (af), Bangladesh (bd), Bhutan (bt), India (in), Iran (ir), Maldives (mv), Nepal (np), Pakistan (pk), Sri Lanka (lk)
--   **Western Asia:** Armenia (am), Azerbaijan (az), Bahrain (bh), Cyprus (cy), Georgia (ge), Iraq (iq), Israel (il), Jordan (jo), Kuwait (kw), Lebanon (lb), Oman (om), Palestine (ps), Qatar (qa), Saudi Arabia (sa), Syria (sy), Turkey (tr), United Arab Emirates (ae), Yemen (ye)
+-   **Central Asia:** Kazakhstan, Kyrgyzstan, Tajikistan, Turkmenistan, Uzbekistan
+-   **Eastern Asia:** China, Hong Kong, Macao, Japan, Mongolia, North Korea, South Korea, Taiwan
+-   **South-Eastern Asia:** Brunei, Cambodia, Indonesia, Laos, Malaysia, Myanmar, Philippines, Singapore, Thailand, Vietnam
+-   **Southern Asia:** Afghanistan, Bangladesh, Bhutan, India, Iran, Maldives, Nepal, Pakistan, Sri Lanka
+-   **Western Asia:** Armenia, Azerbaijan, Bahrain, Cyprus, Georgia, Iraq, Israel, Jordan, Kuwait, Lebanon, Oman, Palestine, Qatar, Saudi Arabia, Syria, Turkey, United Arab Emirates, Yemen
 
 ### America
+Countries and regions across North, Central, and South America.
 
-Includes countries and regions across North, Central, and South America.
-
--   **Northern America:** Bermuda (bm), Canada (ca), Greenland (gl), Saint Pierre and Miquelon (pm), United States (us)
--   **Caribbean:** Anguilla (ai), Antigua and Barbuda (ag), Aruba (aw), Bahamas (bs), Barbados (bb), Bonaire (bq), British Virgin Islands (vg), Cayman Islands (ky), Cuba (cu), Curaçao (cw), Dominica (dm), Dominican Republic (do), Grenada (gd), Guadeloupe (gp), Haiti (ht), Jamaica (jm), Martinique (mq), Montserrat (ms), Puerto Rico (pr), Saint Barthélemy (bl), Saint Kitts and Nevis (kn), Saint Lucia (lc), Saint Martin (mf), Saint Vincent and the Grenadines (vc), Sint Maarten (sx), Trinidad and Tobago (tt), Turks and Caicos Islands (tc), U.S. Virgin Islands (vi)
--   **Central America:** Belize (bz), Costa Rica (cr), El Salvador (sv), Guatemala (gt), Honduras (hn), Mexico (mx), Nicaragua (ni), Panama (pa)
--   **South America:** Argentina (ar), Bolivia (bo), Brazil (br), Chile (cl), Colombia (co), Ecuador (ec), Falkland Islands (fk), French Guiana (gf), Guyana (gy), Paraguay (py), Peru (pe), Suriname (sr), Uruguay (uy), Venezuela (ve)
+-   **Northern America:** Canada, United States
+-   **Caribbean:** Bahamas, Barbados, Cuba, Dominican Republic, Grenada, Haiti, Jamaica, Puerto Rico, Trinidad and Tobago
+-   **Central America:** Belize, Costa Rica, El Salvador, Guatemala, Honduras, Mexico, Nicaragua, Panama
+-   **South America:** Argentina, Bolivia, Brazil, Chile, Colombia, Ecuador, Guyana, Paraguay, Peru, Suriname, Uruguay, Venezuela
 
 ---
 
