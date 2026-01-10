@@ -1,6 +1,12 @@
 import "./analytics.js";
-import "./game.js";
+import "./auth-service.js";
+import "./charts-config.js";
 import "./driver-js-theme.js";
+import "./game.js";
 import "./navigation.js";
+import "./presence-service.js";
+import "./profile-page.js";
+import "./profile-service.js";
+import "./score-service.js";
 import "./scores-display.js";
 import "./theme.js";

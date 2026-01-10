@@ -479,7 +479,44 @@ class FlagsofWorld {
             this.modalFinalMoves.textContent = this.moves;
             this.modalFinalTime.textContent = finalTime;
             await this.populateCountryDropdown();
+
+            // Auto-populate name and country from user profile if authenticated
+            await this.autoPopulateProfileInfo();
+
             this.nameModal.style.display = 'block';
+        }
+    }
+
+    /**
+     * Auto-populate name and country fields from user profile if authenticated
+     */
+    async autoPopulateProfileInfo() {
+        try {
+            const { default: authService } = await import('./auth-service.js');
+            const isAuthenticated = authService.getIsAuthenticated();
+
+            if (isAuthenticated) {
+                const user = authService.getCurrentUser();
+                const userProfile = await authService.getUserProfile();
+
+                // Auto-populate name field
+                if (userProfile?.full_name) {
+                    this.playerNameInput.value = userProfile.full_name;
+                } else if (user?.user_metadata?.full_name) {
+                    this.playerNameInput.value = user.user_metadata.full_name;
+                } else if (user?.email) {
+                    this.playerNameInput.value = user.email.split('@')[0]; // Use email prefix as name
+                }
+
+                // Auto-populate country field
+                if (userProfile?.player_country) {
+                    this.playerCountrySelect.value = userProfile.player_country;
+                } else if (user?.user_metadata?.player_country) {
+                    this.playerCountrySelect.value = user.user_metadata.player_country;
+                }
+            }
+        } catch (error) {
+            console.error('Error auto-populating profile info:', error);
         }
     }
 
@@ -634,12 +671,28 @@ class FlagsofWorld {
 }
 
 // Initialize the game once the DOM is fully loaded, but only if we're on the game page
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
     // Check if we're on the game page by looking for a key game element
     const gameBoard = document.getElementById('game-board');
 
     // Only initialize the game if the game board element exists
     if (gameBoard) {
         new FlagsofWorld();
+
+        // Initialize presence service to track online users
+        try {
+            const { default: presenceService } = await import('./presence-service.js');
+            await presenceService.initialize();
+
+            // Listen for online users count changes
+            document.addEventListener('onlineUsersCountChanged', (event) => {
+                const onlineUsersCountElement = document.getElementById('online-users-count');
+                if (onlineUsersCountElement) {
+                    onlineUsersCountElement.textContent = event.detail.count;
+                }
+            });
+        } catch (presenceError) {
+            console.error('Error initializing presence service:', presenceError);
+        }
     }
 });

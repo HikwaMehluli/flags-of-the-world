@@ -32,14 +32,19 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="./dist/app.css">
-    
+
     <!-- Chart.js for statistics visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="./js/charts-config.js"></script>
 </head>
 
 <body>
     <header>
         <div class="menu-icon" id="menu-icon"><span class="menu-text">MENU</span></div>
+        <div class="auth-status" id="auth-status">
+            <span id="auth-indicator">Guest</span>
+            <button id="auth-toggle-btn" class="auth-btn">Login</button>
+        </div>
         <div class="theme-switcher" title="Toggle Theme">
             <button id="theme-toggle" aria-label="Toggle theme">
                 <span class="icon"></span>
@@ -55,9 +60,9 @@
             <li>
                 <a href="scores.html">Scores</a>
             </li>
-            <!-- <li>
+            <li>
                 <a class="active" href="profile.html">Profile</a>
-            </li> -->
+            </li>
             <li>
                 <a href="fun-facts.html">Fun Facts</a>
             </li>
@@ -65,6 +70,15 @@
                 <a href="privacy-policy.html">Privacy Policy</a>
             </li>
         </ul>
+        
+        <!-- Currently Playing Section -->
+        <div class="currently-playing-section">
+            <h3>Currently Playing</h3>
+            <div class="online-users-indicator">
+                <div class="pulsing-circle"></div>
+                <span id="online-users-count">0</span> online
+            </div>
+        </div>
     </div>
 
     <div class="overlay" id="overlay"></div>
@@ -78,114 +92,114 @@
         <section class="profile-content">
             <div class="profile-header">
                 <div class="avatar-section">
-                    <img id="user-avatar" src="" alt="User Avatar" class="avatar">
+                    <img id="user-avatar" src="./img/default-avatar.png" alt="User Avatar" class="avatar">
                     <div class="upload-avatar">
                         <input type="file" id="avatar-upload" accept="image/*">
                         <label for="avatar-upload">Change Avatar</label>
                     </div>
                 </div>
-                
+
                 <div class="profile-info">
                     <div class="info-item">
                         <label for="full-name">Full Name:</label>
                         <input type="text" id="full-name" placeholder="Enter your full name">
                     </div>
-                    
+
                     <div class="info-item">
                         <label for="user-country">Country:</label>
                         <select id="user-country">
                             <option value="">Select your country</option>
                         </select>
                     </div>
-                    
+
                     <div class="info-item">
                         <label for="username">Username:</label>
                         <input type="text" id="username" readonly>
                     </div>
-                    
+
                     <div class="info-item">
                         <label for="email">Email:</label>
                         <input type="email" id="email" readonly>
                     </div>
-                    
+
                     <button id="save-profile" class="save-btn">Save Changes</button>
                 </div>
             </div>
-            
+
             <div class="stats-section">
                 <h2>Game Statistics</h2>
-                
+
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h3>Total Games Played</h3>
                         <p id="total-games">0</p>
                     </div>
-                    
+
                     <div class="stat-card">
                         <h3>Best Moves</h3>
                         <p id="best-moves">-</p>
                     </div>
-                    
+
                     <div class="stat-card">
                         <h3>Best Time</h3>
                         <p id="best-time">-</p>
                     </div>
-                    
+
                     <div class="stat-card">
                         <h3>Overall Rank</h3>
                         <p id="overall-rank">#0</p>
                     </div>
                 </div>
-                
+
                 <div class="charts-container">
                     <div class="chart-wrapper">
                         <canvas id="games-over-time-chart"></canvas>
                     </div>
-                    
+
                     <div class="chart-wrapper">
                         <canvas id="performance-by-difficulty-chart"></canvas>
                     </div>
-                    
+
                     <div class="chart-wrapper">
                         <canvas id="performance-by-continent-chart"></canvas>
                     </div>
                 </div>
             </div>
-            
+
             <div class="rankings-section">
                 <h2>Your Rankings</h2>
-                
+
                 <div class="rankings-grid">
                     <div class="ranking-card">
                         <h3>Global Ranking</h3>
                         <p id="global-ranking">#0</p>
                     </div>
-                    
+
                     <div class="ranking-card">
                         <h3>Africa Ranking</h3>
                         <p id="africa-ranking">#0</p>
                     </div>
-                    
+
                     <div class="ranking-card">
                         <h3>Europe Ranking</h3>
                         <p id="europe-ranking">#0</p>
                     </div>
-                    
+
                     <div class="ranking-card">
                         <h3>Asia Ranking</h3>
                         <p id="asia-ranking">#0</p>
                     </div>
-                    
+
                     <div class="ranking-card">
                         <h3>America Ranking</h3>
                         <p id="america-ranking">#0</p>
                     </div>
                 </div>
             </div>
-            
+
             <div class="account-actions">
                 <h2>Account Actions</h2>
-                
+
                 <div class="action-buttons">
                     <button id="logout-btn" class="logout-btn">Logout</button>
                     <button id="delete-account-btn" class="delete-account-btn">Delete Account</button>
@@ -195,7 +209,7 @@
 
         <footer>
             <p>
-                <a href="privacy-policy.html">Privacy Policy</a> | 
+                <a href="privacy-policy.html">Privacy Policy</a> |
                 Created by <a href="https://thatafro.netlify.app" target="_blank" rel="noopener noreferrer">@thatafro</a>
             </p>
             <p>
@@ -220,6 +234,78 @@
             <div class="modal-actions">
                 <button id="cancel-delete-btn" class="cancel-btn">Cancel</button>
                 <button id="confirm-delete-btn" class="delete-btn" disabled>Confirm Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login/Signup Modal -->
+    <div id="login-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content auth-modal">
+            <button class="close-modal" aria-label="Close modal">&times;</button>
+            <div class="auth-tabs">
+                <button class="tab-button active" data-tab="login">Login</button>
+                <button class="tab-button" data-tab="signup">Sign Up</button>
+            </div>
+            <div class="tab-panel active" id="login-tab">
+                <h2>Login to Your Account</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="email" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" required />
+                    </div>
+                    <button type="submit" class="submit-btn">Login</button>
+                </form>
+                <div class="social-login">
+                    <p>Or login with:</p>
+                    <button type="button" id="google-login" class="social-btn google">Google</button>
+                    <button type="button" id="github-login" class="social-btn github">GitHub</button>
+                </div>
+                <div class="auth-footer">
+                    <a href="#" id="forgot-password-link">Forgot Password?</a>
+                </div>
+            </div>
+            <div class="tab-panel" id="signup-tab">
+                <h2>Create an Account</h2>
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label for="signup-fullname">Full Name</label>
+                        <input type="text" id="signup-fullname" name="fullname" maxlength="50" />
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-username">Username</label>
+                        <input type="text" id="signup-username" name="username" required maxlength="30" />
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" name="email" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" name="password" required minlength="6" />
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <input type="password" id="signup-confirm-password" name="confirm-password" required />
+                    </div>
+                    <button type="submit" class="submit-btn">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logout-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <button class="close-modal" aria-label="Close modal">&times;</button>
+            <h2>Confirm Logout</h2>
+            <p>Are you sure you want to log out?</p>
+            <div class="modal-actions">
+                <button id="cancel-logout" class="cancel-btn">Cancel</button>
+                <button id="confirm-logout" class="logout-btn">Logout</button>
             </div>
         </div>
     </div>

@@ -47,6 +47,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await updateAuthUI(isAuthenticated);
                 await initializeScoreDisplay();
             });
+
+            // Initialize presence service to track online users
+            try {
+                const { default: presenceService } = await import('./presence-service.js');
+                await presenceService.initialize();
+
+                // Listen for online users count changes
+                document.addEventListener('onlineUsersCountChanged', (event) => {
+                    const onlineUsersCountElement = document.getElementById('online-users-count');
+                    if (onlineUsersCountElement) {
+                        onlineUsersCountElement.textContent = event.detail.count;
+                    }
+                });
+            } catch (presenceError) {
+                console.error('Error initializing presence service:', presenceError);
+            }
         } catch (error) {
             console.error('Error setting up auth listener:', error);
         }
@@ -165,6 +181,12 @@ async function loadScoresForContinent(continent) {
         const { default: authService } = await import('./auth-service.js');
         const isAuthenticated = authService.getIsAuthenticated();
 
+        // If not authenticated and trying to view global scores, show login prompt
+        if (!isAuthenticated && currentScoreType === 'global') {
+            await showLoginPromptForGlobalScores(continent);
+            return;
+        }
+
         // If not authenticated, only show local scores regardless of toggle
         if (!isAuthenticated) {
             await loadLocalScoresForContinent(continent);
@@ -185,6 +207,40 @@ async function loadScoresForContinent(continent) {
         console.error(`Error loading scores for ${continent}:`, error);
         // Fallback to local scores
         await loadLocalScoresForContinent(continent);
+    }
+}
+
+/**
+ * Show login prompt when trying to view global scores while not authenticated
+ */
+async function showLoginPromptForGlobalScores(continent) {
+    // Get the score list and no scores container for this continent
+    const scoreList = document.querySelector(`.continent-scores-list[data-continent="${continent}"]`);
+    const noScoresContainer = document.querySelector(`.no-scores-container[data-continent="${continent}"]`);
+
+    // Show a login prompt instead of scores
+    if (scoreList) {
+        scoreList.style.display = 'none';
+    }
+
+    if (noScoresContainer) {
+        noScoresContainer.style.display = 'block';
+        noScoresContainer.innerHTML = `
+            <p>To view global scores, please log in or create an account.</p>
+            <button id="login-prompt-btn" class="btn-play-game">Login / Sign Up</button>
+        `;
+
+        // Add event listener to the login button
+        const loginPromptBtn = document.getElementById('login-prompt-btn');
+        if (loginPromptBtn) {
+            loginPromptBtn.addEventListener('click', () => {
+                // Show the login modal
+                const loginModal = document.getElementById('login-modal');
+                if (loginModal) {
+                    loginModal.style.display = 'flex';
+                }
+            });
+        }
     }
 }
 
@@ -225,6 +281,9 @@ function enableScoreTypeToggle() {
  */
 async function loadGlobalScoresForContinent(continent) {
     try {
+        // Show loading indicator
+        showLoadingIndicator(continent);
+
         const { default: scoreService } = await import('./score-service.js');
 
         // Fetch scores for all difficulties for the continent
@@ -262,10 +321,43 @@ async function loadGlobalScoresForContinent(continent) {
             scoreList.style.display = 'none';
             noScoresContainer.style.display = 'block';
         }
+
+        // Hide loading indicator
+        hideLoadingIndicator(continent);
     } catch (error) {
         console.error(`Error loading global scores for ${continent}:`, error);
+        // Hide loading indicator
+        hideLoadingIndicator(continent);
         // Fallback to local scores
         await loadLocalScoresForContinent(continent);
+    }
+}
+
+/**
+ * Show loading indicator for a specific continent
+ */
+function showLoadingIndicator(continent) {
+    const scoreList = document.querySelector(`.continent-scores-list[data-continent="${continent}"]`);
+    const noScoresContainer = document.querySelector(`.no-scores-container[data-continent="${continent}"]`);
+
+    if (scoreList) {
+        scoreList.innerHTML = '<li class="loading-indicator">Loading global scores...</li>';
+        scoreList.style.display = 'block';
+    }
+
+    if (noScoresContainer) {
+        noScoresContainer.style.display = 'none';
+    }
+}
+
+/**
+ * Hide loading indicator for a specific continent
+ */
+function hideLoadingIndicator(continent) {
+    const scoreList = document.querySelector(`.continent-scores-list[data-continent="${continent}"]`);
+
+    if (scoreList && scoreList.querySelector('.loading-indicator')) {
+        scoreList.innerHTML = '';
     }
 }
 
