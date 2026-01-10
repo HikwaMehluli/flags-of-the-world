@@ -364,4 +364,4 @@ const authService = new AuthService();
 export default authService;
 
 // Also export for direct instantiation if needed
-export { AuthService };
+export { AuthService, supabase };

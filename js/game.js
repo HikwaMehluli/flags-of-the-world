@@ -537,7 +537,7 @@ class FlagsofWorld {
     }
 
     /**
-     * Saves the player's score to local storage.
+     * Saves the player's score to local storage and Supabase if authenticated.
      * @param {string} name Player's name.
      * @param {number} moves Number of moves taken.
      * @param {string} time Final time.
@@ -545,14 +545,15 @@ class FlagsofWorld {
      * @param {string} region Game region.
      * @param {string} playerCountry Player's selected country.
      */
-    saveScore(name, moves, time, difficulty, region, playerCountry) {
+    async saveScore(name, moves, time, difficulty, region, playerCountry) {
         const newScore = {
             name,
             moves,
             time,
             difficulty,
             region: `${this.continent} - ${region}`,
-            playerCountry
+            playerCountry,
+            continent: this.continent
         };
 
         // Load existing scores for this continent
@@ -566,6 +567,36 @@ class FlagsofWorld {
 
         // Save the updated continent-specific scores
         localStorage.setItem(continentScoresKey, JSON.stringify(continentScores));
+
+        // Check if user is authenticated and save to Supabase if they are
+        try {
+            // Import the auth service to check authentication status
+            const { default: authService } = await import('./auth-service.js');
+            const isAuthenticated = authService.getIsAuthenticated();
+
+            if (isAuthenticated) {
+                // Import the score service to save to Supabase
+                const { default: scoreService } = await import('./score-service.js');
+
+                // Prepare score data for Supabase
+                const scoreData = {
+                    name,
+                    moves,
+                    time,
+                    difficulty,
+                    region: newScore.region,
+                    player_country: playerCountry,
+                    continent: this.continent
+                };
+
+                // Save to Supabase
+                await scoreService.saveScore(scoreData);
+                console.log('Score saved to Supabase successfully');
+            }
+        } catch (error) {
+            console.error('Error saving score to Supabase:', error);
+            // Continue without throwing error to ensure local storage is still saved
+        }
     }
 
     /**

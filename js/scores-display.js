@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Preload all flag data for quick lookup
         await preloadFlagData();
 
-        // Display scores for each continent
-        await displayScoresByContinent();
+        // Check authentication status and display appropriate scores
+        await initializeScoreDisplay();
 
         // Add event listeners to tab buttons
         tabButtons.forEach(button => {
@@ -34,22 +34,259 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Show the selected tab content
                 const continent = button.getAttribute('data-tab');
                 document.getElementById(`${continent}-tab`).style.display = 'block';
+
+                // Load scores for the selected continent
+                await loadScoresForContinent(continent);
             });
         });
+
+        // Add authentication status listener to update UI when auth state changes
+        try {
+            const { default: authService } = await import('./auth-service.js');
+            authService.onAuthStateChange(async ({ isAuthenticated }) => {
+                await updateAuthUI(isAuthenticated);
+                await initializeScoreDisplay();
+            });
+        } catch (error) {
+            console.error('Error setting up auth listener:', error);
+        }
     }
     // If we're not on the scores page, simply don't run the script (no error message)
 });
 
 /**
- * Displays scores for each continent from continent-specific storage
+ * Initialize score display based on authentication status
  */
-async function displayScoresByContinent() {
-    const continents = ['africa', 'america', 'asia', 'europe'];
+async function initializeScoreDisplay() {
+    try {
+        const { default: authService } = await import('./auth-service.js');
+        const isAuthenticated = authService.getIsAuthenticated();
 
-    for (const continent of continents) {
-        // Load scores for this specific continent
-        const continentScoresKey = `highScores_${continent}`;
-        const continentScores = JSON.parse(localStorage.getItem(continentScoresKey)) || [];
+        await updateAuthUI(isAuthenticated);
+
+        // Initialize the score type toggle
+        initializeScoreTypeToggle();
+
+        // Enable or disable the toggle based on authentication
+        if (isAuthenticated) {
+            enableScoreTypeToggle();
+        } else {
+            disableScoreTypeToggle();
+        }
+
+        await loadScoresForContinent('africa'); // Load default continent
+    } catch (error) {
+        console.error('Error initializing score display:', error);
+        // Fallback to local scores
+        await displayScoresByContinent();
+    }
+}
+
+/**
+ * Update UI based on authentication status
+ */
+async function updateAuthUI(isAuthenticated) {
+    // Update auth status indicator in header
+    const authIndicator = document.getElementById('auth-indicator');
+    const authToggleBtn = document.getElementById('auth-toggle-btn');
+
+    if (authIndicator && authToggleBtn) {
+        if (isAuthenticated) {
+            const currentUser = authService.getCurrentUser();
+            const displayName = currentUser?.user_metadata?.full_name ||
+                               currentUser?.user_metadata?.username ||
+                               currentUser?.email?.split('@')[0] ||
+                               'User';
+            authIndicator.textContent = displayName;
+            authToggleBtn.textContent = 'Logout';
+        } else {
+            authIndicator.textContent = 'Guest';
+            authToggleBtn.textContent = 'Login';
+        }
+    }
+}
+
+// Add variables to track score type
+let currentScoreType = 'global'; // Default to global scores
+
+/**
+ * Initialize the score type toggle buttons
+ */
+function initializeScoreTypeToggle() {
+    const globalScoresBtn = document.getElementById('global-scores-btn');
+    const personalScoresBtn = document.getElementById('personal-scores-btn');
+
+    if (globalScoresBtn && personalScoresBtn) {
+        globalScoresBtn.addEventListener('click', () => {
+            currentScoreType = 'global';
+            updateScoreTypeToggleUI();
+            loadScoresForContinent(getActiveContinent());
+        });
+
+        personalScoresBtn.addEventListener('click', () => {
+            currentScoreType = 'personal';
+            updateScoreTypeToggleUI();
+            loadScoresForContinent(getActiveContinent());
+        });
+    }
+}
+
+/**
+ * Update the UI for the score type toggle buttons
+ */
+function updateScoreTypeToggleUI() {
+    const globalScoresBtn = document.getElementById('global-scores-btn');
+    const personalScoresBtn = document.getElementById('personal-scores-btn');
+
+    if (globalScoresBtn && personalScoresBtn) {
+        if (currentScoreType === 'global') {
+            globalScoresBtn.classList.add('active');
+            personalScoresBtn.classList.remove('active');
+        } else {
+            globalScoresBtn.classList.remove('active');
+            personalScoresBtn.classList.add('active');
+        }
+    }
+}
+
+/**
+ * Get the currently active continent tab
+ */
+function getActiveContinent() {
+    const activeTabButton = document.querySelector('.tab-button.active');
+    return activeTabButton ? activeTabButton.getAttribute('data-tab') : 'africa';
+}
+
+/**
+ * Load scores for a specific continent based on current score type selection
+ */
+async function loadScoresForContinent(continent) {
+    try {
+        const { default: authService } = await import('./auth-service.js');
+        const isAuthenticated = authService.getIsAuthenticated();
+
+        // If not authenticated, only show local scores regardless of toggle
+        if (!isAuthenticated) {
+            await loadLocalScoresForContinent(continent);
+            // Disable the toggle buttons since only local scores are available
+            disableScoreTypeToggle();
+            return;
+        }
+
+        // If authenticated, respect the score type toggle
+        if (currentScoreType === 'global') {
+            // Load global scores from Supabase
+            await loadGlobalScoresForContinent(continent);
+        } else {
+            // Load personal scores from Supabase
+            await loadPersonalScoresForContinent(continent);
+        }
+    } catch (error) {
+        console.error(`Error loading scores for ${continent}:`, error);
+        // Fallback to local scores
+        await loadLocalScoresForContinent(continent);
+    }
+}
+
+/**
+ * Disable the score type toggle when user is not authenticated
+ */
+function disableScoreTypeToggle() {
+    const globalScoresBtn = document.getElementById('global-scores-btn');
+    const personalScoresBtn = document.getElementById('personal-scores-btn');
+
+    if (globalScoresBtn) {
+        globalScoresBtn.classList.add('active');
+        globalScoresBtn.classList.add('disabled');
+    }
+    if (personalScoresBtn) {
+        personalScoresBtn.classList.remove('active');
+        personalScoresBtn.classList.add('disabled');
+    }
+}
+
+/**
+ * Enable the score type toggle when user is authenticated
+ */
+function enableScoreTypeToggle() {
+    const globalScoresBtn = document.getElementById('global-scores-btn');
+    const personalScoresBtn = document.getElementById('personal-scores-btn');
+
+    if (globalScoresBtn) {
+        globalScoresBtn.classList.remove('disabled');
+    }
+    if (personalScoresBtn) {
+        personalScoresBtn.classList.remove('disabled');
+    }
+}
+
+/**
+ * Load global scores for a specific continent from Supabase
+ */
+async function loadGlobalScoresForContinent(continent) {
+    try {
+        const { default: scoreService } = await import('./score-service.js');
+
+        // Fetch scores for all difficulties for the continent
+        const difficulties = ['easy', 'medium', 'hard'];
+        let allScores = [];
+
+        for (const difficulty of difficulties) {
+            try {
+                const scores = await scoreService.fetchGlobalScores(continent, difficulty);
+                allScores = allScores.concat(scores);
+            } catch (error) {
+                console.warn(`No global scores for ${continent} - ${difficulty}:`, error.message);
+            }
+        }
+
+        // Sort all scores by moves and time
+        allScores.sort((a, b) => {
+            if (a.moves !== b.moves) return a.moves - b.moves;
+            return a.time.localeCompare(b.time);
+        });
+
+        // Get the score list and no scores container for this continent
+        const scoreList = document.querySelector(`.continent-scores-list[data-continent="${continent}"]`);
+        const noScoresContainer = document.querySelector(`.no-scores-container[data-continent="${continent}"]`);
+
+        if (allScores.length > 0) {
+            // If scores exist, display the list and hide the 'no scores' message
+            scoreList.style.display = 'block';
+            noScoresContainer.style.display = 'none';
+
+            // Populate the list with score items
+            scoreList.innerHTML = allScores.map(createGlobalScoreListItem).join('');
+        } else {
+            // If no scores exist, hide the list and show the 'no scores' message
+            scoreList.style.display = 'none';
+            noScoresContainer.style.display = 'block';
+        }
+    } catch (error) {
+        console.error(`Error loading global scores for ${continent}:`, error);
+        // Fallback to local scores
+        await loadLocalScoresForContinent(continent);
+    }
+}
+
+/**
+ * Load personal scores for a specific continent from Supabase
+ */
+async function loadPersonalScoresForContinent(continent) {
+    try {
+        const { default: scoreService } = await import('./score-service.js');
+
+        // Fetch user's personal scores for the continent
+        const scores = await scoreService.fetchUserScores();
+
+        // Filter scores for the specific continent
+        const continentScores = scores.filter(score => score.continent === continent);
+
+        // Sort scores by moves and time
+        continentScores.sort((a, b) => {
+            if (a.moves !== b.moves) return a.moves - b.moves;
+            return a.time.localeCompare(b.time);
+        });
 
         // Get the score list and no scores container for this continent
         const scoreList = document.querySelector(`.continent-scores-list[data-continent="${continent}"]`);
@@ -59,14 +296,71 @@ async function displayScoresByContinent() {
             // If scores exist, display the list and hide the 'no scores' message
             scoreList.style.display = 'block';
             noScoresContainer.style.display = 'none';
+
             // Populate the list with score items
-            scoreList.innerHTML = continentScores.map(createScoreListItem).join('');
+            scoreList.innerHTML = continentScores.map(createGlobalScoreListItem).join('');
         } else {
             // If no scores exist, hide the list and show the 'no scores' message
             scoreList.style.display = 'none';
             noScoresContainer.style.display = 'block';
         }
+    } catch (error) {
+        console.error(`Error loading personal scores for ${continent}:`, error);
+        // Fallback to local scores
+        await loadLocalScoresForContinent(continent);
     }
+}
+
+/**
+ * Load local scores for a specific continent from localStorage
+ */
+async function loadLocalScoresForContinent(continent) {
+    // Load scores for this specific continent
+    const continentScoresKey = `highScores_${continent}`;
+    const continentScores = JSON.parse(localStorage.getItem(continentScoresKey)) || [];
+
+    // Get the score list and no scores container for this continent
+    const scoreList = document.querySelector(`.continent-scores-list[data-continent="${continent}"]`);
+    const noScoresContainer = document.querySelector(`.no-scores-container[data-continent="${continent}"]`);
+
+    if (continentScores.length > 0) {
+        // If scores exist, display the list and hide the 'no scores' message
+        scoreList.style.display = 'block';
+        noScoresContainer.style.display = 'none';
+        // Populate the list with score items
+        scoreList.innerHTML = continentScores.map(createScoreListItem).join('');
+    } else {
+        // If no scores exist, hide the list and show the 'no scores' message
+        scoreList.style.display = 'none';
+        noScoresContainer.style.display = 'block';
+    }
+}
+
+/**
+ * Creates an HTML list item string for a global score object from Supabase.
+ * @param {object} score - The score object from Supabase.
+ * @returns {string} The HTML string for the list item.
+ */
+function createGlobalScoreListItem(score) {
+    // Format the region text for display, showing only the region part since continent is indicated by tab
+    const regionText = formatRegion(score.region, false);
+
+    // Get the flag SVG for the player's country if available
+    const playerCountryFlag = score.player_country ? getCountryFlagSync(score.player_country) : '';
+
+    return `
+        <li>
+            <span class="player-name">
+                ${score.name || score.users?.full_name || score.users?.username || 'Anonymous'}, from ${score.player_country || ''} ${playerCountryFlag ? `<span class="player-country-flag">${playerCountryFlag}</span>` : ''}
+            </span>
+            <span class="game-level">
+                Level: ${score.difficulty} - ${regionText}
+            </span>
+            <span class="score-details">
+                Time: ${score.time}, in ${score.moves} moves
+            </span>
+        </li>
+    `;
 }
 
 /**
