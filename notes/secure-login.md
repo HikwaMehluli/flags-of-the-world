@@ -21,33 +21,35 @@ This document outlines the implementation plan for integrating Supabase-based au
 
 #### Users Table
 ```sql
-users
-- id (UUID, Primary Key, Default: gen_random_uuid())
-- email (TEXT, Unique, Not Null)
-- username (TEXT, Unique, Not Null)
-- full_name (TEXT)
-- avatar_url (TEXT)
-- created_at (TIMESTAMP, Default: NOW())
-- updated_at (TIMESTAMP, Default: NOW())
+CREATE TABLE users (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  username TEXT UNIQUE NOT NULL,
+  full_name TEXT,
+  avatar_url TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
 ```
 
 #### Scores Table
 ```sql
-scores
-- id (UUID, Primary Key, Default: gen_random_uuid())
-- user_id (UUID, Foreign Key -> users.id, Not Null)
-- name (TEXT, Not Null) - Player's display name
-- moves (INTEGER, Not Null) - Number of moves taken
-- time (TEXT, Not Null) - Time taken (formatted as MM:SS)
-- difficulty (TEXT, Not Null) - Game difficulty (easy, medium, hard)
-- region (TEXT, Not Null) - Game region (e.g., "africa - southern")
-- player_country (TEXT) - Player's selected country
-- continent (TEXT, Not Null) - Game continent (africa, america, asia, europe)
-- created_at (TIMESTAMP, Default: NOW())
+CREATE TABLE scores (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id),
+  name TEXT NOT NULL, -- Player's display name
+  moves INTEGER NOT NULL, -- Number of moves taken
+  time TEXT NOT NULL, -- Time taken (formatted as MM:SS)
+  difficulty TEXT NOT NULL, -- Game difficulty (easy, medium, hard)
+  region TEXT NOT NULL, -- Game region (e.g., "africa - southern")
+  player_country TEXT, -- Player's selected country
+  continent TEXT NOT NULL, -- Game continent (africa, america, asia, europe)
+  created_at TIMESTAMP DEFAULT NOW()
+);
 
-Indexes:
-- idx_scores_continent_difficulty_moves_time (continent, difficulty, moves, time)
-- idx_scores_user_id (user_id)
+-- Indexes
+CREATE INDEX idx_scores_continent_difficulty_moves_time ON scores (continent, difficulty, moves, time);
+CREATE INDEX idx_scores_user_id ON scores (user_id);
 ```
 
 ## Implementation Steps
@@ -230,13 +232,14 @@ Indexes:
 ### Real-Time Online Users Tracking
 1. Create a presence table in Supabase:
    ```sql
-   presence
-   - id (UUID, Primary Key)
-   - user_id (UUID, Foreign Key -> users.id)
-   - session_id (TEXT, Unique identifier for browser session)
-   - last_seen (TIMESTAMP, Default: NOW())
-   - is_online (BOOLEAN, Default: TRUE)
-   ```
+CREATE TABLE presence (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES users(id),
+  session_id TEXT UNIQUE, -- Unique identifier for browser session
+  last_seen TIMESTAMP DEFAULT NOW(),
+  is_online BOOLEAN DEFAULT TRUE
+);
+```
 2. When user logs in:
    - Subscribe to the presence channel
    - Insert/update presence record for the user
@@ -343,8 +346,8 @@ Indexes:
 - `.env.example` - Added Supabase configuration
 
 ### Environment Variables
-- `REACT_APP_SUPABASE_URL` - Supabase project URL
-- `REACT_APP_SUPABASE_ANON_KEY` - Supabase anonymous key
+- `SUPABASE_URL` - Supabase project URL
+- `SUPABASE_ANON_KEY` - Supabase anonymous key
 
 ### Third-party Dependencies
 - `@supabase/supabase-js` - Supabase client library for authentication and database operations
