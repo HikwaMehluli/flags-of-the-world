@@ -23,6 +23,7 @@ if (document.querySelector('.intro-menu')) {
             nextBtnText: "Next",
             closeBtnText: "Close",
             showProgress: true,
+            overlayColor: 'blue',
             steps: [
                 { element: '.intro-menu', popover: { title: 'Navigation', description: 'This is where you can access the main menu navigation.' } },
                 { element: '.intro-continent', popover: { title: 'Game Play', description: 'Start by selecting the continent you wish to explore.' } },
