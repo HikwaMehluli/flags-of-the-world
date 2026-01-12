@@ -21,7 +21,7 @@ class ProfileStats {
    */
   async loadAndRenderCharts() {
     try {
-      const { default: profileService } = await import('./profile-service.js');
+      const { default: profileService } = await import('../profile-service.js');
       const stats = await profileService.getUserStats();
 
       // Render charts with user statistics
@@ -37,7 +37,7 @@ class ProfileStats {
   async renderCharts(stats) {
     try {
       // Import Chart.js configurations
-      const { gamesOverTimeConfig, performanceByDifficultyConfig, performanceByContinentConfig } = await import('./charts-config.js');
+      const { gamesOverTimeConfig, performanceByDifficultyConfig, performanceByContinentConfig } = await import('../charts-config.js');
 
       // Render games over time chart
       if (stats.gamesOverTime.dates.length > 0) {
@@ -159,7 +159,7 @@ class ProfileStats {
    */
   async updateRankingsDisplay() {
     try {
-      const { default: profileService } = await import('./profile-service.js');
+      const { default: profileService } = await import('../profile-service.js');
       const rankings = await profileService.getUserRankings();
 
       // Update ranking elements

@@ -123,7 +123,7 @@ class AuthModal {
     }
 
     try {
-      const { default: authService } = await import('./auth-service.js');
+      const { default: authService } = await import('../auth-service.js');
       
       const result = await authService.signIn(email, password);
       
@@ -171,7 +171,7 @@ class AuthModal {
     }
 
     try {
-      const { default: authService } = await import('./auth-service.js');
+      const { default: authService } = await import('../auth-service.js');
       
       const result = await authService.signUp(email, password, {
         fullName,
@@ -199,7 +199,7 @@ class AuthModal {
     if (this.googleLoginBtn) {
       this.googleLoginBtn.addEventListener('click', async () => {
         try {
-          const { default: authService } = await import('./auth-service.js');
+          const { default: authService } = await import('../auth-service.js');
           await authService.signInWithProvider('google');
         } catch (error) {
           console.error('Google login error:', error);
@@ -211,7 +211,7 @@ class AuthModal {
     if (this.githubLoginBtn) {
       this.githubLoginBtn.addEventListener('click', async () => {
         try {
-          const { default: authService } = await import('./auth-service.js');
+          const { default: authService } = await import('../auth-service.js');
           await authService.signInWithProvider('github');
         } catch (error) {
           console.error('GitHub login error:', error);
@@ -233,7 +233,7 @@ class AuthModal {
         if (!email) return;
 
         try {
-          const { default: authService } = await import('./auth-service.js');
+          const { default: authService } = await import('../auth-service.js');
           await authService.resetPassword(email);
           
           this.showMessage('Password reset email sent! Please check your inbox.', 'success');
@@ -251,7 +251,7 @@ class AuthModal {
   setupAuthToggle() {
     if (this.authToggleBtn) {
       this.authToggleBtn.addEventListener('click', async () => {
-        const { default: authService } = await import('./auth-service.js');
+        const { default: authService } = await import('../auth-service.js');
         const isAuthenticated = authService.getIsAuthenticated();
 
         if (isAuthenticated) {

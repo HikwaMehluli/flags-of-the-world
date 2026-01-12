@@ -12,7 +12,7 @@ class UserProfile {
 	 */
 	async initialize() {
 		try {
-			const { default: authService } = await import('./auth-service.js');
+			const { default: authService } = await import('../auth-service.js');
 
 			// Initialize auth state
 			await authService.initializeSession();
