@@ -1,5 +1,10 @@
 import authService, { supabase } from './auth-service.js';
 
+// Check if Supabase is properly initialized
+const isSupabaseInitialized = () => {
+  return supabase !== null;
+};
+
 /**
  * Presence service module for tracking online users in real-time
  */
@@ -97,8 +102,8 @@ class PresenceService {
 	 * Set user presence (online/offline)
 	 */
 	async setPresence(isOnline) {
-		if (!supabase) {
-			console.error('Supabase client not available');
+		if (!isSupabaseInitialized()) {
+			console.warn('Supabase is not initialized. Cannot set presence.');
 			return;
 		}
 

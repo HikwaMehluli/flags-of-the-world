@@ -132,14 +132,12 @@ header {
         color: var(--secondary-color);
         font-size: 0.9rem;
         margin: 0 0 10px 0;
-        text-align: center;
     }
 }
 
 .online-users-indicator {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 8px;
     color: var(--secondary-color);
     font-size: 0.8rem;

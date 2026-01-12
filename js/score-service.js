@@ -1,5 +1,10 @@
 import authService, { supabase } from './auth-service.js';
 
+// Check if Supabase is properly initialized
+const isSupabaseInitialized = () => {
+  return supabase !== null;
+};
+
 /**
  * Score service module for handling global scoring system
  */
@@ -15,8 +20,9 @@ class ScoreService {
    * Save a score to Supabase
    */
   async saveScore(scoreData) {
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
+    if (!isSupabaseInitialized()) {
+      console.warn('Supabase is not initialized. Score will not be saved to global leaderboard.');
+      return null;
     }
 
     // Add user_id if authenticated
@@ -37,29 +43,35 @@ class ScoreService {
       created_at: new Date().toISOString()
     };
 
-    const { data, error } = await supabase
-      .from('scores')
-      .insert([scoreRecord])
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('scores')
+        .insert([scoreRecord])
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Error saving score:', error.message);
-      throw new Error(error.message);
+      if (error) {
+        console.error('Error saving score:', error.message);
+        throw new Error(error.message);
+      }
+
+      // Invalidate the cache for this continent/difficulty
+      this.invalidateCache(scoreData.continent, scoreData.difficulty);
+
+      return data;
+    } catch (error) {
+      console.error('Error in saveScore:', error);
+      throw error;
     }
-
-    // Invalidate the cache for this continent/difficulty
-    this.invalidateCache(scoreData.continent, scoreData.difficulty);
-
-    return data;
   }
 
   /**
    * Fetch global scores for a specific continent and difficulty
    */
   async fetchGlobalScores(continent, difficulty, limit = 50) {
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
+    if (!isSupabaseInitialized()) {
+      console.warn('Supabase is not initialized. Returning empty scores.');
+      return [];
     }
 
     // Check if we have cached data that's still valid
@@ -72,46 +84,52 @@ class ScoreService {
       return cachedData.data;
     }
 
-    const { data, error } = await supabase
-      .from('scores')
-      .select(`
-        id,
-        name,
-        moves,
-        time,
-        difficulty,
-        region,
-        player_country,
-        continent,
-        created_at,
-        users (username, full_name, avatar_url)
-      `)
-      .eq('continent', continent)
-      .eq('difficulty', difficulty)
-      .order('moves', { ascending: true })
-      .order('time', { ascending: true })
-      .limit(limit);
+    try {
+      const { data, error } = await supabase
+        .from('scores')
+        .select(`
+          id,
+          name,
+          moves,
+          time,
+          difficulty,
+          region,
+          player_country,
+          continent,
+          created_at,
+          users (username, full_name, avatar_url)
+        `)
+        .eq('continent', continent)
+        .eq('difficulty', difficulty)
+        .order('moves', { ascending: true })
+        .order('time', { ascending: true })
+        .limit(limit);
 
-    if (error) {
-      console.error('Error fetching global scores:', error.message);
-      throw new Error(error.message);
+      if (error) {
+        console.error('Error fetching global scores:', error.message);
+        throw new Error(error.message);
+      }
+
+      // Cache the results
+      this.globalScoresCache[cacheKey] = {
+        data: data,
+        timestamp: Date.now()
+      };
+
+      return data;
+    } catch (error) {
+      console.error('Error in fetchGlobalScores:', error);
+      throw error;
     }
-
-    // Cache the results
-    this.globalScoresCache[cacheKey] = {
-      data: data,
-      timestamp: Date.now()
-    };
-
-    return data;
   }
 
   /**
    * Fetch user's personal scores
    */
   async fetchUserScores(userId = null) {
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
+    if (!isSupabaseInitialized()) {
+      console.warn('Supabase is not initialized. Returning empty scores.');
+      return [];
     }
 
     const userIdToUse = userId || authService.getCurrentUser()?.id;
@@ -126,57 +144,68 @@ class ScoreService {
       return this.userScoresCache.data;
     }
 
-    const { data, error } = await supabase
-      .from('scores')
-      .select('*')
-      .eq('user_id', userIdToUse)
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('scores')
+        .select('*')
+        .eq('user_id', userIdToUse)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching user scores:', error.message);
-      throw new Error(error.message);
+      if (error) {
+        console.error('Error fetching user scores:', error.message);
+        throw new Error(error.message);
+      }
+
+      // Cache the results
+      this.userScoresCache = {
+        data: data,
+        timestamp: Date.now()
+      };
+
+      return data;
+    } catch (error) {
+      console.error('Error in fetchUserScores:', error);
+      throw error;
     }
-
-    // Cache the results
-    this.userScoresCache = {
-      data: data,
-      timestamp: Date.now()
-    };
-
-    return data;
   }
 
   /**
    * Fetch top scores for all continents and difficulties
    */
   async fetchAllGlobalScores() {
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
+    if (!isSupabaseInitialized()) {
+      console.warn('Supabase is not initialized. Returning empty scores.');
+      return [];
     }
 
-    const { data, error } = await supabase
-      .from('scores')
-      .select(`
-        id,
-        name,
-        moves,
-        time,
-        difficulty,
-        region,
-        player_country,
-        continent,
-        created_at,
-        users (username, full_name, avatar_url)
-      `)
-      .order('moves', { ascending: true })
-      .order('time', { ascending: true });
+    try {
+      const { data, error } = await supabase
+        .from('scores')
+        .select(`
+          id,
+          name,
+          moves,
+          time,
+          difficulty,
+          region,
+          player_country,
+          continent,
+          created_at,
+          users (username, full_name, avatar_url)
+        `)
+        .order('moves', { ascending: true })
+        .order('time', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching all global scores:', error.message);
-      throw new Error(error.message);
+      if (error) {
+        console.error('Error fetching all global scores:', error.message);
+        throw new Error(error.message);
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error in fetchAllGlobalScores:', error);
+      throw error;
     }
-
-    return data;
   }
 
   /**

@@ -1,6 +1,11 @@
 import authService, { supabase } from "./auth-service.js";
 import { default as scoreService } from "./score-service.js";
 
+// Check if Supabase is properly initialized
+const isSupabaseInitialized = () => {
+  return supabase !== null;
+};
+
 /**
  * Profile service module for handling user profile and statistics
  */
@@ -13,8 +18,9 @@ class ProfileService {
 	 * Get user profile information
 	 */
 	async getUserProfile(userId = null) {
-		if (!supabase) {
-			throw new Error("Supabase client not initialized");
+		if (!isSupabaseInitialized()) {
+			console.warn('Supabase is not initialized. Cannot fetch user profile.');
+			return null;
 		}
 
 		const userIdToUse = userId || authService.getCurrentUser()?.id;
@@ -22,29 +28,35 @@ class ProfileService {
 			throw new Error("No user ID provided and no authenticated user");
 		}
 
-		const { data, error } = await supabase
-			.from("users")
-			.select("*")
-			.eq("id", userIdToUse)
-			.single();
+		try {
+			const { data, error } = await supabase
+				.from("users")
+				.select("*")
+				.eq("id", userIdToUse)
+				.single();
 
-		if (error) {
-			if (error.code === "PGRST116") {
-				// Record not found - user might not have a profile in the users table yet
-				return null;
+			if (error) {
+				if (error.code === "PGRST116") {
+					// Record not found - user might not have a profile in the users table yet
+					return null;
+				}
+				throw new Error(error.message);
 			}
-			throw new Error(error.message);
-		}
 
-		return data;
+			return data;
+		} catch (error) {
+			console.error('Error in getUserProfile:', error);
+			throw error;
+		}
 	}
 
 	/**
 	 * Update user profile information
 	 */
 	async updateUserProfile(profileData) {
-		if (!supabase) {
-			throw new Error("Supabase client not initialized");
+		if (!isSupabaseInitialized()) {
+			console.warn('Supabase is not initialized. Cannot update user profile.');
+			return null;
 		}
 
 		if (!authService.getCurrentUser()) {
@@ -56,17 +68,22 @@ class ProfileService {
 			updated_at: new Date().toISOString(),
 		};
 
-		const { data, error } = await supabase
-			.from("users")
-			.upsert([profile], { onConflict: "id" })
-			.select()
-			.single();
+		try {
+			const { data, error } = await supabase
+				.from("users")
+				.upsert([profile], { onConflict: "id" })
+				.select()
+				.single();
 
-		if (error) {
-			throw new Error(error.message);
+			if (error) {
+				throw new Error(error.message);
+			}
+
+			return data;
+		} catch (error) {
+			console.error('Error in updateUserProfile:', error);
+			throw error;
 		}
-
-		return data;
 	}
 
 	/**

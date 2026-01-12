@@ -4,11 +4,13 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
+let supabase = null;
+
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Supabase environment variables are not set. Authentication will not work.');
+} else {
+  supabase = createClient(supabaseUrl, supabaseAnonKey);
 }
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 /**
  * Authentication service module for Supabase integration
@@ -45,33 +47,38 @@ class AuthService {
    */
   async initializeSession() {
     if (!supabase) return null;
-    
-    const { data: { session }, error } = await supabase.auth.getSession();
-    
-    if (error) {
-      console.error('Error getting session:', error.message);
-      return null;
-    }
-    
-    if (session) {
-      this.currentUser = session.user;
-      this.isAuthenticated = true;
-      this.notifyAuthStateChange(this.currentUser, this.isAuthenticated);
-    }
-    
-    // Set up real-time auth state listener
-    supabase.auth.onAuthStateChange((_event, session) => {
+
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      if (error) {
+        console.error('Error getting session:', error.message);
+        return null;
+      }
+
       if (session) {
         this.currentUser = session.user;
         this.isAuthenticated = true;
-      } else {
-        this.currentUser = null;
-        this.isAuthenticated = false;
+        this.notifyAuthStateChange(this.currentUser, this.isAuthenticated);
       }
-      this.notifyAuthStateChange(this.currentUser, this.isAuthenticated);
-    });
 
-    return session;
+      // Set up real-time auth state listener
+      supabase.auth.onAuthStateChange((_event, session) => {
+        if (session) {
+          this.currentUser = session.user;
+          this.isAuthenticated = true;
+        } else {
+          this.currentUser = null;
+          this.isAuthenticated = false;
+        }
+        this.notifyAuthStateChange(this.currentUser, this.isAuthenticated);
+      });
+
+      return session;
+    } catch (error) {
+      console.error('Error initializing session:', error);
+      return null;
+    }
   }
 
   /**
@@ -82,31 +89,36 @@ class AuthService {
       throw new Error('Supabase client not initialized');
     }
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: options.fullName || '',
-          username: options.username || '',
-          ...options.additionalData
-        },
-        emailRedirectTo: window.location.origin
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: options.fullName || '',
+            username: options.username || '',
+            ...options.additionalData
+          },
+          emailRedirectTo: window.location.origin
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message);
       }
-    });
 
-    if (error) {
-      throw new Error(error.message);
+      // Update current user if signup was successful
+      if (data?.user) {
+        this.currentUser = data.user;
+        this.isAuthenticated = !!data.session;
+        this.notifyAuthStateChange(this.currentUser, this.isAuthenticated);
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error during sign up:', error);
+      throw error;
     }
-
-    // Update current user if signup was successful
-    if (data?.user) {
-      this.currentUser = data.user;
-      this.isAuthenticated = !!data.session;
-      this.notifyAuthStateChange(this.currentUser, this.isAuthenticated);
-    }
-
-    return data;
   }
 
   /**
@@ -117,22 +129,27 @@ class AuthService {
       throw new Error('Supabase client not initialized');
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-    if (error) {
-      throw new Error(error.message);
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data?.user) {
+        this.currentUser = data.user;
+        this.isAuthenticated = true;
+        this.notifyAuthStateChange(this.currentUser, this.isAuthenticated);
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error during sign in:', error);
+      throw error;
     }
-
-    if (data?.user) {
-      this.currentUser = data.user;
-      this.isAuthenticated = true;
-      this.notifyAuthStateChange(this.currentUser, this.isAuthenticated);
-    }
-
-    return data;
   }
 
   /**
@@ -143,18 +160,23 @@ class AuthService {
       throw new Error('Supabase client not initialized');
     }
 
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: options.redirectTo || window.location.origin
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: options.redirectTo || window.location.origin
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message);
       }
-    });
 
-    if (error) {
-      throw new Error(error.message);
+      return data;
+    } catch (error) {
+      console.error('Error during social sign in:', error);
+      throw error;
     }
-
-    return data;
   }
 
   /**
@@ -165,18 +187,23 @@ class AuthService {
       throw new Error('Supabase client not initialized');
     }
 
-    const { error } = await supabase.auth.signOut();
+    try {
+      const { error } = await supabase.auth.signOut();
 
-    if (error) {
-      console.error('Error signing out:', error.message);
-      throw new Error(error.message);
+      if (error) {
+        console.error('Error signing out:', error.message);
+        throw new Error(error.message);
+      }
+
+      this.currentUser = null;
+      this.isAuthenticated = false;
+      this.notifyAuthStateChange(this.currentUser, this.isAuthenticated);
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error during sign out:', error);
+      throw error;
     }
-
-    this.currentUser = null;
-    this.isAuthenticated = false;
-    this.notifyAuthStateChange(this.currentUser, this.isAuthenticated);
-
-    return { success: true };
   }
 
   /**
@@ -187,15 +214,20 @@ class AuthService {
       throw new Error('Supabase client not initialized');
     }
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin
-    });
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin
+      });
 
-    if (error) {
-      throw new Error(error.message);
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error during password reset:', error);
+      throw error;
     }
-
-    return { success: true };
   }
 
   /**
@@ -210,19 +242,24 @@ class AuthService {
       throw new Error('User not authenticated');
     }
 
-    const { data, error } = await supabase.auth.updateUser({
-      data: updates
-    });
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        data: updates
+      });
 
-    if (error) {
-      throw new Error(error.message);
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      // Update local user object
+      this.currentUser = { ...this.currentUser, ...data.user };
+      this.notifyAuthStateChange(this.currentUser, this.isAuthenticated);
+
+      return data;
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+      throw error;
     }
-
-    // Update local user object
-    this.currentUser = { ...this.currentUser, ...data.user };
-    this.notifyAuthStateChange(this.currentUser, this.isAuthenticated);
-
-    return data;
   }
 
   /**
@@ -252,21 +289,26 @@ class AuthService {
       throw new Error('No user ID provided and no authenticated user');
     }
 
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', userIdToUse)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userIdToUse)
+        .single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        // Record not found - user might not have a profile in the users table yet
-        return null;
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // Record not found - user might not have a profile in the users table yet
+          return null;
+        }
+        throw new Error(error.message);
       }
-      throw new Error(error.message);
-    }
 
-    return data;
+      return data;
+    } catch (error) {
+      console.error('Error getting user profile:', error);
+      throw error;
+    }
   }
 
   /**
@@ -287,17 +329,22 @@ class AuthService {
       ...profileData
     };
 
-    const { data, error } = await supabase
-      .from('users')
-      .upsert([profile], { onConflict: 'id' })
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .upsert([profile], { onConflict: 'id' })
+        .select()
+        .single();
 
-    if (error) {
-      throw new Error(error.message);
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error upserting user profile:', error);
+      throw error;
     }
-
-    return data;
   }
 
   /**
@@ -312,25 +359,30 @@ class AuthService {
       throw new Error('User not authenticated');
     }
 
-    // First, delete user's scores
-    await this.deleteUserScores();
+    try {
+      // First, delete user's scores
+      await this.deleteUserScores();
 
-    // Then delete user profile from the users table
-    const { error: profileError } = await supabase
-      .from('users')
-      .delete()
-      .eq('id', this.currentUser.id);
+      // Then delete user profile from the users table
+      const { error: profileError } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', this.currentUser.id);
 
-    if (profileError) {
-      console.error('Error deleting user profile:', profileError.message);
-      // Don't throw here as we still want to try to delete the auth account
+      if (profileError) {
+        console.error('Error deleting user profile:', profileError.message);
+        // Don't throw here as we still want to try to delete the auth account
+      }
+
+      // Finally, delete the auth account (requires service role key, so this might not work from client)
+      // Instead, we'll just sign out the user
+      await this.signOut();
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error during account deletion:', error);
+      throw error;
     }
-
-    // Finally, delete the auth account (requires service role key, so this might not work from client)
-    // Instead, we'll just sign out the user
-    await this.signOut();
-
-    return { success: true };
   }
 
   /**
@@ -345,17 +397,22 @@ class AuthService {
       throw new Error('User not authenticated');
     }
 
-    const { error } = await supabase
-      .from('scores')
-      .delete()
-      .eq('user_id', this.currentUser.id);
+    try {
+      const { error } = await supabase
+        .from('scores')
+        .delete()
+        .eq('user_id', this.currentUser.id);
 
-    if (error) {
-      console.error('Error deleting user scores:', error.message);
-      throw new Error(error.message);
+      if (error) {
+        console.error('Error deleting user scores:', error.message);
+        throw new Error(error.message);
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error deleting user scores:', error);
+      throw error;
     }
-
-    return { success: true };
   }
 }
 
