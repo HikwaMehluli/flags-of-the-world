@@ -1,317 +1,335 @@
-import authService, { supabase } from './auth-service.js';
-import { default as scoreService } from './score-service.js';
+import authService, { supabase } from "./auth-service.js";
+import { default as scoreService } from "./score-service.js";
 
 /**
  * Profile service module for handling user profile and statistics
  */
 class ProfileService {
-  constructor() {
-    this.charts = {};
-  }
+	constructor() {
+		this.charts = {};
+	}
 
-  /**
-   * Get user profile information
-   */
-  async getUserProfile(userId = null) {
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
-    }
+	/**
+	 * Get user profile information
+	 */
+	async getUserProfile(userId = null) {
+		if (!supabase) {
+			throw new Error("Supabase client not initialized");
+		}
 
-    const userIdToUse = userId || authService.getCurrentUser()?.id;
-    if (!userIdToUse) {
-      throw new Error('No user ID provided and no authenticated user');
-    }
+		const userIdToUse = userId || authService.getCurrentUser()?.id;
+		if (!userIdToUse) {
+			throw new Error("No user ID provided and no authenticated user");
+		}
 
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', userIdToUse)
-      .single();
+		const { data, error } = await supabase
+			.from("users")
+			.select("*")
+			.eq("id", userIdToUse)
+			.single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        // Record not found - user might not have a profile in the users table yet
-        return null;
-      }
-      throw new Error(error.message);
-    }
+		if (error) {
+			if (error.code === "PGRST116") {
+				// Record not found - user might not have a profile in the users table yet
+				return null;
+			}
+			throw new Error(error.message);
+		}
 
-    return data;
-  }
+		return data;
+	}
 
-  /**
-   * Update user profile information
-   */
-  async updateUserProfile(profileData) {
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
-    }
+	/**
+	 * Update user profile information
+	 */
+	async updateUserProfile(profileData) {
+		if (!supabase) {
+			throw new Error("Supabase client not initialized");
+		}
 
-    if (!authService.getCurrentUser()) {
-      throw new Error('User not authenticated');
-    }
+		if (!authService.getCurrentUser()) {
+			throw new Error("User not authenticated");
+		}
 
-    const profile = {
-      ...profileData,
-      updated_at: new Date().toISOString()
-    };
+		const profile = {
+			...profileData,
+			updated_at: new Date().toISOString(),
+		};
 
-    const { data, error } = await supabase
-      .from('users')
-      .upsert([profile], { onConflict: 'id' })
-      .select()
-      .single();
+		const { data, error } = await supabase
+			.from("users")
+			.upsert([profile], { onConflict: "id" })
+			.select()
+			.single();
 
-    if (error) {
-      throw new Error(error.message);
-    }
+		if (error) {
+			throw new Error(error.message);
+		}
 
-    return data;
-  }
+		return data;
+	}
 
-  /**
-   * Get user's game statistics
-   */
-  async getUserStats(userId = null) {
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
-    }
+	/**
+	 * Get user's game statistics
+	 */
+	async getUserStats(userId = null) {
+		if (!supabase) {
+			throw new Error("Supabase client not initialized");
+		}
 
-    const userIdToUse = userId || authService.getCurrentUser()?.id;
-    if (!userIdToUse) {
-      throw new Error('No user ID provided and no authenticated user');
-    }
+		const userIdToUse = userId || authService.getCurrentUser()?.id;
+		if (!userIdToUse) {
+			throw new Error("No user ID provided and no authenticated user");
+		}
 
-    // Get all user scores
-    const userScores = await scoreService.fetchUserScores(userIdToUse);
+		// Get all user scores
+		const userScores = await scoreService.fetchUserScores(userIdToUse);
 
-    // Calculate statistics
-    const stats = {
-      totalGames: userScores.length,
-      bestMoves: this.getBestMoves(userScores),
-      bestTime: this.getBestTime(userScores),
-      gamesOverTime: this.calculateGamesOverTime(userScores),
-      performanceByDifficulty: this.calculatePerformanceByDifficulty(userScores),
-      performanceByContinent: this.calculatePerformanceByContinent(userScores)
-    };
+		// Calculate statistics
+		const stats = {
+			totalGames: userScores.length,
+			bestMoves: this.getBestMoves(userScores),
+			bestTime: this.getBestTime(userScores),
+			gamesOverTime: this.calculateGamesOverTime(userScores),
+			performanceByDifficulty:
+				this.calculatePerformanceByDifficulty(userScores),
+			performanceByContinent: this.calculatePerformanceByContinent(userScores),
+		};
 
-    return stats;
-  }
+		return stats;
+	}
 
-  /**
-   * Get best moves from user scores
-   */
-  getBestMoves(scores) {
-    if (scores.length === 0) return '-';
-    
-    const bestScore = scores.reduce((best, current) => 
-      current.moves < best.moves ? current : best
-    );
-    
-    return bestScore.moves;
-  }
+	/**
+	 * Get best moves from user scores
+	 */
+	getBestMoves(scores) {
+		if (scores.length === 0) return "-";
 
-  /**
-   * Get best time from user scores
-   */
-  getBestTime(scores) {
-    if (scores.length === 0) return '-';
-    
-    const bestScore = scores.reduce((best, current) => {
-      if (current.moves < best.moves) return current;
-      if (current.moves === best.moves) {
-        const currentTimeSec = this.timeToSeconds(current.time);
-        const bestTimeSec = this.timeToSeconds(best.time);
-        return currentTimeSec < bestTimeSec ? current : best;
-      }
-      return best;
-    });
-    
-    return bestScore.time;
-  }
+		const bestScore = scores.reduce((best, current) =>
+			current.moves < best.moves ? current : best
+		);
 
-  /**
-   * Calculate games played over time
-   */
-  calculateGamesOverTime(scores) {
-    const gamesByDate = {};
-    
-    scores.forEach(score => {
-      const date = new Date(score.created_at).toDateString();
-      gamesByDate[date] = (gamesByDate[date] || 0) + 1;
-    });
-    
-    // Convert to arrays for chart
-    const dates = Object.keys(gamesByDate).sort();
-    const counts = dates.map(date => gamesByDate[date]);
-    
-    return { dates, counts };
-  }
+		return bestScore.moves;
+	}
 
-  /**
-   * Calculate performance by difficulty
-   */
-  calculatePerformanceByDifficulty(scores) {
-    const difficultyStats = {
-      easy: { avgMoves: 0, avgTime: 0, count: 0 },
-      medium: { avgMoves: 0, avgTime: 0, count: 0 },
-      hard: { avgMoves: 0, avgTime: 0, count: 0 }
-    };
-    
-    // Group scores by difficulty
-    const grouped = scores.reduce((acc, score) => {
-      if (!acc[score.difficulty]) acc[score.difficulty] = [];
-      acc[score.difficulty].push(score);
-      return acc;
-    }, {});
-    
-    // Calculate averages for each difficulty
-    Object.keys(difficultyStats).forEach(difficulty => {
-      const difficultyScores = grouped[difficulty] || [];
-      if (difficultyScores.length > 0) {
-        const totalMoves = difficultyScores.reduce((sum, score) => sum + score.moves, 0);
-        const totalTime = difficultyScores.reduce((sum, score) => sum + this.timeToSeconds(score.time), 0);
-        
-        difficultyStats[difficulty].avgMoves = totalMoves / difficultyScores.length;
-        difficultyStats[difficulty].avgTime = totalTime / difficultyScores.length;
-        difficultyStats[difficulty].count = difficultyScores.length;
-      }
-    });
-    
-    return difficultyStats;
-  }
+	/**
+	 * Get best time from user scores
+	 */
+	getBestTime(scores) {
+		if (scores.length === 0) return "-";
 
-  /**
-   * Calculate performance by continent
-   */
-  calculatePerformanceByContinent(scores) {
-    const continentStats = {};
-    
-    // Group scores by continent
-    const grouped = scores.reduce((acc, score) => {
-      if (!acc[score.continent]) acc[score.continent] = [];
-      acc[score.continent].push(score);
-      return acc;
-    }, {});
-    
-    // Calculate averages for each continent
-    Object.keys(grouped).forEach(continent => {
-      const continentScores = grouped[continent];
-      const totalMoves = continentScores.reduce((sum, score) => sum + score.moves, 0);
-      const totalTime = continentScores.reduce((sum, score) => sum + this.timeToSeconds(score.time), 0);
-      
-      continentStats[continent] = {
-        avgMoves: totalMoves / continentScores.length,
-        avgTime: totalTime / continentScores.length,
-        count: continentScores.length
-      };
-    });
-    
-    return continentStats;
-  }
+		const bestScore = scores.reduce((best, current) => {
+			if (current.moves < best.moves) return current;
+			if (current.moves === best.moves) {
+				const currentTimeSec = this.timeToSeconds(current.time);
+				const bestTimeSec = this.timeToSeconds(best.time);
+				return currentTimeSec < bestTimeSec ? current : best;
+			}
+			return best;
+		});
 
-  /**
-   * Get user's rankings
-   */
-  async getUserRankings(userId = null) {
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
-    }
+		return bestScore.time;
+	}
 
-    const userIdToUse = userId || authService.getCurrentUser()?.id;
-    if (!userIdToUse) {
-      throw new Error('No user ID provided and no authenticated user');
-    }
+	/**
+	 * Calculate games played over time
+	 */
+	calculateGamesOverTime(scores) {
+		const gamesByDate = {};
 
-    // Get rankings for all continents
-    const continents = ['africa', 'america', 'asia', 'europe'];
-    const rankings = {
-      global: { rank: 0, total: 0 },
-      africa: { rank: 0, total: 0 },
-      america: { rank: 0, total: 0 },
-      asia: { rank: 0, total: 0 },
-      europe: { rank: 0, total: 0 }
-    };
+		scores.forEach((score) => {
+			const date = new Date(score.created_at).toDateString();
+			gamesByDate[date] = (gamesByDate[date] || 0) + 1;
+		});
 
-    // Calculate global ranking
-    const globalRanking = await this.calculateGlobalRanking(userIdToUse);
-    rankings.global = globalRanking;
+		// Convert to arrays for chart
+		const dates = Object.keys(gamesByDate).sort();
+		const counts = dates.map((date) => gamesByDate[date]);
 
-    // Calculate continent-specific rankings
-    for (const continent of continents) {
-      const continentRanking = await scoreService.getUserRanking(continent, 'all');
-      rankings[continent] = continentRanking;
-    }
+		return { dates, counts };
+	}
 
-    return rankings;
-  }
+	/**
+	 * Calculate performance by difficulty
+	 */
+	calculatePerformanceByDifficulty(scores) {
+		const difficultyStats = {
+			easy: { avgMoves: 0, avgTime: 0, count: 0 },
+			medium: { avgMoves: 0, avgTime: 0, count: 0 },
+			hard: { avgMoves: 0, avgTime: 0, count: 0 },
+		};
 
-  /**
-   * Calculate global ranking for a user
-   */
-  async calculateGlobalRanking(userId) {
-    // This is a simplified calculation - in reality, you'd need a more complex query
-    // to determine global ranking based on best scores
-    
-    // For now, we'll return a default value
-    return { rank: 0, total: 0 };
-  }
+		// Group scores by difficulty
+		const grouped = scores.reduce((acc, score) => {
+			if (!acc[score.difficulty]) acc[score.difficulty] = [];
+			acc[score.difficulty].push(score);
+			return acc;
+		}, {});
 
-  /**
-   * Convert time string (MM:SS) to seconds for comparison
-   */
-  timeToSeconds(timeStr) {
-    const [minutes, seconds] = timeStr.split(':').map(Number);
-    return minutes * 60 + seconds;
-  }
+		// Calculate averages for each difficulty
+		Object.keys(difficultyStats).forEach((difficulty) => {
+			const difficultyScores = grouped[difficulty] || [];
+			if (difficultyScores.length > 0) {
+				const totalMoves = difficultyScores.reduce(
+					(sum, score) => sum + score.moves,
+					0
+				);
+				const totalTime = difficultyScores.reduce(
+					(sum, score) => sum + this.timeToSeconds(score.time),
+					0
+				);
 
-  /**
-   * Delete user account and all associated data
-   */
-  async deleteAccount() {
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
-    }
+				difficultyStats[difficulty].avgMoves =
+					totalMoves / difficultyScores.length;
+				difficultyStats[difficulty].avgTime =
+					totalTime / difficultyScores.length;
+				difficultyStats[difficulty].count = difficultyScores.length;
+			}
+		});
 
-    if (!authService.getCurrentUser()) {
-      throw new Error('User not authenticated');
-    }
+		return difficultyStats;
+	}
 
-    const userId = authService.getCurrentUser().id;
+	/**
+	 * Calculate performance by continent
+	 */
+	calculatePerformanceByContinent(scores) {
+		const continentStats = {};
 
-    try {
-      // Delete user's scores
-      const { error: scoresError } = await supabase
-        .from('scores')
-        .delete()
-        .eq('user_id', userId);
+		// Group scores by continent
+		const grouped = scores.reduce((acc, score) => {
+			if (!acc[score.continent]) acc[score.continent] = [];
+			acc[score.continent].push(score);
+			return acc;
+		}, {});
 
-      if (scoresError) {
-        console.error('Error deleting user scores:', scoresError.message);
-        throw new Error(scoresError.message);
-      }
+		// Calculate averages for each continent
+		Object.keys(grouped).forEach((continent) => {
+			const continentScores = grouped[continent];
+			const totalMoves = continentScores.reduce(
+				(sum, score) => sum + score.moves,
+				0
+			);
+			const totalTime = continentScores.reduce(
+				(sum, score) => sum + this.timeToSeconds(score.time),
+				0
+			);
 
-      // Delete user profile from the users table
-      const { error: profileError } = await supabase
-        .from('users')
-        .delete()
-        .eq('id', userId);
+			continentStats[continent] = {
+				avgMoves: totalMoves / continentScores.length,
+				avgTime: totalTime / continentScores.length,
+				count: continentScores.length,
+			};
+		});
 
-      if (profileError) {
-        console.error('Error deleting user profile:', profileError.message);
-        throw new Error(profileError.message);
-      }
+		return continentStats;
+	}
 
-      // Delete user from auth system (this requires service role key, so we'll skip for now)
-      // Instead, we'll just sign out the user
-      await authService.signOut();
+	/**
+	 * Get user's rankings
+	 */
+	async getUserRankings(userId = null) {
+		if (!supabase) {
+			throw new Error("Supabase client not initialized");
+		}
 
-      return { success: true };
-    } catch (error) {
-      console.error('Error deleting account:', error);
-      throw error;
-    }
-  }
+		const userIdToUse = userId || authService.getCurrentUser()?.id;
+		if (!userIdToUse) {
+			throw new Error("No user ID provided and no authenticated user");
+		}
+
+		// Get rankings for all continents
+		const continents = ["africa", "america", "asia", "europe"];
+		const rankings = {
+			global: { rank: 0, total: 0 },
+			africa: { rank: 0, total: 0 },
+			america: { rank: 0, total: 0 },
+			asia: { rank: 0, total: 0 },
+			europe: { rank: 0, total: 0 },
+		};
+
+		// Calculate global ranking
+		const globalRanking = await this.calculateGlobalRanking(userIdToUse);
+		rankings.global = globalRanking;
+
+		// Calculate continent-specific rankings
+		for (const continent of continents) {
+			const continentRanking = await scoreService.getUserRanking(
+				continent,
+				"all"
+			);
+			rankings[continent] = continentRanking;
+		}
+
+		return rankings;
+	}
+
+	/**
+	 * Calculate global ranking for a user
+	 */
+	async calculateGlobalRanking(userId) {
+		// This is a simplified calculation - in reality, you'd need a more complex query
+		// to determine global ranking based on best scores
+
+		// For now, we'll return a default value
+		return { rank: 0, total: 0 };
+	}
+
+	/**
+	 * Convert time string (MM:SS) to seconds for comparison
+	 */
+	timeToSeconds(timeStr) {
+		const [minutes, seconds] = timeStr.split(":").map(Number);
+		return minutes * 60 + seconds;
+	}
+
+	/**
+	 * Delete user account and all associated data
+	 */
+	async deleteAccount() {
+		if (!supabase) {
+			throw new Error("Supabase client not initialized");
+		}
+
+		if (!authService.getCurrentUser()) {
+			throw new Error("User not authenticated");
+		}
+
+		const userId = authService.getCurrentUser().id;
+
+		try {
+			// Delete user's scores
+			const { error: scoresError } = await supabase
+				.from("scores")
+				.delete()
+				.eq("user_id", userId);
+
+			if (scoresError) {
+				console.error("Error deleting user scores:", scoresError.message);
+				throw new Error(scoresError.message);
+			}
+
+			// Delete user profile from the users table
+			const { error: profileError } = await supabase
+				.from("users")
+				.delete()
+				.eq("id", userId);
+
+			if (profileError) {
+				console.error("Error deleting user profile:", profileError.message);
+				throw new Error(profileError.message);
+			}
+
+			// Delete user from auth system (this requires service role key, so we'll skip for now)
+			// Instead, we'll just sign out the user
+			await authService.signOut();
+
+			return { success: true };
+		} catch (error) {
+			console.error("Error deleting account:", error);
+			throw error;
+		}
+	}
 }
 
 // Export singleton instance
