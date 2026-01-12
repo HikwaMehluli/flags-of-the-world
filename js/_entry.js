@@ -1,6 +1,10 @@
 import "./analytics.js";
 import "./auth-service.js";
 import "./charts-config.js";
+import "./components/auth-modal.js";
+import "./components/user-profile.js";
+import "./components/online-users-indicator.js";
+import "./components/profile-stats.js";
 import "./driver-js-theme.js";
 import "./game.js";
 import "./navigation.js";
