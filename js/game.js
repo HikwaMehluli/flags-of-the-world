@@ -91,12 +91,13 @@ class FlagsofWorld {
 
         // Event listener for the name submission form
         if (this.nameForm) {
-            this.nameForm.addEventListener('submit', (e) => {
+            this.nameForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const playerName = this.playerNameInput.value.trim();
                 const playerCountry = this.playerCountrySelect ? this.playerCountrySelect.value : '';
                 if (playerName) {
-                    this.saveScore(playerName, this.moves, this.timeElement.textContent, this.difficulty, this.region, playerCountry);
+                    // Call saveScore which handles both local and Supabase saving
+                    await this.saveScore(playerName, this.moves, this.timeElement.textContent, this.difficulty, this.region, playerCountry);
                     this.nameModal.style.display = 'none';
                     this.playerNameInput.value = '';
                     if (this.playerCountrySelect) {
@@ -494,25 +495,25 @@ class FlagsofWorld {
         try {
             const { default: authService } = await import('./auth-service.js');
             const isAuthenticated = authService.getIsAuthenticated();
+            const currentUser = authService.getCurrentUser();
 
-            if (isAuthenticated) {
-                const user = authService.getCurrentUser();
+            if (isAuthenticated && currentUser) {
                 const userProfile = await authService.getUserProfile();
 
                 // Auto-populate name field
                 if (userProfile?.full_name) {
                     this.playerNameInput.value = userProfile.full_name;
-                } else if (user?.user_metadata?.full_name) {
-                    this.playerNameInput.value = user.user_metadata.full_name;
-                } else if (user?.email) {
-                    this.playerNameInput.value = user.email.split('@')[0]; // Use email prefix as name
+                } else if (currentUser?.user_metadata?.full_name) {
+                    this.playerNameInput.value = currentUser.user_metadata.full_name;
+                } else if (currentUser?.email) {
+                    this.playerNameInput.value = currentUser.email.split('@')[0]; // Use email prefix as name
                 }
 
                 // Auto-populate country field
                 if (userProfile?.player_country) {
                     this.playerCountrySelect.value = userProfile.player_country;
-                } else if (user?.user_metadata?.player_country) {
-                    this.playerCountrySelect.value = user.user_metadata.player_country;
+                } else if (currentUser?.user_metadata?.player_country) {
+                    this.playerCountrySelect.value = currentUser.user_metadata.player_country;
                 }
             }
         } catch (error) {
@@ -609,9 +610,13 @@ class FlagsofWorld {
         try {
             // Import the auth service to check authentication status
             const { default: authService } = await import('./auth-service.js');
-            const isAuthenticated = authService.getIsAuthenticated();
 
-            if (isAuthenticated) {
+            // Wait for authentication state to be properly loaded
+            const isAuthenticated = authService.getIsAuthenticated();
+            const currentUser = authService.getCurrentUser();
+
+            // Check both authentication status and that we have a valid user ID
+            if (isAuthenticated && currentUser && currentUser.id) {
                 // Import the score service to save to Supabase
                 const { default: scoreService } = await import('./score-service.js');
 
@@ -629,6 +634,8 @@ class FlagsofWorld {
                 // Save to Supabase
                 await scoreService.saveScore(scoreData);
                 console.log('Score saved to Supabase successfully');
+            } else {
+                console.log('User not authenticated or user ID not available, score saved locally only');
             }
         } catch (error) {
             console.error('Error saving score to Supabase:', error);

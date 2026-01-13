@@ -26,19 +26,20 @@ class ScoreService {
     }
 
     // Add user_id if authenticated
-    const userId = authService.getCurrentUser()?.id;
+    const currentUser = authService.getCurrentUser();
+    const userId = currentUser?.id;
     if (!userId) {
       throw new Error('User must be authenticated to save score to global leaderboard');
     }
 
     const scoreRecord = {
       user_id: userId,
-      name: scoreData.name || authService.getCurrentUser()?.user_metadata?.full_name || authService.getCurrentUser()?.email?.split('@')[0],
+      name: scoreData.name || currentUser?.user_metadata?.full_name || currentUser?.email?.split('@')[0],
       moves: scoreData.moves,
       time: scoreData.time,
       difficulty: scoreData.difficulty,
       region: scoreData.region,
-      player_country: scoreData.player_country || authService.getCurrentUser()?.user_metadata?.country || '',
+      player_country: scoreData.player_country || currentUser?.user_metadata?.country || '',
       continent: scoreData.continent,
       created_at: new Date().toISOString()
     };
@@ -240,7 +241,8 @@ class ScoreService {
       throw new Error('Supabase client not initialized');
     }
 
-    const userId = authService.getCurrentUser()?.id;
+    const currentUser = authService.getCurrentUser();
+    const userId = currentUser?.id;
     if (!userId) {
       throw new Error('User must be authenticated');
     }
@@ -272,7 +274,8 @@ class ScoreService {
       throw new Error('Supabase client not initialized');
     }
 
-    const userId = authService.getCurrentUser()?.id;
+    const currentUser = authService.getCurrentUser();
+    const userId = currentUser?.id;
     if (!userId) {
       throw new Error('User must be authenticated');
     }
