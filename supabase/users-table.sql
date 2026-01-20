@@ -5,7 +5,7 @@
 -- The id should match the auth.users id to properly link profiles
 CREATE TABLE IF NOT EXISTS users (
   id UUID REFERENCES auth.users(id) PRIMARY KEY,
-  email TEXT UNIQUE, -- Made optional since it's handled by trigger
+  email TEXT UNIQUE NOT NULL, -- Email is required and comes from auth
   username TEXT UNIQUE,
   full_name TEXT,
   avatar_url TEXT,
@@ -26,7 +26,8 @@ BEGIN
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1)),
     COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name')
-  );
+  )
+  ON CONFLICT (id) DO NOTHING; -- Handle potential race conditions
   RETURN NEW;
 END;
 $$;
@@ -43,13 +44,19 @@ CREATE OR REPLACE FUNCTION public.handle_updated_user()
  LANGUAGE plpgsql
 AS $$
 BEGIN
-  UPDATE public.users
-  SET
-    email = NEW.email,
-    username = COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1)),
-    full_name = COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
-    updated_at = NOW()
-  WHERE id = NEW.id;
+  INSERT INTO public.users (id, email, username, full_name)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1)),
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name')
+  )
+  ON CONFLICT (id)
+  DO UPDATE SET
+    email = EXCLUDED.email,
+    username = EXCLUDED.username,
+    full_name = EXCLUDED.full_name,
+    updated_at = NOW();
   RETURN NEW;
 END;
 $$;
