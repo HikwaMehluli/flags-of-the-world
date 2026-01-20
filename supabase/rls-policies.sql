@@ -45,26 +45,20 @@ USING (auth.uid() = user_id);
 -- Enable RLS on the presence table
 ALTER TABLE presence ENABLE ROW LEVEL SECURITY;
 
--- Create policy: Users can only see online status of authenticated users
-CREATE POLICY "Users can view presence" ON presence
-FOR SELECT TO authenticated
-USING (is_online = true);
+-- Policy to allow anyone to view online users
+CREATE POLICY "Anyone can view presence"
+ON presence FOR SELECT
+USING (true);
 
--- Create policy: Users can only insert their own presence
-CREATE POLICY "Users can insert own presence" ON presence
-FOR INSERT TO authenticated
-WITH CHECK (auth.uid() = user_id OR (user_id IS NULL AND session_id = current_setting('request.headers', true)::json->>'x-custom-session-id'));
+-- Policy to allow authenticated users to insert/update their own presence
+CREATE POLICY "Users can update their own presence"
+ON presence FOR ALL
+USING (auth.uid() = user_id)
+WITH CHECK (auth.uid() = user_id);
 
--- Create policy: Users can only update their own presence
-CREATE POLICY "Users can update own presence" ON presence
-FOR UPDATE TO authenticated
-USING (auth.uid() = user_id OR (user_id IS NULL AND session_id = current_setting('request.headers', true)::json->>'x-custom-session-id'))
-WITH CHECK (auth.uid() = user_id OR (user_id IS NULL AND session_id = current_setting('request.headers', true)::json->>'x-custom-session-id'));
-
--- Create policy: Users can only delete their own presence
-CREATE POLICY "Users can delete own presence" ON presence
-FOR DELETE TO authenticated
-USING (auth.uid() = user_id OR (user_id IS NULL AND session_id = current_setting('request.headers', true)::json->>'x-custom-session-id'));
+-- Create indices for performance
+CREATE INDEX IF NOT EXISTS idx_presence_last_seen ON presence (last_seen);
+CREATE INDEX IF NOT EXISTS idx_presence_is_online ON presence (is_online);
 
 -- Additional security: Limit access to auth table for regular users
 -- Only service role should have access to sensitive auth information

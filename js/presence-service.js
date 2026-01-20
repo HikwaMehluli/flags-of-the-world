@@ -2,7 +2,7 @@ import authService, { supabase } from './auth-service.js';
 
 // Check if Supabase is properly initialized
 const isSupabaseInitialized = () => {
-  return supabase !== null;
+	return supabase !== null;
 };
 
 /**
@@ -47,7 +47,13 @@ class PresenceService {
 						this.handlePresenceUpdate(payload);
 					}
 				)
-				.subscribe();
+				.subscribe(async (status) => {
+					if (status === 'SUBSCRIBED') {
+						console.log('Successfully subscribed to presence channel');
+						// Fetch initial online users once connected
+						await this.fetchInitialOnlineUsers();
+					}
+				});
 
 			// Start heartbeat to maintain presence
 			this.startHeartbeat();
@@ -56,6 +62,8 @@ class PresenceService {
 			const { default: authService } = await import('./auth-service.js');
 			authService.onAuthStateChange(({ user, isAuthenticated }) => {
 				if (isAuthenticated && user) {
+					// We need to wait a brief moment to ensure we don't conflict with initial fetch
+					// or simply update our presence immediately
 					this.setPresence(true);
 				} else {
 					this.setPresence(false);
@@ -66,6 +74,42 @@ class PresenceService {
 			console.log('Presence service initialized');
 		} catch (error) {
 			console.error('Error initializing presence service:', error);
+		}
+	}
+
+	/**
+	 * Fetch initial list of online users
+	 */
+	async fetchInitialOnlineUsers() {
+		if (!isSupabaseInitialized()) return;
+
+		try {
+			// Get users active in the last 2 minutes
+			const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+
+			const { data, error } = await supabase
+				.from('presence')
+				.select('*')
+				.eq('is_online', true)
+				.gt('last_seen', twoMinutesAgo);
+
+			if (error) {
+				console.error('Error fetching online users:', error);
+				return;
+			}
+
+			if (data) {
+				// Populate presence records
+				data.forEach(record => {
+					this.presenceRecords[record.id] = record;
+				});
+
+				// Update count
+				this.onlineUsersCount = Object.keys(this.presenceRecords).length;
+				this.notifyOnlineUsersCountChange(this.onlineUsersCount);
+			}
+		} catch (error) {
+			console.error('Error in fetchInitialOnlineUsers:', error);
 		}
 	}
 
