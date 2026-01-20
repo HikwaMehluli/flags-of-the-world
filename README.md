@@ -84,7 +84,7 @@ To enable social login (Google and GitHub) in the application, follow these step
 2. Navigate to your project
 3. Go to **Authentication** → **SignIn/Providers** in the left sidebar
 
-#### For Google OAuth:
+#### For Google OAuth [Login with Google Docs](https://supabase.com/docs/guides/auth/social-login/auth-google)
 1. Find "Google" in the providers list and toggle it ON
 2. Click on "Configure" next to Google
 3. Go to [Google Cloud Console](https://console.cloud.google.com/)
@@ -98,7 +98,7 @@ To enable social login (Google and GitHub) in the application, follow these step
 9. Copy the "Client ID" and "Client Secret" back to the Supabase Google configuration
 10. Save the settings
 
-#### For GitHub OAuth:
+#### For GitHub OAuth [Login with Github Docs](https://supabase.com/docs/guides/auth/social-login/auth-github)
 1. Find "GitHub" in the providers list and toggle it ON
 2. Click on "Configure" next to GitHub
 3. Go to [GitHub Developer Settings](https://github.com/settings/developers)
@@ -135,6 +135,55 @@ The social login flow works as follows:
 3. Supabase redirects the user to the provider's authentication page
 4. After successful authentication, the user is redirected back to your app
 5. The user's session is established and their profile is created/updated in the database
+
+## 📷 Avatar Upload Setup Instructions
+
+To enable avatar upload functionality, you need to set up Supabase Storage:
+
+### 1. Create a Storage Bucket
+
+1. Go to your [Supabase Dashboard](https://app.supabase.com/)
+2. Navigate to your project
+3. Go to **Storage** in the left sidebar
+4. Click "New bucket"
+5. Set the bucket name to `avatars`
+6. Set "Public" to `true` (so avatars can be displayed publicly)
+7. Click "Create bucket"
+
+### 2. Configure Bucket Policies
+
+After creating the bucket, you need to set up policies for access:
+
+1. In the Storage section, click on your `avatars` bucket
+2. Click on "Policies" tab
+3. Add the following policies:
+
+#### For authenticated users to upload avatars:
+```sql
+-- Allow authenticated users to upload to their own folder
+CREATE POLICY "Allow authenticated users to upload avatars" ON storage.objects
+FOR INSERT TO authenticated
+WITH CHECK (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+
+-- Allow authenticated users to update their own avatars
+CREATE POLICY "Allow authenticated users to update own avatars" ON storage.objects
+FOR UPDATE TO authenticated
+USING (bucket_id = 'avatars' AND (storage.foldername(name))[1] = auth.uid()::text);
+
+-- Allow public read access to avatars
+CREATE POLICY "Allow public read access to avatars" ON storage.objects
+FOR SELECT TO public
+USING (bucket_id = 'avatars');
+```
+
+### 3. How It Works
+
+The avatar upload flow works as follows:
+1. User selects an image file on the profile page
+2. The image is validated (type and size)
+3. When "Save Profile" is clicked, the image is uploaded to Supabase Storage
+4. The avatar URL is saved to the user's profile in the database
+5. The avatar is displayed on the profile page and in other areas of the app
 
 ## 🗺️ Regions Included
 The game includes flags from various continents: Africa, Europe, Asia, and the Americas.

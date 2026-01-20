@@ -398,18 +398,87 @@ function setupEventListeners() {
 async function saveProfile() {
 	try {
 		const { default: profileService } = await import("./profile-service.js");
+		const { default: authService } = await import("./auth-service.js");
+
+		// Get the avatar file if one has been selected
+		const avatarFile = document.getElementById("avatar-upload").files[0];
+
+		let avatarUrl = null;
+		if (avatarFile) {
+			// Upload avatar to Supabase storage
+			avatarUrl = await uploadAvatar(avatarFile);
+		}
 
 		const profileData = {
 			full_name: document.getElementById("full-name").value,
 			player_country: document.getElementById("user-country").value,
 		};
 
+		// Add avatar URL if we have one, otherwise keep existing
+		if (avatarUrl) {
+			profileData.avatar_url = avatarUrl;
+		} else {
+			// If no new avatar was selected, preserve the existing avatar URL
+			// by fetching the current profile first
+			const currentProfile = await profileService.getUserProfile();
+			if (currentProfile && currentProfile.avatar_url) {
+				profileData.avatar_url = currentProfile.avatar_url;
+			}
+		}
+
 		await profileService.updateUserProfile(profileData);
+
+		// Reload the profile to show updated information
+		await loadUserProfile();
 
 		alert("Profile updated successfully!");
 	} catch (error) {
 		console.error("Error saving profile:", error);
 		alert("Error saving profile: " + error.message);
+	}
+}
+
+/**
+ * Upload avatar to Supabase Storage
+ */
+async function uploadAvatar(file) {
+	try {
+		const { default: authService, supabase } = await import('./auth-service.js');
+
+		if (!supabase) {
+			throw new Error('Supabase client not initialized');
+		}
+
+		const { data: { user }, error: userError } = await supabase.auth.getUser();
+		if (userError || !user) {
+			throw new Error('User not authenticated');
+		}
+
+		// Generate a unique filename using user ID and timestamp
+		const userId = user.id;
+		const fileName = `avatars/${userId}/${Date.now()}_${file.name}`;
+
+		// Upload file to 'avatars' bucket
+		const { data, error } = await supabase.storage
+			.from('avatars')
+			.upload(fileName, file, {
+				cacheControl: '3600',
+				upsert: true
+			});
+
+		if (error) {
+			throw error;
+		}
+
+		// Get public URL for the uploaded file
+		const { data: publicData } = supabase.storage
+			.from('avatars')
+			.getPublicUrl(fileName);
+
+		return publicData.publicUrl;
+	} catch (error) {
+		console.error('Error uploading avatar:', error);
+		throw error;
 	}
 }
 
@@ -420,12 +489,30 @@ async function handleAvatarUpload(event) {
 	const file = event.target.files[0];
 	if (!file) return;
 
-	// In a real implementation, you would upload the image to a storage service
-	// For now, we'll just display the selected image
+	// Check if file is an image
+	const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+	if (!validImageTypes.includes(file.type)) {
+		alert('Please select a valid image file (JPEG, PNG, WebP, GIF)');
+		return;
+	}
 
+	// Check file size (limit to 5MB)
+	if (file.size > 5 * 1024 * 1024) {
+		alert('File size exceeds 5MB limit');
+		return;
+	}
+
+	// Display the selected image immediately
 	const reader = new FileReader();
 	reader.onload = function (e) {
-		document.getElementById("user-avatar").src = e.target.result;
+		const avatarImg = document.getElementById("user-avatar");
+		avatarImg.src = e.target.result;
+
+		// Add a visual indication that the image will be saved
+		avatarImg.style.border = "2px solid #4CAF50";
+		setTimeout(() => {
+			avatarImg.style.border = "none";
+		}, 2000);
 	};
 	reader.readAsDataURL(file);
 }
