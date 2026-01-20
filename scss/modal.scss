@@ -10,7 +10,6 @@
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(0.7px);
-    padding-top: 100px;
 }
 
 .modal-content {
@@ -52,20 +51,46 @@
     color: var(--secondary-color);
 }
 
-.modal-content #name-form {
+.modal-content form {
     display: flex;
     flex-direction: column;
 }
 
-.modal-content #player-name,
-.modal-content #player-country {
+.modal-content a {
+    color: var(--secondary-color);
+    position: relative;
+    text-decoration: underline;
+    transition: var(--transition);
+
+    &:hover {
+        opacity: .7;
+    }
+}
+
+.modal-content select,
+.modal-content input[type=text],
+.modal-content input[type=email],
+.modal-content input[type=password] {
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid var(--border-color);
+    border: none;
     border-radius: 5px;
     font-size: 1rem;
 }
 
+.modal-content label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+    font-size: 1em;
+    text-align: start;
+}
+
+.modal-content textarea {
+
+}
+
+button,
 .modal-content button {
     background-color: var(--secondary-color);
     border: 1px solid var(--secondary-color);

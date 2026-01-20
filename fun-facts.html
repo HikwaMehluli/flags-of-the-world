@@ -316,14 +316,12 @@
             <button class="close-modal" aria-label="Close modal">&times;</button>
             <h2>Login to Your Account</h2>
             <form id="login-form">
-                <div class="form-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" name="email" required />
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" name="password" required />
-                </div>
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" name="email" placeholder="name@email.com" required />
+    
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" name="password" placeholder="***********" required />
+    
                 <button type="submit" class="submit-btn">Login</button>
             </form>
             <div class="social-login">
@@ -338,33 +336,30 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Signup Modal -->
     <div id="signup-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content auth-modal">
             <button class="close-modal" aria-label="Close modal">&times;</button>
             <h2>Create an Account</h2>
             <form id="signup-form">
-                <div class="form-group">
-                    <label for="signup-fullname">Full Name</label>
-                    <input type="text" id="signup-fullname" name="fullname" maxlength="50" />
-                </div>
-                <div class="form-group">
-                    <label for="signup-username">Username</label>
-                    <input type="text" id="signup-username" name="username" required maxlength="30" />
-                </div>
-                <div class="form-group">
-                    <label for="signup-email">Email</label>
-                    <input type="email" id="signup-email" name="email" required />
-                </div>
-                <div class="form-group">
-                    <label for="signup-password">Password</label>
-                    <input type="password" id="signup-password" name="password" required minlength="6" />
-                </div>
-                <div class="form-group">
-                    <label for="signup-confirm-password">Confirm Password</label>
-                    <input type="password" id="signup-confirm-password" name="confirm-password" required />
-                </div>
+                <label for="signup-fullname">Full Name</label>
+                <input type="text" id="signup-fullname" name="fullname" placeholder="Full Name" maxlength="50" />
+    
+                <label for="signup-username">Username</label>
+                <input type="text" id="signup-username" name="username" placeholder="Username" required maxlength="30" />
+    
+                <label for="signup-email">Email</label>
+                <input type="email" id="signup-email" name="email" placeholder="name@email.com" required />
+    
+                <label for="signup-password">Password</label>
+                <input type="password" id="signup-password" name="password" placeholder="***********" required
+                    minlength="6" />
+    
+                <label for="signup-confirm-password">Confirm Password</label>
+                <input type="password" id="signup-confirm-password" name="confirm-password" placeholder="***********"
+                    required />
+    
                 <button type="submit" class="submit-btn">Sign Up</button>
                 <div class="auth-footer">
                     <p class="auth-switch-text">Already have an account? <a href="#" id="switch-to-login"
@@ -373,7 +368,7 @@
             </form>
         </div>
     </div>
-
+    
     <!-- Logout Confirmation Modal -->
     <div id="logout-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
