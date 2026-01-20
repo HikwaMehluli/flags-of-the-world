@@ -363,7 +363,29 @@ class AuthService {
 				.single();
 
 			if (error) {
-				throw new Error(error.message);
+				// If update fails because the record doesn't exist, try inserting
+				if (error.code === 'PGRST116') { // Record not found
+					// Insert the profile with the user ID and email
+					const insertProfile = {
+						id: userId,
+						email: this.currentUser.email || '', // Ensure email is provided
+						...profile
+					};
+
+					const { data: insertData, error: insertError } = await supabase
+						.from('users')
+						.insert([insertProfile])
+						.select()
+						.single();
+
+					if (insertError) {
+						throw new Error(insertError.message);
+					}
+
+					return insertData;
+				} else {
+					throw new Error(error.message);
+				}
 			}
 
 			return data;

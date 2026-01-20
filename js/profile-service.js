@@ -63,7 +63,8 @@ class ProfileService {
 			throw new Error("User not authenticated");
 		}
 
-		const userId = authService.getCurrentUser().id;
+		const user = authService.getCurrentUser();
+		const userId = user.id;
 		const profile = {
 			...profileData,
 			updated_at: new Date().toISOString(),
@@ -81,9 +82,10 @@ class ProfileService {
 			if (error) {
 				// If update fails because the record doesn't exist, try inserting
 				if (error.code === 'PGRST116') { // Record not found
-					// Insert the profile with the user ID
+					// Insert the profile with the user ID and email
 					const insertProfile = {
 						id: userId,
+						email: user.email || '', // Ensure email is provided
 						...profile
 					};
 

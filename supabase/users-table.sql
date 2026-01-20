@@ -5,7 +5,7 @@
 -- The id should match the auth.users id to properly link profiles
 CREATE TABLE IF NOT EXISTS users (
   id UUID REFERENCES auth.users(id) PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
+  email TEXT UNIQUE, -- Made optional since it's handled by trigger
   username TEXT UNIQUE,
   full_name TEXT,
   avatar_url TEXT,
