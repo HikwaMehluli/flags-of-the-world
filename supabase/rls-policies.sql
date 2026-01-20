@@ -307,16 +307,53 @@ END $$;
 DO $$
 BEGIN
   -- Grant permissions for functions, ignoring errors if already granted
-  PERFORM pg_catalog.pg_grant('authenticated, service_role', 'FUNCTION', 'validate_score_reasonableness(integer, text, text)');
-  PERFORM pg_catalog.pg_grant('authenticated, service_role', 'FUNCTION', 'validate_score_insert()');
-  PERFORM pg_catalog.pg_grant('authenticated, service_role', 'FUNCTION', 'validate_score_update()');
-  PERFORM pg_catalog.pg_grant('authenticated, service_role', 'FUNCTION', 'check_rate_limit()');
-  PERFORM pg_catalog.pg_grant('authenticated, service_role', 'FUNCTION', 'enforce_rate_limit()');
-  PERFORM pg_catalog.pg_grant('authenticated, service_role', 'FUNCTION', 'gen_random_uuid()');
-EXCEPTION
-  WHEN undefined_function THEN
-    -- Functions may not exist yet, that's OK
-    NULL;
+  BEGIN
+    GRANT EXECUTE ON FUNCTION validate_score_reasonableness(integer, text, text) TO authenticated, service_role;
+  EXCEPTION
+    WHEN undefined_function THEN
+      -- Function doesn't exist yet, that's OK
+      NULL;
+  END;
+
+  BEGIN
+    GRANT EXECUTE ON FUNCTION validate_score_insert() TO authenticated, service_role;
+  EXCEPTION
+    WHEN undefined_function THEN
+      -- Function doesn't exist yet, that's OK
+      NULL;
+  END;
+
+  BEGIN
+    GRANT EXECUTE ON FUNCTION validate_score_update() TO authenticated, service_role;
+  EXCEPTION
+    WHEN undefined_function THEN
+      -- Function doesn't exist yet, that's OK
+      NULL;
+  END;
+
+  BEGIN
+    GRANT EXECUTE ON FUNCTION check_rate_limit() TO authenticated, service_role;
+  EXCEPTION
+    WHEN undefined_function THEN
+      -- Function doesn't exist yet, that's OK
+      NULL;
+  END;
+
+  BEGIN
+    GRANT EXECUTE ON FUNCTION enforce_rate_limit() TO authenticated, service_role;
+  EXCEPTION
+    WHEN undefined_function THEN
+      -- Function doesn't exist yet, that's OK
+      NULL;
+  END;
+
+  BEGIN
+    GRANT EXECUTE ON FUNCTION gen_random_uuid() TO authenticated, service_role;
+  EXCEPTION
+    WHEN undefined_function THEN
+      -- Function doesn't exist yet, that's OK
+      NULL;
+  END;
 END $$;
 
 -- 10. Grant schema usage and table permissions

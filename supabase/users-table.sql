@@ -67,28 +67,21 @@ BEGIN
 END;
 $$;
 
--- 5. Create triggers on auth.users table (only create if they don't exist)
+-- 5. Create triggers on auth.users table (drop and recreate to ensure proper function)
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_trigger
-    WHERE tgname = 'on_auth_user_created'
-    AND tgrelid = 'auth.users'::regclass
-  ) THEN
-    CREATE TRIGGER on_auth_user_created
-      AFTER INSERT ON auth.users
-      FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-  END IF;
+  -- Drop existing triggers if they exist
+  DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+  DROP TRIGGER IF EXISTS on_auth_user_updated ON auth.users;
 
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_trigger
-    WHERE tgname = 'on_auth_user_updated'
-    AND tgrelid = 'auth.users'::regclass
-  ) THEN
-    CREATE TRIGGER on_auth_user_updated
-      AFTER UPDATE ON auth.users
-      FOR EACH ROW EXECUTE FUNCTION public.handle_updated_user();
-  END IF;
+  -- Create the triggers
+  CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+  CREATE TRIGGER on_auth_user_updated
+    AFTER UPDATE ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_user();
 END $$;
 
 -- 6. Grant permissions for the trigger functions

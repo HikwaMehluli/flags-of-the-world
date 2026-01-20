@@ -30,19 +30,17 @@ BEGIN
 END;
 $$;
 
--- 4. Create a trigger to automatically update last_seen on row updates (only if it doesn't exist)
+-- 4. Create a trigger to automatically update last_seen on row updates (drop and recreate to ensure proper function)
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_trigger
-    WHERE tgname = 'update_presence_last_seen'
-    AND tgrelid = 'presence'::regclass
-  ) THEN
-    CREATE TRIGGER update_presence_last_seen
-      BEFORE UPDATE ON presence
-      FOR EACH ROW
-      EXECUTE FUNCTION update_last_seen();
-  END IF;
+  -- Drop existing trigger if it exists
+  DROP TRIGGER IF EXISTS update_presence_last_seen ON presence;
+
+  -- Create the trigger
+  CREATE TRIGGER update_presence_last_seen
+    BEFORE UPDATE ON presence
+    FOR EACH ROW
+    EXECUTE FUNCTION update_last_seen();
 END $$;
 
 -- 5. Grant permissions for the trigger function
