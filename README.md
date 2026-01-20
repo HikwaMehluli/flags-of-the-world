@@ -74,6 +74,68 @@ To set up your Supabase database for the Flags of the World application, follow 
 3. **`presence-table.sql`** - Creates the presence table
 4. **`rls-policies.sql`** - Sets up Row Level Security policies and permissions
 
+## 🔐 Social Login Setup Instructions
+
+To enable social login (Google and GitHub) in the application, follow these steps:
+
+### 1. Configure Social Providers in Supabase Dashboard
+
+1. Go to your [Supabase Dashboard](https://app.supabase.com/)
+2. Navigate to your project
+3. Go to **Authentication** → **SignIn/Providers** in the left sidebar
+
+#### For Google OAuth:
+1. Find "Google" in the providers list and toggle it ON
+2. Click on "Configure" next to Google
+3. Go to [Google Cloud Console](https://console.cloud.google.com/)
+4. Create a new project or select an existing one
+5. Enable the Google+ API
+6. Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client IDs"
+7. Set the application type to "Web Application"
+8. Add your domain to "Authorized redirect URIs":
+   - For production: `https://<your-project-ref>.supabase.co/auth/v1/callback`
+   - For development: `http://localhost:3000/auth/v1/callback` (adjust port as needed)
+9. Copy the "Client ID" and "Client Secret" back to the Supabase Google configuration
+10. Save the settings
+
+#### For GitHub OAuth:
+1. Find "GitHub" in the providers list and toggle it ON
+2. Click on "Configure" next to GitHub
+3. Go to [GitHub Developer Settings](https://github.com/settings/developers)
+4. Click "New OAuth App" or "Register a new application"
+5. Fill in the application details:
+   - Application name: Your app name
+   - Homepage URL: Your site URL
+   - Authorization callback URL: `https://<your-project-ref>.supabase.co/auth/v1/callback`
+6. Copy the "Client ID" and "Client Secret" to the Supabase GitHub configuration
+7. Save the settings
+
+### 2. Update Environment Variables
+
+Update your `.env` file with your Supabase credentials:
+
+```bash
+SUPABASE_URL=https://<your-project-ref>.supabase.co
+SUPABASE_ANON_KEY=<your-anon-key>
+```
+
+### 3. Supported OAuth Providers
+
+The application currently supports:
+- Google (`provider: 'google'`)
+- GitHub (`provider: 'github'`)
+
+To add more providers, you can extend the `signInWithProvider` method in `js/auth-service.js` with additional provider options like Apple, Facebook, Twitter, etc.
+
+### 4. How It Works
+
+The social login flow works as follows:
+1. User clicks a social login button (Google/GitHub)
+2. The app calls `authService.signInWithProvider(provider)`
+3. Supabase redirects the user to the provider's authentication page
+4. After successful authentication, the user is redirected back to your app
+5. The user's session is established and their profile is created/updated in the database
+
 ## 🗺️ Regions Included
 The game includes flags from various continents: Africa, Europe, Asia, and the Americas.
 
