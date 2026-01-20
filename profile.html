@@ -111,18 +111,18 @@
 
                 <div class="profile-info">
                     <label for="full-name">Full Name:</label>
-                    <input type="text" id="full-name" placeholder="Enter your full name">
+                    <input type="text" id="full-name" placeholder="Enter your full name" autocomplete="name">
 
                     <label for="user-country">Country:</label>
-                    <select id="user-country">
+                    <select id="user-country" autocomplete="country">
                         <option value="">Select your country</option>
                     </select>
 
                     <label for="username">Username:</label>
-                    <input type="text" id="username" readonly>
+                    <input type="text" id="username" readonly autocomplete="username">
 
                     <label for="email">Email:</label>
-                    <input type="email" id="email" readonly>
+                    <input type="email" id="email" readonly autocomplete="email">
 
                     <button id="save-profile" class="save-btn">Save Changes</button>
                 </div>
@@ -232,7 +232,7 @@
             <h2>Delete Account</h2>
             <p>Are you sure you want to delete your account? This action cannot be undone.</p>
             <p>Please type <strong>DELETE</strong> to confirm:</p>
-            <input type="text" id="confirm-delete-input" placeholder="Type DELETE to confirm">
+            <input type="text" id="confirm-delete-input" placeholder="Type DELETE to confirm" autocomplete="off">
             <div class="modal-actions">
                 <button id="cancel-delete-btn" class="cancel-btn">Cancel</button>
                 <button id="confirm-delete-btn" class="delete-btn" disabled>Confirm Delete</button>
@@ -247,10 +247,10 @@
             <h2>Login to Your Account</h2>
             <form id="login-form">
                 <label for="login-email">Email</label>
-                <input type="email" id="login-email" name="email" placeholder="name@email.com" required />
+                <input type="email" id="login-email" name="email" placeholder="name@email.com" required autocomplete="email" />
 
                 <label for="login-password">Password</label>
-                <input type="password" id="login-password" name="password" placeholder="***********" required />
+                <input type="password" id="login-password" name="password" placeholder="***********" required autocomplete="current-password" />
 
                 <button type="submit" class="submit-btn">Login</button>
             </form>
@@ -274,22 +274,22 @@
             <h2>Create an Account</h2>
             <form id="signup-form">
                 <label for="signup-fullname">Full Name</label>
-                <input type="text" id="signup-fullname" name="fullname" placeholder="Full Name" maxlength="50" />
+                <input type="text" id="signup-fullname" name="fullname" placeholder="Full Name" maxlength="50" autocomplete="name" />
 
                 <label for="signup-username">Username</label>
                 <input type="text" id="signup-username" name="username" placeholder="Username" required
-                    maxlength="30" />
+                    maxlength="30" autocomplete="username" />
 
                 <label for="signup-email">Email</label>
-                <input type="email" id="signup-email" name="email" placeholder="name@email.com" required />
+                <input type="email" id="signup-email" name="email" placeholder="name@email.com" required autocomplete="email" />
 
                 <label for="signup-password">Password</label>
                 <input type="password" id="signup-password" name="password" placeholder="***********" required
-                    minlength="6" />
+                    minlength="6" autocomplete="new-password" />
 
                 <label for="signup-confirm-password">Confirm Password</label>
                 <input type="password" id="signup-confirm-password" name="confirm-password" placeholder="***********"
-                    required />
+                    required autocomplete="new-password" />
 
                 <button type="submit" class="submit-btn">Sign Up</button>
                 <div class="auth-footer">

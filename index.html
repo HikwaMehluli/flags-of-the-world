@@ -162,8 +162,8 @@
             <p>You won in <span id="modal-final-moves">0</span> moves and <span id="modal-final-time">00:00</span>!</p>
             <p>Enter your name to save your score:</p>
             <form id="name-form">
-                <input type="text" id="player-name" placeholder="Enter your name" maxlength="20" required />
-                <select id="player-country" aria-label="Select Your Country">
+                <input type="text" id="player-name" placeholder="Enter your name" maxlength="20" required autocomplete="name" />
+                <select id="player-country" aria-label="Select Your Country" autocomplete="country">
                     <option value="">Select your country</option>
                 </select>
                 <button type="submit">Save Score</button>
@@ -178,10 +178,10 @@
             <h2>Login to Your Account</h2>
             <form id="login-form">
                 <label for="login-email">Email</label>
-                <input type="email" id="login-email" name="email" placeholder="name@email.com" required />
+                <input type="email" id="login-email" name="email" placeholder="name@email.com" required autocomplete="email" />
 
                 <label for="login-password">Password</label>
-                <input type="password" id="login-password" name="password" placeholder="***********" required />
+                <input type="password" id="login-password" name="password" placeholder="***********" required autocomplete="current-password" />
 
                 <button type="submit" class="submit-btn">Login</button>
             </form>
@@ -205,19 +205,19 @@
             <h2>Create an Account</h2>
             <form id="signup-form">
                 <label for="signup-fullname">Full Name</label>
-                <input type="text" id="signup-fullname" name="fullname" placeholder="Full Name" maxlength="50" />
+                <input type="text" id="signup-fullname" name="fullname" placeholder="Full Name" maxlength="50" autocomplete="name" />
 
                 <label for="signup-username">Username</label>
-                <input type="text" id="signup-username" name="username" placeholder="Username" required maxlength="30" />
+                <input type="text" id="signup-username" name="username" placeholder="Username" required maxlength="30" autocomplete="username" />
 
                 <label for="signup-email">Email</label>
-                <input type="email" id="signup-email" name="email" placeholder="name@email.com" required />
+                <input type="email" id="signup-email" name="email" placeholder="name@email.com" required autocomplete="email" />
 
                 <label for="signup-password">Password</label>
-                <input type="password" id="signup-password" name="password" placeholder="***********" required minlength="6" />
+                <input type="password" id="signup-password" name="password" placeholder="***********" required minlength="6" autocomplete="new-password" />
 
                 <label for="signup-confirm-password">Confirm Password</label>
-                <input type="password" id="signup-confirm-password" name="confirm-password" placeholder="***********" required />
+                <input type="password" id="signup-confirm-password" name="confirm-password" placeholder="***********" required autocomplete="new-password" />
 
                 <button type="submit" class="submit-btn">Sign Up</button>
                 <div class="auth-footer">
