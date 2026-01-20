@@ -2,326 +2,406 @@
  * Authentication modal component for login/signup functionality
  */
 class AuthModal {
-  constructor() {
-    this.loginForm = document.getElementById('login-form');
-    this.signupForm = document.getElementById('signup-form');
-    this.loginTabBtn = document.querySelector('.tab-button[data-tab="login"]');
-    this.signupTabBtn = document.querySelector('.tab-button[data-tab="signup"]');
-    this.loginTabPanel = document.getElementById('login-tab');
-    this.signupTabPanel = document.getElementById('signup-tab');
-    this.loginModal = document.getElementById('login-modal');
-    this.authToggleBtn = document.getElementById('auth-toggle-btn');
-    
-    // Social login buttons
-    this.googleLoginBtn = document.getElementById('google-login');
-    this.githubLoginBtn = document.getElementById('github-login');
-    
-    // Forgot password link
-    this.forgotPasswordLink = document.getElementById('forgot-password-link');
-    
-    // Initialize the modal
-    this.init();
-  }
+	constructor() {
+		this.loginForm = document.getElementById('login-form');
+		this.signupForm = document.getElementById('signup-form');
+		this.loginTabBtn = document.querySelector('.tab-button[data-tab="login"]');
+		this.signupTabBtn = document.querySelector('.tab-button[data-tab="signup"]');
+		this.loginTabPanel = document.getElementById('login-tab');
+		this.signupTabPanel = document.getElementById('signup-tab');
+		this.loginModal = document.getElementById('login-modal');
+		this.logoutModal = document.getElementById('logout-modal');
+		this.authToggleBtn = document.getElementById('auth-toggle-btn');
+		this.confirmLogoutBtn = document.getElementById('confirm-logout');
+		this.cancelLogoutBtn = document.getElementById('cancel-logout');
 
-  /**
-   * Initialize the authentication modal
-   */
-  init() {
-    if (!this.loginModal) return;
+		// Social login buttons
+		this.googleLoginBtn = document.getElementById('google-login');
+		this.githubLoginBtn = document.getElementById('github-login');
 
-    // Set up tab switching
-    this.setupTabSwitching();
+		// Forgot password link
+		this.forgotPasswordLink = document.getElementById('forgot-password-link');
+		this.switchToSignupLink = document.getElementById('switch-to-signup');
+		this.switchToLoginLink = document.getElementById('switch-to-login');
 
-    // Set up form submissions
-    this.setupFormSubmissions();
+		// Initialize the modal
+		this.init();
+	}
 
-    // Set up social login buttons
-    this.setupSocialLogin();
+	/**
+	 * Initialize the authentication modal
+	 */
+	init() {
+		if (!this.loginModal) return;
 
-    // Set up forgot password
-    this.setupForgotPassword();
+		// Set up tab switching
+		this.setupTabSwitching();
 
-    // Set up auth toggle button
-    this.setupAuthToggle();
+		// Set up form submissions
+		this.setupFormSubmissions();
 
-    // Set up close buttons
-    this.setupCloseButtons();
-  }
+		// Set up social login buttons
+		this.setupSocialLogin();
 
-  /**
-   * Set up tab switching between login and signup
-   */
-  setupTabSwitching() {
-    if (this.loginTabBtn && this.signupTabBtn) {
-      this.loginTabBtn.addEventListener('click', () => {
-        this.switchToLoginTab();
-      });
+		// Set up forgot password
+		this.setupForgotPassword();
 
-      this.signupTabBtn.addEventListener('click', () => {
-        this.switchToSignupTab();
-      });
-    }
-  }
+		// Set up forgot password
+		this.setupForgotPassword();
 
-  /**
-   * Switch to login tab
-   */
-  switchToLoginTab() {
-    if (this.loginTabBtn && this.signupTabBtn && this.loginTabPanel && this.signupTabPanel) {
-      this.loginTabBtn.classList.add('active');
-      this.signupTabBtn.classList.remove('active');
-      this.loginTabPanel.classList.add('active');
-      this.signupTabPanel.classList.remove('active');
-    }
-  }
+		// Set up switch links
+		this.setupSwitchLinks();
 
-  /**
-   * Switch to signup tab
-   */
-  switchToSignupTab() {
-    if (this.loginTabBtn && this.signupTabBtn && this.loginTabPanel && this.signupTabPanel) {
-      this.signupTabBtn.classList.add('active');
-      this.loginTabBtn.classList.remove('active');
-      this.signupTabPanel.classList.add('active');
-      this.loginTabPanel.classList.remove('active');
-    }
-  }
+		// Set up auth toggle button
+		this.setupAuthToggle();
 
-  /**
-   * Set up form submissions
-   */
-  setupFormSubmissions() {
-    // Login form submission
-    if (this.loginForm) {
-      this.loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await this.handleLogin();
-      });
-    }
+		// Set up logout functionality
+		this.setupLogout();
 
-    // Signup form submission
-    if (this.signupForm) {
-      this.signupForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await this.handleSignup();
-      });
-    }
-  }
+		// Set up close buttons
+		this.setupCloseButtons();
+	}
 
-  /**
-   * Handle login form submission
-   */
-  async handleLogin() {
-    if (!this.loginForm) return;
+	/**
+	 * Set up tab switching between login and signup
+	 */
+	setupTabSwitching() {
+		if (this.loginTabBtn && this.signupTabBtn) {
+			this.loginTabBtn.addEventListener('click', () => {
+				this.switchToLoginTab();
+			});
 
-    const email = document.getElementById('login-email').value.trim();
-    const password = document.getElementById('login-password').value;
+			this.signupTabBtn.addEventListener('click', () => {
+				this.switchToSignupTab();
+			});
+		}
+	}
 
-    if (!email || !password) {
-      this.showMessage('Please fill in all fields', 'error');
-      return;
-    }
+	/**
+	 * Set up switch links between login and signup forms
+	 */
+	setupSwitchLinks() {
+		if (this.switchToSignupLink) {
+			this.switchToSignupLink.addEventListener('click', (e) => {
+				e.preventDefault();
+				this.switchToSignupTab();
+			});
+		}
 
-    try {
-      const { default: authService } = await import('../auth-service.js');
-      
-      const result = await authService.signIn(email, password);
-      
-      if (result) {
-        this.showMessage('Login successful!', 'success');
-        
-        // Close the modal
-        this.closeModal();
-        
-        // Update UI elements that depend on auth state
-        this.updateAuthUI(authService.getCurrentUser(), true);
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      this.showMessage(error.message || 'Login failed. Please try again.', 'error');
-    }
-  }
+		if (this.switchToLoginLink) {
+			this.switchToLoginLink.addEventListener('click', (e) => {
+				e.preventDefault();
+				this.switchToLoginTab();
+			});
+		}
+	}
 
-  /**
-   * Handle signup form submission
-   */
-  async handleSignup() {
-    if (!this.signupForm) return;
+	/**
+	 * Switch to login tab
+	 */
+	switchToLoginTab() {
+		if (this.loginTabBtn && this.signupTabBtn && this.loginTabPanel && this.signupTabPanel) {
+			this.loginTabBtn.classList.add('active');
+			this.signupTabBtn.classList.remove('active');
+			this.loginTabPanel.classList.add('active');
+			this.signupTabPanel.classList.remove('active');
+		}
+	}
 
-    const fullName = document.getElementById('signup-fullname').value.trim();
-    const username = document.getElementById('signup-username').value.trim();
-    const email = document.getElementById('signup-email').value.trim();
-    const password = document.getElementById('signup-password').value;
-    const confirmPassword = document.getElementById('signup-confirm-password').value;
+	/**
+	 * Switch to signup tab
+	 */
+	switchToSignupTab() {
+		if (this.loginTabBtn && this.signupTabBtn && this.loginTabPanel && this.signupTabPanel) {
+			this.signupTabBtn.classList.add('active');
+			this.loginTabBtn.classList.remove('active');
+			this.signupTabPanel.classList.add('active');
+			this.loginTabPanel.classList.remove('active');
+		}
+	}
 
-    // Validation
-    if (!fullName || !username || !email || !password || !confirmPassword) {
-      this.showMessage('Please fill in all fields', 'error');
-      return;
-    }
+	/**
+	 * Set up form submissions
+	 */
+	setupFormSubmissions() {
+		// Login form submission
+		if (this.loginForm) {
+			this.loginForm.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				await this.handleLogin();
+			});
+		}
 
-    if (password !== confirmPassword) {
-      this.showMessage('Passwords do not match', 'error');
-      return;
-    }
+		// Signup form submission
+		if (this.signupForm) {
+			this.signupForm.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				await this.handleSignup();
+			});
+		}
+	}
 
-    if (password.length < 6) {
-      this.showMessage('Password must be at least 6 characters', 'error');
-      return;
-    }
+	/**
+	 * Handle login form submission
+	 */
+	async handleLogin() {
+		if (!this.loginForm) return;
 
-    try {
-      const { default: authService } = await import('../auth-service.js');
-      
-      const result = await authService.signUp(email, password, {
-        fullName,
-        username
-      });
-      
-      if (result) {
-        this.showMessage('Account created successfully! Please check your email to confirm your account.', 'success');
-        
-        // Switch to login tab after successful signup
-        setTimeout(() => {
-          this.switchToLoginTab();
-        }, 2000);
-      }
-    } catch (error) {
-      console.error('Signup error:', error);
-      this.showMessage(error.message || 'Signup failed. Please try again.', 'error');
-    }
-  }
+		const email = document.getElementById('login-email').value.trim();
+		const password = document.getElementById('login-password').value;
 
-  /**
-   * Set up social login buttons
-   */
-  setupSocialLogin() {
-    if (this.googleLoginBtn) {
-      this.googleLoginBtn.addEventListener('click', async () => {
-        try {
-          const { default: authService } = await import('../auth-service.js');
-          await authService.signInWithProvider('google');
-        } catch (error) {
-          console.error('Google login error:', error);
-          this.showMessage(error.message || 'Google login failed. Please try again.', 'error');
-        }
-      });
-    }
+		if (!email || !password) {
+			this.showMessage('Please fill in all fields', 'error');
+			return;
+		}
 
-    if (this.githubLoginBtn) {
-      this.githubLoginBtn.addEventListener('click', async () => {
-        try {
-          const { default: authService } = await import('../auth-service.js');
-          await authService.signInWithProvider('github');
-        } catch (error) {
-          console.error('GitHub login error:', error);
-          this.showMessage(error.message || 'GitHub login failed. Please try again.', 'error');
-        }
-      });
-    }
-  }
+		try {
+			const { default: authService } = await import('../auth-service.js');
 
-  /**
-   * Set up forgot password functionality
-   */
-  setupForgotPassword() {
-    if (this.forgotPasswordLink) {
-      this.forgotPasswordLink.addEventListener('click', async (e) => {
-        e.preventDefault();
-        
-        const email = prompt('Please enter your email address:');
-        if (!email) return;
+			const result = await authService.signIn(email, password);
 
-        try {
-          const { default: authService } = await import('../auth-service.js');
-          await authService.resetPassword(email);
-          
-          this.showMessage('Password reset email sent! Please check your inbox.', 'success');
-        } catch (error) {
-          console.error('Password reset error:', error);
-          this.showMessage(error.message || 'Failed to send password reset email. Please try again.', 'error');
-        }
-      });
-    }
-  }
+			if (result) {
+				this.showMessage('Login successful!', 'success');
 
-  /**
-   * Set up auth toggle button (the Login/Logout button in header)
-   */
-  setupAuthToggle() {
-    if (this.authToggleBtn) {
-      this.authToggleBtn.addEventListener('click', async () => {
-        const { default: authService } = await import('../auth-service.js');
-        const isAuthenticated = authService.getIsAuthenticated();
+				// Close the modal
+				this.closeModal();
 
-        if (isAuthenticated) {
-          // Show logout confirmation modal
-          document.getElementById('logout-modal').style.display = 'flex';
-        } else {
-          // Show login modal
-          this.openModal();
-        }
-      });
-    }
-  }
+				// Update UI elements that depend on auth state
+				this.updateAuthUI(authService.getCurrentUser(), true);
+			}
+		} catch (error) {
+			console.error('Login error:', error);
+			this.showMessage(error.message || 'Login failed. Please try again.', 'error');
+		}
+	}
 
-  /**
-   * Set up close buttons
-   */
-  setupCloseButtons() {
-    // Close modal buttons
-    const closeButtons = document.querySelectorAll('.close-modal');
-    closeButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        this.closeModal();
-      });
-    });
+	/**
+	 * Handle signup form submission
+	 */
+	async handleSignup() {
+		if (!this.signupForm) return;
 
-    // Close modal when clicking outside content
-    if (this.loginModal) {
-      this.loginModal.addEventListener('click', (e) => {
-        if (e.target === this.loginModal) {
-          this.closeModal();
-        }
-      });
-    }
-  }
+		const fullName = document.getElementById('signup-fullname').value.trim();
+		const username = document.getElementById('signup-username').value.trim();
+		const email = document.getElementById('signup-email').value.trim();
+		const password = document.getElementById('signup-password').value;
+		const confirmPassword = document.getElementById('signup-confirm-password').value;
 
-  /**
-   * Open the login modal
-   */
-  openModal() {
-    if (this.loginModal) {
-      this.loginModal.style.display = 'flex';
-    }
-  }
+		// Validation
+		if (!fullName || !username || !email || !password || !confirmPassword) {
+			this.showMessage('Please fill in all fields', 'error');
+			return;
+		}
 
-  /**
-   * Close the login modal
-   */
-  closeModal() {
-    if (this.loginModal) {
-      this.loginModal.style.display = 'none';
-    }
-    
-    // Clear form fields
-    if (this.loginForm) {
-      this.loginForm.reset();
-    }
-    if (this.signupForm) {
-      this.signupForm.reset();
-    }
-  }
+		if (password !== confirmPassword) {
+			this.showMessage('Passwords do not match', 'error');
+			return;
+		}
 
-  /**
-   * Show a message to the user
-   */
-  showMessage(message, type) {
-    // Create a temporary message element
-    const messageEl = document.createElement('div');
-    messageEl.className = `auth-message auth-message-${type}`;
-    messageEl.textContent = message;
-    messageEl.style.cssText = `
+		if (password.length < 6) {
+			this.showMessage('Password must be at least 6 characters', 'error');
+			return;
+		}
+
+		try {
+			const { default: authService } = await import('../auth-service.js');
+
+			const result = await authService.signUp(email, password, {
+				fullName,
+				username
+			});
+
+			if (result) {
+				this.showMessage('Account created successfully! Please check your email to confirm your account.', 'success');
+
+				// Switch to login tab after successful signup
+				setTimeout(() => {
+					this.switchToLoginTab();
+				}, 2000);
+			}
+		} catch (error) {
+			console.error('Signup error:', error);
+			this.showMessage(error.message || 'Signup failed. Please try again.', 'error');
+		}
+	}
+
+	/**
+	 * Set up social login buttons
+	 */
+	setupSocialLogin() {
+		if (this.googleLoginBtn) {
+			this.googleLoginBtn.addEventListener('click', async () => {
+				try {
+					const { default: authService } = await import('../auth-service.js');
+					await authService.signInWithProvider('google');
+				} catch (error) {
+					console.error('Google login error:', error);
+					this.showMessage(error.message || 'Google login failed. Please try again.', 'error');
+				}
+			});
+		}
+
+		if (this.githubLoginBtn) {
+			this.githubLoginBtn.addEventListener('click', async () => {
+				try {
+					const { default: authService } = await import('../auth-service.js');
+					await authService.signInWithProvider('github');
+				} catch (error) {
+					console.error('GitHub login error:', error);
+					this.showMessage(error.message || 'GitHub login failed. Please try again.', 'error');
+				}
+			});
+		}
+	}
+
+	/**
+	 * Set up forgot password functionality
+	 */
+	setupForgotPassword() {
+		if (this.forgotPasswordLink) {
+			this.forgotPasswordLink.addEventListener('click', async (e) => {
+				e.preventDefault();
+
+				const email = prompt('Please enter your email address:');
+				if (!email) return;
+
+				try {
+					const { default: authService } = await import('../auth-service.js');
+					await authService.resetPassword(email);
+
+					this.showMessage('Password reset email sent! Please check your inbox.', 'success');
+				} catch (error) {
+					console.error('Password reset error:', error);
+					this.showMessage(error.message || 'Failed to send password reset email. Please try again.', 'error');
+				}
+			});
+		}
+	}
+
+	/**
+	 * Set up auth toggle button (the Login/Logout button in header)
+	 */
+	setupAuthToggle() {
+		if (this.authToggleBtn) {
+			this.authToggleBtn.addEventListener('click', async () => {
+				const { default: authService } = await import('../auth-service.js');
+				const isAuthenticated = authService.getIsAuthenticated();
+
+				if (isAuthenticated) {
+					// Show logout confirmation modal
+					if (this.logoutModal) {
+						this.logoutModal.style.display = 'flex';
+					}
+				} else {
+					// Show login modal
+					this.openModal();
+				}
+			});
+		}
+	}
+
+	/**
+	 * Set up logout functionality
+	 */
+	setupLogout() {
+		if (this.confirmLogoutBtn) {
+			this.confirmLogoutBtn.addEventListener('click', async () => {
+				await this.handleLogout();
+			});
+		}
+
+		if (this.cancelLogoutBtn) {
+			this.cancelLogoutBtn.addEventListener('click', () => {
+				if (this.logoutModal) {
+					this.logoutModal.style.display = 'none';
+				}
+			});
+		}
+	}
+
+	/**
+	 * Handle logout action
+	 */
+	async handleLogout() {
+		try {
+			const { default: authService } = await import('../auth-service.js');
+			const result = await authService.signOut();
+
+			if (result && result.success) {
+				// Close modal
+				if (this.logoutModal) {
+					this.logoutModal.style.display = 'none';
+				}
+
+				this.showMessage('Logged out successfully', 'success');
+
+				// Update UI
+				this.updateAuthUI(null, false);
+			}
+		} catch (error) {
+			console.error('Logout error:', error);
+			this.showMessage('Logout failed. Please try again.', 'error');
+		}
+	}
+
+	/**
+	 * Set up close buttons
+	 */
+	setupCloseButtons() {
+		// Close modal buttons
+		const closeButtons = document.querySelectorAll('.close-modal');
+		closeButtons.forEach(button => {
+			button.addEventListener('click', () => {
+				this.closeModal();
+			});
+		});
+
+		// Close modal when clicking outside content
+		window.addEventListener('click', (e) => {
+			if (this.loginModal && e.target === this.loginModal) {
+				this.closeModal();
+			}
+			if (this.logoutModal && e.target === this.logoutModal) {
+				this.logoutModal.style.display = 'none';
+			}
+		});
+	}
+
+	/**
+	 * Open the login modal
+	 */
+	openModal() {
+		if (this.loginModal) {
+			this.loginModal.style.display = 'flex';
+		}
+	}
+
+	/**
+	 * Close the login modal
+	 */
+	closeModal() {
+		if (this.loginModal) {
+			this.loginModal.style.display = 'none';
+		}
+
+		// Clear form fields
+		if (this.loginForm) {
+			this.loginForm.reset();
+		}
+		if (this.signupForm) {
+			this.signupForm.reset();
+		}
+	}
+
+	/**
+	 * Show a message to the user
+	 */
+	showMessage(message, type) {
+		// Create a temporary message element
+		const messageEl = document.createElement('div');
+		messageEl.className = `auth-message auth-message-${type}`;
+		messageEl.textContent = message;
+		messageEl.style.cssText = `
       position: fixed;
       top: 20px;
       right: 20px;
@@ -333,45 +413,45 @@ class AuthModal {
       ${type === 'error' ? 'background-color: #f44336;' : 'background-color: #4CAF50;'}
     `;
 
-    document.body.appendChild(messageEl);
+		document.body.appendChild(messageEl);
 
-    // Remove the message after 3 seconds
-    setTimeout(() => {
-      if (document.body.contains(messageEl)) {
-        document.body.removeChild(messageEl);
-      }
-    }, 3000);
-  }
+		// Remove the message after 3 seconds
+		setTimeout(() => {
+			if (document.body.contains(messageEl)) {
+				document.body.removeChild(messageEl);
+			}
+		}, 3000);
+	}
 
-  /**
-   * Update authentication UI elements
-   */
-  updateAuthUI(user, isAuthenticated) {
-    const authIndicator = document.getElementById('auth-indicator');
-    const authToggleBtn = document.getElementById('auth-toggle-btn');
+	/**
+	 * Update authentication UI elements
+	 */
+	updateAuthUI(user, isAuthenticated) {
+		const authIndicator = document.getElementById('auth-indicator');
+		const authToggleBtn = document.getElementById('auth-toggle-btn');
 
-    if (authIndicator && authToggleBtn) {
-      if (isAuthenticated && user) {
-        const displayName = user.user_metadata?.full_name ||
-                           user.user_metadata?.username ||
-                           user.email?.split('@')[0] ||
-                           'User';
-        authIndicator.textContent = displayName;
-        authToggleBtn.textContent = 'Logout';
-      } else {
-        authIndicator.textContent = 'Guest';
-        authToggleBtn.textContent = 'Login';
-      }
-    }
-  }
+		if (authIndicator && authToggleBtn) {
+			if (isAuthenticated && user) {
+				const displayName = user.user_metadata?.full_name ||
+					user.user_metadata?.username ||
+					user.email?.split('@')[0] ||
+					'User';
+				authIndicator.textContent = displayName;
+				authToggleBtn.textContent = 'Logout';
+			} else {
+				authIndicator.textContent = 'Guest';
+				authToggleBtn.textContent = 'Login';
+			}
+		}
+	}
 }
 
 // Initialize the auth modal when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  // Only initialize if we're on a page that has the auth modal
-  if (document.getElementById('login-modal')) {
-    new AuthModal();
-  }
+	// Only initialize if we're on a page that has the auth modal
+	if (document.getElementById('login-modal')) {
+		new AuthModal();
+	}
 });
 
 // Export the class for potential use in other modules

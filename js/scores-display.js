@@ -83,18 +83,27 @@ async function initializeScoreDisplay() {
         // Initialize the score type toggle
         initializeScoreTypeToggle();
 
-        // Enable or disable the toggle based on authentication
+        const personalScoresBtn = document.getElementById('personal-scores-btn');
+
+        // Configure based on authentication
         if (isAuthenticated) {
-            enableScoreTypeToggle();
+            // Restore "Personal Scores" label
+            if (personalScoresBtn) personalScoresBtn.textContent = 'Personal Scores';
         } else {
-            disableScoreTypeToggle();
+            // Guest mode behavior
+            // "Local Scores" label for guests
+            if (personalScoresBtn) personalScoresBtn.textContent = 'Local Scores';
         }
+
+        // Ensure UI reflects the default state
+        updateScoreTypeToggleUI();
+        enableScoreTypeToggle();
 
         await loadScoresForContinent('africa'); // Load default continent
     } catch (error) {
         console.error('Error initializing score display:', error);
         // Fallback to local scores
-        await displayScoresByContinent();
+        await loadLocalScoresForContinent('africa');
     }
 }
 
@@ -110,9 +119,9 @@ async function updateAuthUI(isAuthenticated) {
         if (isAuthenticated) {
             const currentUser = authService.getCurrentUser();
             const displayName = currentUser?.user_metadata?.full_name ||
-                               currentUser?.user_metadata?.username ||
-                               currentUser?.email?.split('@')[0] ||
-                               'User';
+                currentUser?.user_metadata?.username ||
+                currentUser?.email?.split('@')[0] ||
+                'User';
             authIndicator.textContent = displayName;
             authToggleBtn.textContent = 'Logout';
         } else {
@@ -123,7 +132,7 @@ async function updateAuthUI(isAuthenticated) {
 }
 
 // Add variables to track score type
-let currentScoreType = 'global'; // Default to global scores
+let currentScoreType = 'personal'; // Default to personal/local scores
 
 /**
  * Initialize the score type toggle buttons
@@ -181,17 +190,15 @@ async function loadScoresForContinent(continent) {
         const { default: authService } = await import('./auth-service.js');
         const isAuthenticated = authService.getIsAuthenticated();
 
-        // If not authenticated and trying to view global scores, show login prompt
-        if (!isAuthenticated && currentScoreType === 'global') {
-            await showLoginPromptForGlobalScores(continent);
-            return;
-        }
-
-        // If not authenticated, only show local scores regardless of toggle
+        // If not authenticated
         if (!isAuthenticated) {
-            await loadLocalScoresForContinent(continent);
-            // Disable the toggle buttons since only local scores are available
-            disableScoreTypeToggle();
+            if (currentScoreType === 'global') {
+                // Trying to view global scores -> show login prompt
+                await showLoginPromptForGlobalScores(continent);
+            } else {
+                // View local scores
+                await loadLocalScoresForContinent(continent);
+            }
             return;
         }
 
@@ -471,7 +478,7 @@ function createScoreListItem(score) {
     // - When showContinent is true(default ), it displays the full format(e.g., "Africa - Southern Africa")
     // - When showContinent is false, it displays only the region part(e.g., "Southern Africa")
     const regionText = formatRegion(score.region, false);
-    
+
     // Get the flag SVG for the player's country if available
     const playerCountryFlag = score.playerCountry ? getCountryFlagSync(score.playerCountry) : '';
 
