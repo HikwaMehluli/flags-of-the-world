@@ -2,36 +2,67 @@
 -- This script is idempotent and can be run multiple times without error
 
 -- 1. Create table if it doesn't exist
+-- The id should match the auth.users id to properly link profiles
 CREATE TABLE IF NOT EXISTS users (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  id UUID REFERENCES auth.users(id) PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
-  username TEXT UNIQUE NOT NULL,
+  username TEXT UNIQUE,
+  full_name TEXT,
+  avatar_url TEXT,
+  player_country TEXT,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- 2. Add columns safely if they don't exist
-DO $$
+-- 2. Create a trigger function to automatically create user profiles
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+ RETURNS TRIGGER
+ LANGUAGE plpgsql
+AS $$
 BEGIN
-    -- Add full_name column
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'full_name') THEN
-        ALTER TABLE users ADD COLUMN full_name TEXT;
-    END IF;
+  INSERT INTO public.users (id, email, username, full_name)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1)),
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name')
+  );
+  RETURN NEW;
+END;
+$$;
 
-    -- Add avatar_url column
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'avatar_url') THEN
-        ALTER TABLE users ADD COLUMN avatar_url TEXT;
-    END IF;
+-- 3. Create the trigger if it doesn't exist
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
-    -- Add player_country column
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'player_country') THEN
-        ALTER TABLE users ADD COLUMN player_country TEXT;
-    END IF;
-END $$;
+-- 4. Create a trigger function to automatically update user profiles when auth info changes
+CREATE OR REPLACE FUNCTION public.handle_updated_user()
+ RETURNS TRIGGER
+ LANGUAGE plpgsql
+AS $$
+BEGIN
+  UPDATE public.users
+  SET
+    email = NEW.email,
+    username = COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1)),
+    full_name = COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
+    updated_at = NOW()
+  WHERE id = NEW.id;
+  RETURN NEW;
+END;
+$$;
 
--- 3. Create indexes safely
+-- 5. Create the update trigger if it doesn't exist
+DROP TRIGGER IF EXISTS on_auth_user_updated ON auth.users;
+CREATE TRIGGER on_auth_user_updated
+  AFTER UPDATE ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_user();
+
+-- 6. Create indexes safely
 CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
 CREATE INDEX IF NOT EXISTS idx_users_username ON users (username);
 
--- 4. Force a refresh of the schema cache to ensure the API sees new columns/tables immediately
+-- 7. Force a refresh of the schema cache to ensure the API sees new columns/tables immediately
 NOTIFY pgrst, 'reload config';

@@ -3,7 +3,7 @@ import { default as scoreService } from "./score-service.js";
 
 // Check if Supabase is properly initialized
 const isSupabaseInitialized = () => {
-  return supabase !== null;
+	return supabase !== null;
 };
 
 /**
@@ -63,20 +63,44 @@ class ProfileService {
 			throw new Error("User not authenticated");
 		}
 
+		const userId = authService.getCurrentUser().id;
 		const profile = {
 			...profileData,
 			updated_at: new Date().toISOString(),
 		};
 
 		try {
+			// Update the existing profile
 			const { data, error } = await supabase
 				.from("users")
-				.upsert([profile], { onConflict: "id" })
+				.update(profile)
+				.eq("id", userId)
 				.select()
 				.single();
 
 			if (error) {
-				throw new Error(error.message);
+				// If update fails because the record doesn't exist, try inserting
+				if (error.code === 'PGRST116') { // Record not found
+					// Insert the profile with the user ID
+					const insertProfile = {
+						id: userId,
+						...profile
+					};
+
+					const { data: insertData, error: insertError } = await supabase
+						.from("users")
+						.insert([insertProfile])
+						.select()
+						.single();
+
+					if (insertError) {
+						throw new Error(insertError.message);
+					}
+
+					return insertData;
+				} else {
+					throw new Error(error.message);
+				}
 			}
 
 			return data;

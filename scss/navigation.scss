@@ -15,21 +15,27 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative; /* Ensure pseudo-elements are positioned relative to this */
+    position: relative;
+    /* Ensure pseudo-elements are positioned relative to this */
     transition: var(--transition);
 
     .menu-text {
         color: var(--secondary-color);
-        font-size: 0.6rem; /* Smaller font size to fit */
+        font-size: 0.6rem;
+        /* Smaller font size to fit */
         font-weight: bold;
         transition: opacity 0.3s ease;
         opacity: 1;
         position: absolute;
-        top: 50%; /* Center vertically */
-        left: 50%; /* Center horizontally */
-        transform: translate(-50%, -50%); /* Adjust for its own size */
+        top: 50%;
+        /* Center vertically */
+        left: 50%;
+        /* Center horizontally */
+        transform: translate(-50%, -50%);
+        /* Adjust for its own size */
         line-height: 1;
-        white-space: nowrap; /* Prevent text from wrapping */
+        white-space: nowrap;
+        /* Prevent text from wrapping */
         transition: var(--transition);
     }
 
@@ -44,11 +50,13 @@ header {
     }
 
     &:before {
-        top: 10px; /* Position top line */
+        top: 10px;
+        /* Position top line */
     }
 
     &:after {
-        bottom: 10px; /* Position bottom line */
+        bottom: 10px;
+        /* Position bottom line */
     }
 
     &.open {
@@ -191,7 +199,7 @@ header {
    ========================================================================== */
 .theme-switcher {
     z-index: 8;
-    
+
     button {
         background-color: var(--primary-color);
         border: 2px solid var(--secondary-color);
@@ -199,7 +207,7 @@ header {
         width: 45px;
         height: 45px;
         transition: var(--transition);
-        
+
         .icon {
             display: block;
             width: 32px;
@@ -207,6 +215,10 @@ header {
             background-repeat: no-repeat;
             background-size: contain;
             transition: var(--transition);
+
+            position: relative;
+            top: -5px;
+            left: -14px;
         }
 
         &:hover {

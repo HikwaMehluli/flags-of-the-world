@@ -1,13 +1,7 @@
 .profile-header {
     display: flex;
-    // align-items: center;
     gap: 20px;
     margin-bottom: 30px;
-
-    // h1 {
-    //     font-size: 2rem;
-    //     margin: 0;
-    // }
 
     .profile-info {
         display: flex;
@@ -23,7 +17,7 @@
             border-radius: 5px;
             font-size: 1rem;
         }
-    
+
         label {
             font-weight: bold;
             margin-bottom: 10px;
@@ -33,18 +27,58 @@
         }
     }
 
-    
-}
+    .avatar-section {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
 
-.avatar-section {
-    display: grid;
+        .avatar-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
 
-    .avatar {
-        background-color: var(--gray-color);
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        object-fit: cover;
+            .avatar {
+                background-color: var(--gray-color);
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 3px solid var(--secondary-color);
+            }
+
+            .edit-avatar-label {
+                position: absolute;
+                bottom: 5px;
+                right: 5px;
+                background-color: var(--secondary-color);
+                color: #fff;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                z-index: 10;
+                border: 2px solid #fff;
+
+                &:hover {
+                    transform: scale(1.1);
+                    background-color: darken(#e6ad00, 10%); // Assuming secondary color is yellow/gold based on flags context, but sticking to var
+                    filter: brightness(1.1);
+                }
+
+                // svg {
+                //     width: 20px;
+                //     height: 20px;
+                // }
+            }
+
+            #avatar-upload {
+                display: none;
+            }
+        }
     }
-
 }

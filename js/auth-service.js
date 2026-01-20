@@ -347,16 +347,18 @@ class AuthService {
 			throw new Error('User not authenticated');
 		}
 
+		const userId = this.currentUser.id;
 		const profile = {
-			id: this.currentUser.id,
-			email: this.currentUser.email,
-			...profileData
+			...profileData,
+			updated_at: new Date().toISOString(),
 		};
 
 		try {
+			// Update the existing profile
 			const { data, error } = await supabase
 				.from('users')
-				.upsert([profile], { onConflict: 'id' })
+				.update(profile)
+				.eq('id', userId)
 				.select()
 				.single();
 

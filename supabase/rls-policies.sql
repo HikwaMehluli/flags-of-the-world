@@ -15,10 +15,8 @@ FOR UPDATE TO authenticated
 USING (auth.uid() = id)
 WITH CHECK (auth.uid() = id);
 
-DROP POLICY IF EXISTS "Users can insert own profile" ON users;
-CREATE POLICY "Users can insert own profile" ON users
-FOR INSERT TO authenticated
-WITH CHECK (auth.uid() = id);
+-- Note: Insert is handled by the auth trigger, so we don't need a separate insert policy
+-- for manual inserts by users. The trigger handles creation automatically.
 
 DROP POLICY IF EXISTS "Users can read own profile" ON users;
 CREATE POLICY "Users can read own profile" ON users
