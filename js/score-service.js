@@ -80,8 +80,8 @@ class ScoreService {
     const cachedData = this.globalScoresCache[cacheKey];
 
     if (cachedData &&
-        cachedData.timestamp &&
-        Date.now() - cachedData.timestamp < this.cacheExpiryTime) {
+      cachedData.timestamp &&
+      Date.now() - cachedData.timestamp < this.cacheExpiryTime) {
       return cachedData.data;
     }
 
@@ -140,8 +140,8 @@ class ScoreService {
 
     // Check if we have cached data that's still valid
     if (this.userScoresCache &&
-        this.userScoresCache.timestamp &&
-        Date.now() - this.userScoresCache.timestamp < this.cacheExpiryTime) {
+      this.userScoresCache.timestamp &&
+      Date.now() - this.userScoresCache.timestamp < this.cacheExpiryTime) {
       return this.userScoresCache.data;
     }
 
@@ -220,7 +220,7 @@ class ScoreService {
       // Clear all global scores cache
       this.globalScoresCache = {};
     }
-    
+
     // Clear user scores cache
     this.userScoresCache = null;
   }
@@ -326,7 +326,7 @@ class ScoreService {
     }
 
     const currentBest = await this.getUserBestScore(newScore.continent, newScore.difficulty);
-    
+
     if (!currentBest) {
       return true; // No previous score, so this is a best
     }
@@ -334,8 +334,8 @@ class ScoreService {
     // Compare moves first, then time
     if (newScore.moves < currentBest.moves) {
       return true;
-    } else if (newScore.moves === currentBest.moves && 
-               this.timeToSeconds(newScore.time) < this.timeToSeconds(currentBest.time)) {
+    } else if (newScore.moves === currentBest.moves &&
+      this.timeToSeconds(newScore.time) < this.timeToSeconds(currentBest.time)) {
       return true;
     }
 
@@ -348,6 +348,92 @@ class ScoreService {
   timeToSeconds(timeStr) {
     const [minutes, seconds] = timeStr.split(':').map(Number);
     return minutes * 60 + seconds;
+  }
+
+  /**
+   * Sync local scores to Supabase
+   */
+  async syncLocalScores() {
+    if (!isSupabaseInitialized()) {
+      return { success: false, message: 'Supabase not initialized' };
+    }
+
+    const currentUser = authService.getCurrentUser();
+    if (!currentUser || !currentUser.id) {
+      return { success: false, message: 'User not authenticated' };
+    }
+
+    const continents = ['africa', 'europe', 'asia', 'america'];
+    let syncedCount = 0;
+    let errors = [];
+
+    for (const continent of continents) {
+      const continentScoresKey = `highScores_${continent}`;
+      let continentScores = [];
+
+      try {
+        const storedScores = localStorage.getItem(continentScoresKey);
+        if (storedScores) {
+          continentScores = JSON.parse(storedScores);
+        }
+      } catch (e) {
+        console.error(`Error parsing scores for ${continent}:`, e);
+        continue;
+      }
+
+      if (!Array.isArray(continentScores) || continentScores.length === 0) {
+        continue;
+      }
+
+      let scoresUpdated = false;
+
+      for (const score of continentScores) {
+        // If score is already synced, skip it
+        if (score.synced) {
+          continue;
+        }
+
+        try {
+          // Prepare score data for Supabase
+          const scoreData = {
+            name: score.name,
+            moves: score.moves,
+            time: score.time,
+            difficulty: score.difficulty,
+            region: score.region,
+            player_country: score.playerCountry,
+            continent: score.continent || continent
+          };
+
+          // Save to Supabase
+          await this.saveScore(scoreData);
+
+          // Mark as synced locally
+          score.synced = true;
+          syncedCount++;
+          scoresUpdated = true;
+        } catch (error) {
+          console.error(`Error syncing score for ${continent}:`, error);
+          errors.push(error.message);
+        }
+      }
+
+      // Update local storage if any scores were synced
+      if (scoresUpdated) {
+        localStorage.setItem(continentScoresKey, JSON.stringify(continentScores));
+      }
+    }
+
+    // Invalidate cache if we synced any scores
+    if (syncedCount > 0) {
+      this.clearCache();
+    }
+
+    return {
+      success: errors.length === 0,
+      syncedCount,
+      errors
+    };
   }
 }
 

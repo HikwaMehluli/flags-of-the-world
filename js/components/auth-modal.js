@@ -5,12 +5,12 @@ class AuthModal {
 	constructor() {
 		this.loginForm = document.getElementById('login-form');
 		this.signupForm = document.getElementById('signup-form');
-		this.loginTabBtn = document.querySelector('.tab-button[data-tab="login"]');
-		this.signupTabBtn = document.querySelector('.tab-button[data-tab="signup"]');
-		this.loginTabPanel = document.getElementById('login-tab');
-		this.signupTabPanel = document.getElementById('signup-tab');
+
+		// Modals
 		this.loginModal = document.getElementById('login-modal');
+		this.signupModal = document.getElementById('signup-modal');
 		this.logoutModal = document.getElementById('logout-modal');
+
 		this.authToggleBtn = document.getElementById('auth-toggle-btn');
 		this.confirmLogoutBtn = document.getElementById('confirm-logout');
 		this.cancelLogoutBtn = document.getElementById('cancel-logout');
@@ -34,17 +34,11 @@ class AuthModal {
 	init() {
 		if (!this.loginModal) return;
 
-		// Set up tab switching
-		this.setupTabSwitching();
-
 		// Set up form submissions
 		this.setupFormSubmissions();
 
 		// Set up social login buttons
 		this.setupSocialLogin();
-
-		// Set up forgot password
-		this.setupForgotPassword();
 
 		// Set up forgot password
 		this.setupForgotPassword();
@@ -63,60 +57,41 @@ class AuthModal {
 	}
 
 	/**
-	 * Set up tab switching between login and signup
-	 */
-	setupTabSwitching() {
-		if (this.loginTabBtn && this.signupTabBtn) {
-			this.loginTabBtn.addEventListener('click', () => {
-				this.switchToLoginTab();
-			});
-
-			this.signupTabBtn.addEventListener('click', () => {
-				this.switchToSignupTab();
-			});
-		}
-	}
-
-	/**
 	 * Set up switch links between login and signup forms
 	 */
 	setupSwitchLinks() {
 		if (this.switchToSignupLink) {
 			this.switchToSignupLink.addEventListener('click', (e) => {
 				e.preventDefault();
-				this.switchToSignupTab();
+				this.openSignupModal();
 			});
 		}
 
 		if (this.switchToLoginLink) {
 			this.switchToLoginLink.addEventListener('click', (e) => {
 				e.preventDefault();
-				this.switchToLoginTab();
+				this.openLoginModal();
 			});
 		}
 	}
 
 	/**
-	 * Switch to login tab
+	 * Open login modal and close signup modal
 	 */
-	switchToLoginTab() {
-		if (this.loginTabBtn && this.signupTabBtn && this.loginTabPanel && this.signupTabPanel) {
-			this.loginTabBtn.classList.add('active');
-			this.signupTabBtn.classList.remove('active');
-			this.loginTabPanel.classList.add('active');
-			this.signupTabPanel.classList.remove('active');
+	openLoginModal() {
+		this.closeModal(); // Close any open modals
+		if (this.loginModal) {
+			this.loginModal.style.display = 'flex';
 		}
 	}
 
 	/**
-	 * Switch to signup tab
+	 * Open signup modal and close login modal
 	 */
-	switchToSignupTab() {
-		if (this.loginTabBtn && this.signupTabBtn && this.loginTabPanel && this.signupTabPanel) {
-			this.signupTabBtn.classList.add('active');
-			this.loginTabBtn.classList.remove('active');
-			this.signupTabPanel.classList.add('active');
-			this.loginTabPanel.classList.remove('active');
+	openSignupModal() {
+		this.closeModal(); // Close any open modals
+		if (this.signupModal) {
+			this.signupModal.style.display = 'flex';
 		}
 	}
 
@@ -214,9 +189,9 @@ class AuthModal {
 			if (result) {
 				this.showMessage('Account created successfully! Please check your email to confirm your account.', 'success');
 
-				// Switch to login tab after successful signup
+				// Switch to login modal after successful signup
 				setTimeout(() => {
-					this.switchToLoginTab();
+					this.openLoginModal();
 				}, 2000);
 			}
 		} catch (error) {
@@ -361,6 +336,9 @@ class AuthModal {
 			if (this.loginModal && e.target === this.loginModal) {
 				this.closeModal();
 			}
+			if (this.signupModal && e.target === this.signupModal) {
+				this.closeModal();
+			}
 			if (this.logoutModal && e.target === this.logoutModal) {
 				this.logoutModal.style.display = 'none';
 			}
@@ -368,20 +346,21 @@ class AuthModal {
 	}
 
 	/**
-	 * Open the login modal
+	 * Open the login modal (default)
 	 */
 	openModal() {
-		if (this.loginModal) {
-			this.loginModal.style.display = 'flex';
-		}
+		this.openLoginModal();
 	}
 
 	/**
-	 * Close the login modal
+	 * Close all auth modals
 	 */
 	closeModal() {
 		if (this.loginModal) {
 			this.loginModal.style.display = 'none';
+		}
+		if (this.signupModal) {
+			this.signupModal.style.display = 'none';
 		}
 
 		// Clear form fields

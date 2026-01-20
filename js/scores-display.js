@@ -44,6 +44,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const { default: authService } = await import('./auth-service.js');
             authService.onAuthStateChange(async ({ isAuthenticated }) => {
+                // If user just logged in, sync their local scores
+                if (isAuthenticated) {
+                    try {
+                        const { default: scoreService } = await import('./score-service.js');
+                        await scoreService.syncLocalScores();
+                    } catch (syncError) {
+                        console.error('Error syncing local scores:', syncError);
+                    }
+                }
+
                 await updateAuthUI(isAuthenticated);
                 await initializeScoreDisplay();
             });
