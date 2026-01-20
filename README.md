@@ -63,6 +63,17 @@ To enable Google Analytics tracking for your deployment:
 
 The Google Analytics tracking code will only be loaded if a valid Measurement ID is provided in your `.env` file. If no ID is provided, the application will run normally without analytics tracking.
 
+## 🛠️ Supabase Database Setup Instructions
+
+To set up your Supabase database for the Flags of the World application, follow these steps:
+
+### Run these files in this exact order:
+
+1. **`users-table.sql`** - Creates the users table and auth triggers
+2. **`scores-table.sql`** - Creates the scores table
+3. **`presence-table.sql`** - Creates the presence table
+4. **`rls-policies.sql`** - Sets up Row Level Security policies and permissions
+
 ## 🗺️ Regions Included
 The game includes flags from various continents: Africa, Europe, Asia, and the Americas.
 

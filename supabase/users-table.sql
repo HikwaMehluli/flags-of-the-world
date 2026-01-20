@@ -1,75 +1,99 @@
--- Create users table for Flags of the World safely
--- This script is idempotent and can be run multiple times without error
+-- Create users table for Flags of the World
+-- This table stores user profile information linked to Supabase auth
 
--- 1. Create table if it doesn't exist
--- The id should match the auth.users id to properly link profiles
+-- 1. Create the users table
 CREATE TABLE IF NOT EXISTS users (
-  id UUID REFERENCES auth.users(id) PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL, -- Email is required and comes from auth
-  username TEXT UNIQUE,
-  full_name TEXT,
-  avatar_url TEXT,
-  player_country TEXT,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE, -- Links to Supabase auth user
+  email TEXT UNIQUE NOT NULL, -- User's email from auth
+  username TEXT UNIQUE, -- User's chosen username
+  full_name TEXT, -- User's full name
+  avatar_url TEXT, -- URL to user's avatar/image
+  player_country TEXT, -- User's selected country
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 2. Create a trigger function to automatically create user profiles
+-- 2. Create indexes for performance
+CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users (username);
+
+-- 3. Create trigger function to automatically create user profiles when a new auth user is created
 CREATE OR REPLACE FUNCTION public.handle_new_user()
- RETURNS TRIGGER
- LANGUAGE plpgsql
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
-  INSERT INTO public.users (id, email, username, full_name)
+  INSERT INTO public.users (id, email, username, full_name, avatar_url)
   VALUES (
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1)),
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name')
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
+    NEW.raw_user_meta_data->>'avatar_url'
   )
-  ON CONFLICT (id) DO NOTHING; -- Handle potential race conditions
+  ON CONFLICT (id) DO NOTHING;
+
   RETURN NEW;
 END;
 $$;
 
--- 3. Create the trigger if it doesn't exist
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
--- 4. Create a trigger function to automatically update user profiles when auth info changes
+-- 4. Create trigger function to update user profiles when auth info changes
 CREATE OR REPLACE FUNCTION public.handle_updated_user()
- RETURNS TRIGGER
- LANGUAGE plpgsql
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
-  INSERT INTO public.users (id, email, username, full_name)
+  INSERT INTO public.users (id, email, username, full_name, avatar_url)
   VALUES (
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1)),
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name')
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
+    NEW.raw_user_meta_data->>'avatar_url'
   )
   ON CONFLICT (id)
   DO UPDATE SET
     email = EXCLUDED.email,
     username = EXCLUDED.username,
     full_name = EXCLUDED.full_name,
+    avatar_url = EXCLUDED.avatar_url,
     updated_at = NOW();
+
   RETURN NEW;
 END;
 $$;
 
--- 5. Create the update trigger if it doesn't exist
-DROP TRIGGER IF EXISTS on_auth_user_updated ON auth.users;
-CREATE TRIGGER on_auth_user_updated
-  AFTER UPDATE ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_user();
+-- 5. Create triggers on auth.users table (only create if they don't exist)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger
+    WHERE tgname = 'on_auth_user_created'
+    AND tgrelid = 'auth.users'::regclass
+  ) THEN
+    CREATE TRIGGER on_auth_user_created
+      AFTER INSERT ON auth.users
+      FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+  END IF;
 
--- 6. Create indexes safely
-CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
-CREATE INDEX IF NOT EXISTS idx_users_username ON users (username);
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger
+    WHERE tgname = 'on_auth_user_updated'
+    AND tgrelid = 'auth.users'::regclass
+  ) THEN
+    CREATE TRIGGER on_auth_user_updated
+      AFTER UPDATE ON auth.users
+      FOR EACH ROW EXECUTE FUNCTION public.handle_updated_user();
+  END IF;
+END $$;
 
--- 7. Force a refresh of the schema cache to ensure the API sees new columns/tables immediately
+-- 6. Grant permissions for the trigger functions
+GRANT EXECUTE ON FUNCTION public.handle_new_user TO service_role;
+GRANT EXECUTE ON FUNCTION public.handle_updated_user TO service_role;
+
+-- 7. Refresh schema cache
 NOTIFY pgrst, 'reload config';
