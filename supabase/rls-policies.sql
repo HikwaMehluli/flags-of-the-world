@@ -1,62 +1,88 @@
 -- Row Level Security (RLS) Policies for Flags of the World
+-- This script is idempotent and can be run multiple times safely.
 
--- Enable RLS on the users table
+-- ==========================================
+-- 1. USERS TABLE
+-- ==========================================
+
+-- Enable RLS on the users table (safe to run multiple times)
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
--- Create policy: Users can only update their own profiles
+-- Drop existing policies to avoid "already exists" errors, then recreate
+DROP POLICY IF EXISTS "Users can update own profile" ON users;
 CREATE POLICY "Users can update own profile" ON users
 FOR UPDATE TO authenticated
 USING (auth.uid() = id)
 WITH CHECK (auth.uid() = id);
 
--- Create policy: Users can only read their own profiles
+DROP POLICY IF EXISTS "Users can insert own profile" ON users;
+CREATE POLICY "Users can insert own profile" ON users
+FOR INSERT TO authenticated
+WITH CHECK (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Users can read own profile" ON users;
 CREATE POLICY "Users can read own profile" ON users
 FOR SELECT TO authenticated
 USING (auth.uid() = id);
 
--- Create policy: Users can only delete their own profiles
+DROP POLICY IF EXISTS "Users can delete own profile" ON users;
 CREATE POLICY "Users can delete own profile" ON users
 FOR DELETE TO authenticated
 USING (auth.uid() = id);
 
+
+-- ==========================================
+-- 2. SCORES TABLE
+-- ==========================================
+
 -- Enable RLS on the scores table
 ALTER TABLE scores ENABLE ROW LEVEL SECURITY;
 
--- Create policy: Scores are publicly readable
+DROP POLICY IF EXISTS "Scores are viewable by everyone" ON scores;
 CREATE POLICY "Scores are viewable by everyone" ON scores
 FOR SELECT USING (true);
 
--- Create policy: Only authenticated users can insert scores
+DROP POLICY IF EXISTS "Authenticated users can insert scores" ON scores;
 CREATE POLICY "Authenticated users can insert scores" ON scores
 FOR INSERT TO authenticated
 WITH CHECK (auth.uid() = user_id);
 
--- Create policy: Users can only update their own scores
+DROP POLICY IF EXISTS "Users can update own scores" ON scores;
 CREATE POLICY "Users can update own scores" ON scores
 FOR UPDATE TO authenticated
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 
--- Create policy: Users can only delete their own scores
+DROP POLICY IF EXISTS "Users can delete own scores" ON scores;
 CREATE POLICY "Users can delete own scores" ON scores
 FOR DELETE TO authenticated
 USING (auth.uid() = user_id);
 
+
+-- ==========================================
+-- 3. PRESENCE TABLE
+-- ==========================================
+
 -- Enable RLS on the presence table
 ALTER TABLE presence ENABLE ROW LEVEL SECURITY;
 
--- Policy to allow anyone to view online users
+DROP POLICY IF EXISTS "Anyone can view presence" ON presence;
 CREATE POLICY "Anyone can view presence"
 ON presence FOR SELECT
 USING (true);
 
--- Policy to allow authenticated users to insert/update their own presence
+DROP POLICY IF EXISTS "Users can update their own presence" ON presence;
 CREATE POLICY "Users can update their own presence"
 ON presence FOR ALL
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 
--- Create indices for performance
+
+-- ==========================================
+-- 4. INDICES & SECURITY
+-- ==========================================
+
+-- Create indices for performance safely
 CREATE INDEX IF NOT EXISTS idx_presence_last_seen ON presence (last_seen);
 CREATE INDEX IF NOT EXISTS idx_presence_is_online ON presence (is_online);
 
@@ -65,7 +91,12 @@ CREATE INDEX IF NOT EXISTS idx_presence_is_online ON presence (is_online);
 REVOKE ALL ON auth.users FROM PUBLIC;
 REVOKE ALL ON auth.identities FROM PUBLIC;
 
--- Create a function to validate score reasonableness
+
+-- ==========================================
+-- 5. FUNCTIONS & TRIGGERS
+-- ==========================================
+
+-- Create a function to validate score reasonableness (CREATE OR REPLACE is safe)
 CREATE OR REPLACE FUNCTION validate_score_reasonableness(moves INT, time_val TEXT, difficulty TEXT)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -129,11 +160,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create trigger to validate scores before insertion
+-- Drop triggers before recreating them to be safe
+DROP TRIGGER IF EXISTS validate_score_before_insert ON scores;
 CREATE TRIGGER validate_score_before_insert
     BEFORE INSERT ON scores
     FOR EACH ROW
     EXECUTE FUNCTION validate_score_insert();
+
 
 -- Create a trigger function to validate scores before update
 CREATE OR REPLACE FUNCTION validate_score_update()
@@ -168,11 +201,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create trigger to validate scores before update
+-- Drop trigger safely
+DROP TRIGGER IF EXISTS validate_score_before_update ON scores;
 CREATE TRIGGER validate_score_before_update
     BEFORE UPDATE ON scores
     FOR EACH ROW
     EXECUTE FUNCTION validate_score_update();
+
 
 -- Create a function to rate limit score submissions
 CREATE OR REPLACE FUNCTION check_rate_limit()
@@ -202,7 +237,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Apply rate limiting to score insertion
+-- Drop trigger safely
+DROP TRIGGER IF EXISTS rate_limit_check_before_insert ON scores;
 CREATE TRIGGER rate_limit_check_before_insert
     BEFORE INSERT ON scores
     FOR EACH ROW

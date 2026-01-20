@@ -39,6 +39,9 @@ async function initializeAuthAndPresence() {
 		const { default: authService } = await import("./auth-service.js");
 		const { default: presenceService } = await import("./presence-service.js");
 
+		// Initialize session before checking state
+		await authService.initializeSession();
+
 		// Initialize presence service
 		await presenceService.initialize();
 
