@@ -58,21 +58,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await initializeScoreDisplay();
             });
 
-            // Initialize presence service to track online users
-            try {
-                const { default: presenceService } = await import('./presence-service.js');
-                await presenceService.initialize();
-
-                // Listen for online users count changes
-                document.addEventListener('onlineUsersCountChanged', (event) => {
-                    const onlineUsersCountElement = document.getElementById('online-users-count');
-                    if (onlineUsersCountElement) {
-                        onlineUsersCountElement.textContent = event.detail.count;
-                    }
-                });
-            } catch (presenceError) {
-                console.error('Error initializing presence service:', presenceError);
-            }
         } catch (error) {
             console.error('Error setting up auth listener:', error);
         }

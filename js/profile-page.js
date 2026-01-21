@@ -37,22 +37,9 @@ async function initializeProfilePage() {
 async function initializeAuthAndPresence() {
 	try {
 		const { default: authService } = await import("./auth-service.js");
-		const { default: presenceService } = await import("./presence-service.js");
 
 		// Initialize session before checking state
 		await authService.initializeSession();
-
-		// Initialize presence service
-		await presenceService.initialize();
-
-		// Listen for online users count changes
-		document.addEventListener("onlineUsersCountChanged", (event) => {
-			const onlineUsersCountElement =
-				document.getElementById("online-users-count");
-			if (onlineUsersCountElement) {
-				onlineUsersCountElement.textContent = event.detail.count;
-			}
-		});
 
 		// Update auth UI
 		const isAuthenticated = authService.getIsAuthenticated();
@@ -70,7 +57,7 @@ async function initializeAuthAndPresence() {
 			}
 		});
 	} catch (error) {
-		console.error("Error initializing auth and presence:", error);
+		console.error("Error initializing auth:", error);
 	}
 }
 

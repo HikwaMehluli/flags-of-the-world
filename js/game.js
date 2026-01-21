@@ -685,21 +685,5 @@ window.addEventListener('DOMContentLoaded', async () => {
     // Only initialize the game if the game board element exists
     if (gameBoard) {
         new FlagsofWorld();
-
-        // Initialize presence service to track online users
-        try {
-            const { default: presenceService } = await import('./presence-service.js');
-            await presenceService.initialize();
-
-            // Listen for online users count changes
-            document.addEventListener('onlineUsersCountChanged', (event) => {
-                const onlineUsersCountElement = document.getElementById('online-users-count');
-                if (onlineUsersCountElement) {
-                    onlineUsersCountElement.textContent = event.detail.count;
-                }
-            });
-        } catch (presenceError) {
-            console.error('Error initializing presence service:', presenceError);
-        }
     }
 });

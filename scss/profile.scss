@@ -51,7 +51,7 @@
                 bottom: 5px;
                 right: 5px;
                 background-color: var(--secondary-color);
-                color: #fff;
+                color: white;
                 width: 40px;
                 height: 40px;
                 border-radius: 50%;
@@ -62,11 +62,11 @@
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
                 transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                 z-index: 10;
-                border: 2px solid #fff;
+                border: 2px solid white;
 
                 &:hover {
                     transform: scale(1.1);
-                    background-color: darken(#e6ad00, 10%); // Assuming secondary color is yellow/gold based on flags context, but sticking to var
+                    background-color: var(--gray-color);
                     filter: brightness(1.1);
                 }
 
