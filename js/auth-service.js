@@ -96,7 +96,6 @@ class AuthService {
 				options: {
 					data: {
 						full_name: options.fullName || '',
-						username: options.username || '',
 						...options.additionalData
 					},
 					emailRedirectTo: window.location.origin

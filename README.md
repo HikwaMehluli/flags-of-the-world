@@ -187,6 +187,7 @@ The avatar upload flow works as follows:
 
 ## 🗺️ Regions Included
 The game includes flags from various continents: Africa, Europe, Asia, and the Americas.
+For the favicon credit goes to [Wikipedia](https://commons.wikimedia.org/wiki/File:GDJ-World-Flags-Globe.svg)
 
 ### Africa
 Based on the official [Regions of the African Union](https://au.int/en/member_states/countryprofiles2). The African Union has 55 Member States divided into five geographic regions.

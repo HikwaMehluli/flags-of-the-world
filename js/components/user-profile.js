@@ -56,7 +56,6 @@ class UserProfile {
 		if (authIndicator && authToggleBtn) {
 			if (this.isAuthenticated && this.user) {
 				const displayName = this.user.user_metadata?.full_name ||
-					this.user.user_metadata?.username ||
 					this.user.email?.split('@')[0] ||
 					'User';
 				authIndicator.textContent = displayName;
@@ -87,9 +86,6 @@ class UserProfile {
 						break;
 					case 'full_name':
 						value = this.user.user_metadata?.full_name || this.user.email?.split('@')[0] || '';
-						break;
-					case 'username':
-						value = this.user.user_metadata?.username || this.user.email?.split('@')[0] || '';
 						break;
 					default:
 						value = this.user[field] || this.user.user_metadata?.[field] || '';

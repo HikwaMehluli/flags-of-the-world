@@ -73,7 +73,6 @@ function updateAuthUI(isAuthenticated) {
 			const currentUser = authService.getCurrentUser();
 			const displayName =
 				currentUser?.user_metadata?.full_name ||
-				currentUser?.user_metadata?.username ||
 				currentUser?.email?.split("@")[0] ||
 				"User";
 			authIndicator.textContent = displayName;
@@ -105,8 +104,6 @@ async function loadUserProfile() {
 
 		// Update profile fields
 		document.getElementById("email").value = user.email || "";
-		document.getElementById("username").value =
-			user.user_metadata?.username || user.email?.split("@")[0] || "";
 		document.getElementById("full-name").value =
 			profile?.full_name || user.user_metadata?.full_name || "";
 

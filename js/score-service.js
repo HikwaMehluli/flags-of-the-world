@@ -98,7 +98,7 @@ class ScoreService {
           player_country,
           continent,
           created_at,
-          users (username, full_name, avatar_url)
+          users (full_name, avatar_url)
         `)
         .eq('continent', continent)
         .eq('difficulty', difficulty)
@@ -192,7 +192,7 @@ class ScoreService {
           player_country,
           continent,
           created_at,
-          users (username, full_name, avatar_url)
+          users (full_name, avatar_url)
         `)
         .order('moves', { ascending: true })
         .order('time', { ascending: true });

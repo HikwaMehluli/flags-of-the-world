@@ -157,13 +157,12 @@ class AuthModal {
 		if (!this.signupForm) return;
 
 		const fullName = document.getElementById('signup-fullname').value.trim();
-		const username = document.getElementById('signup-username').value.trim();
 		const email = document.getElementById('signup-email').value.trim();
 		const password = document.getElementById('signup-password').value;
 		const confirmPassword = document.getElementById('signup-confirm-password').value;
 
 		// Validation
-		if (!fullName || !username || !email || !password || !confirmPassword) {
+		if (!fullName || !email || !password || !confirmPassword) {
 			this.showMessage('Please fill in all fields', 'error');
 			return;
 		}
@@ -182,8 +181,7 @@ class AuthModal {
 			const { default: authService } = await import('../auth-service.js');
 
 			const result = await authService.signUp(email, password, {
-				fullName,
-				username
+				fullName
 			});
 
 			if (result) {
@@ -412,7 +410,6 @@ class AuthModal {
 		if (authIndicator && authToggleBtn) {
 			if (isAuthenticated && user) {
 				const displayName = user.user_metadata?.full_name ||
-					user.user_metadata?.username ||
 					user.email?.split('@')[0] ||
 					'User';
 				authIndicator.textContent = displayName;

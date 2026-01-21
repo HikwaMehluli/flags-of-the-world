@@ -24,15 +24,6 @@ BEGIN
     ALTER TABLE scores ENABLE ROW LEVEL SECURITY;
   END IF;
 
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_class c
-    JOIN pg_namespace n ON n.oid = c.relnamespace
-    WHERE c.relname = 'presence'
-    AND n.nspname = 'public'
-    AND c.relrowsecurity = true
-  ) THEN
-    ALTER TABLE presence ENABLE ROW LEVEL SECURITY;
-  END IF;
 END $$;
 
 -- 2. CREATE policies (with conditional creation to avoid conflicts)
@@ -95,46 +86,6 @@ BEGIN
   END IF;
 END $$;
 
--- Presence table policies
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'presence' AND policyname = 'Users can view presence') THEN
-    CREATE POLICY "Users can view presence" ON presence
-      FOR SELECT TO authenticated, anon
-      USING (true);  -- Allow viewing presence data
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'presence' AND policyname = 'Users can insert own presence') THEN
-    CREATE POLICY "Users can insert own presence" ON presence
-      FOR INSERT TO authenticated
-      WITH CHECK (
-        auth.uid() = user_id OR
-        (auth.uid() IS NOT NULL AND user_id IS NULL)
-      );
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'presence' AND policyname = 'Users can update own presence') THEN
-    CREATE POLICY "Users can update own presence" ON presence
-      FOR UPDATE TO authenticated
-      USING (
-        auth.uid() = user_id OR
-        (auth.uid() IS NOT NULL AND user_id IS NULL AND auth.uid() = (SELECT user_id FROM presence WHERE session_id = current_setting('request.headers', true)::json->>'x-session-id'))
-      )
-      WITH CHECK (
-        auth.uid() = user_id OR
-        (auth.uid() IS NOT NULL AND user_id IS NULL AND auth.uid() = (SELECT user_id FROM presence WHERE session_id = current_setting('request.headers', true)::json->>'x-session-id'))
-      );
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'presence' AND policyname = 'Users can delete own presence') THEN
-    CREATE POLICY "Users can delete own presence" ON presence
-      FOR DELETE TO authenticated
-      USING (
-        auth.uid() = user_id OR
-        (auth.uid() IS NOT NULL AND user_id IS NULL AND auth.uid() = (SELECT user_id FROM presence WHERE session_id = current_setting('request.headers', true)::json->>'x-session-id'))
-      );
-  END IF;
-END $$;
 
 -- 3. Create a function to validate score reasonableness to prevent cheating
 DO $$
@@ -361,7 +312,5 @@ GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
 GRANT ALL ON TABLE users TO service_role;
 GRANT SELECT, INSERT ON TABLE users TO authenticated;
 GRANT ALL ON TABLE scores TO service_role, authenticated;
-GRANT ALL ON TABLE presence TO service_role, authenticated;
-
 -- 11. Refresh schema cache
 NOTIFY pgrst, 'reload config';

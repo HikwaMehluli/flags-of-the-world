@@ -114,7 +114,6 @@ async function updateAuthUI(isAuthenticated) {
         if (isAuthenticated) {
             const currentUser = authService.getCurrentUser();
             const displayName = currentUser?.user_metadata?.full_name ||
-                currentUser?.user_metadata?.username ||
                 currentUser?.email?.split('@')[0] ||
                 'User';
             authIndicator.textContent = displayName;
@@ -445,7 +444,7 @@ function createGlobalScoreListItem(score) {
     return `
         <li>
             <span class="player-name">
-                ${score.name || score.users?.full_name || score.users?.username || 'Anonymous'}, from ${score.player_country || ''} ${playerCountryFlag ? `<span class="player-country-flag">${playerCountryFlag}</span>` : ''}
+                ${score.name || score.users?.full_name || 'Anonymous'}, from ${score.player_country || ''} ${playerCountryFlag ? `<span class="player-country-flag">${playerCountryFlag}</span>` : ''}
             </span>
             <span class="game-level">
                 Level: ${score.difficulty} - ${regionText}

@@ -5,7 +5,6 @@
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE, -- Links to Supabase auth user
   email TEXT UNIQUE NOT NULL, -- User's email from auth
-  username TEXT UNIQUE, -- User's chosen username
   full_name TEXT, -- User's full name
   avatar_url TEXT, -- URL to user's avatar/image
   player_country TEXT, -- User's selected country
@@ -15,7 +14,6 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- 2. Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
-CREATE INDEX IF NOT EXISTS idx_users_username ON users (username);
 
 -- 3. Create trigger function to automatically create user profiles when a new auth user is created
 CREATE OR REPLACE FUNCTION public.handle_new_user()
@@ -25,11 +23,10 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  INSERT INTO public.users (id, email, username, full_name, avatar_url)
+  INSERT INTO public.users (id, email, full_name, avatar_url)
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1)),
     COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
     NEW.raw_user_meta_data->>'avatar_url'
   )
@@ -47,18 +44,16 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  INSERT INTO public.users (id, email, username, full_name, avatar_url)
+  INSERT INTO public.users (id, email, full_name, avatar_url)
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1)),
     COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
     NEW.raw_user_meta_data->>'avatar_url'
   )
   ON CONFLICT (id)
   DO UPDATE SET
     email = EXCLUDED.email,
-    username = EXCLUDED.username,
     full_name = EXCLUDED.full_name,
     avatar_url = EXCLUDED.avatar_url,
     updated_at = NOW();
