@@ -310,6 +310,9 @@ class AuthModal {
 
 				// Update UI
 				this.updateAuthUI(null, false);
+
+				// Redirect to home page after successful logout
+				window.location.href = 'index.html';
 			}
 		} catch (error) {
 			console.error('Logout error:', error);

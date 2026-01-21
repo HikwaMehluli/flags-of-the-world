@@ -521,9 +521,13 @@ function hideLogoutModal() {
 async function performLogout() {
 	try {
 		const { default: authService } = await import("./auth-service.js");
-		await authService.signOut();
+		const result = await authService.signOut();
 		hideLogoutModal();
-		// User will be redirected by the auth state change listener
+
+		if (result && result.success) {
+			// Redirect to home page after successful logout
+			window.location.href = 'index.html';
+		}
 	} catch (error) {
 		console.error("Error logging out:", error);
 		alert("Error logging out: " + error.message);
@@ -598,6 +602,9 @@ async function populateCountryDropdown() {
 	const countrySelect = document.getElementById("user-country");
 	if (!countrySelect) return;
 
+	// Store the current value before clearing options
+	const currentValue = countrySelect.value;
+
 	// Clear existing options except the first one
 	countrySelect.innerHTML = '<option value="">Select your country</option>';
 
@@ -640,6 +647,11 @@ async function populateCountryDropdown() {
 			option.textContent = country;
 			countrySelect.appendChild(option);
 		});
+
+		// Restore the previous value if it exists in the new options
+		if (currentValue) {
+			countrySelect.value = currentValue;
+		}
 	} catch (error) {
 		console.error("Error populating country dropdown:", error);
 	}
