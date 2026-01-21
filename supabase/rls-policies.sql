@@ -37,6 +37,12 @@ BEGIN
       USING (auth.uid() = id);
   END IF;
 
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'users' AND policyname = 'Users can insert own profile') THEN
+    CREATE POLICY "Users can insert own profile" ON users
+      FOR INSERT TO authenticated
+      WITH CHECK (auth.uid() = id);
+  END IF;
+
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'users' AND policyname = 'Users can update own profile') THEN
     CREATE POLICY "Users can update own profile" ON users
       FOR UPDATE TO authenticated
@@ -310,7 +316,7 @@ END $$;
 -- 10. Grant schema usage and table permissions
 GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
 GRANT ALL ON TABLE users TO service_role;
-GRANT SELECT, INSERT ON TABLE users TO authenticated;
+GRANT ALL ON TABLE users TO authenticated;
 GRANT ALL ON TABLE scores TO service_role, authenticated;
 -- 11. Refresh schema cache
 NOTIFY pgrst, 'reload config';
