@@ -2,93 +2,93 @@ import authService, { supabase } from './auth-service.js';
 
 // Check if Supabase is properly initialized
 const isSupabaseInitialized = () => {
-  return supabase !== null;
+	return supabase !== null;
 };
 
 /**
  * Score service module for handling global scoring system
  */
 class ScoreService {
-  constructor() {
-    // Cache to minimize API calls
-    this.globalScoresCache = {};
-    this.userScoresCache = null;
-    this.cacheExpiryTime = 5 * 60 * 1000; // 5 minutes in milliseconds
-  }
+	constructor() {
+		// Cache to minimize API calls
+		this.globalScoresCache = {};
+		this.userScoresCache = null;
+		this.cacheExpiryTime = 5 * 60 * 1000; // 5 minutes in milliseconds
+	}
 
-  /**
-   * Save a score to Supabase
-   */
-  async saveScore(scoreData) {
-    if (!isSupabaseInitialized()) {
-      console.warn('Supabase is not initialized. Score will not be saved to global leaderboard.');
-      return null;
-    }
+	/**
+	 * Save a score to Supabase
+	 */
+	async saveScore(scoreData) {
+		if (!isSupabaseInitialized()) {
+			console.warn('Supabase is not initialized. Score will not be saved to global leaderboard.');
+			return null;
+		}
 
-    // Add user_id if authenticated
-    const currentUser = authService.getCurrentUser();
-    const userId = currentUser?.id;
-    if (!userId) {
-      throw new Error('User must be authenticated to save score to global leaderboard');
-    }
+		// Add user_id if authenticated
+		const currentUser = authService.getCurrentUser();
+		const userId = currentUser?.id;
+		if (!userId) {
+			throw new Error('User must be authenticated to save score to global leaderboard');
+		}
 
-    const scoreRecord = {
-      user_id: userId,
-      name: scoreData.name || currentUser?.user_metadata?.full_name || currentUser?.email?.split('@')[0],
-      moves: scoreData.moves,
-      time: scoreData.time,
-      difficulty: scoreData.difficulty,
-      region: scoreData.region,
-      player_country: scoreData.player_country || currentUser?.user_metadata?.country || '',
-      continent: scoreData.continent,
-      created_at: new Date().toISOString()
-    };
+		const scoreRecord = {
+			user_id: userId,
+			name: scoreData.name || currentUser?.user_metadata?.full_name || currentUser?.email?.split('@')[0],
+			moves: scoreData.moves,
+			time: scoreData.time,
+			difficulty: scoreData.difficulty,
+			region: scoreData.region,
+			player_country: scoreData.player_country || currentUser?.user_metadata?.country || '',
+			continent: scoreData.continent,
+			created_at: new Date().toISOString()
+		};
 
-    try {
-      const { data, error } = await supabase
-        .from('scores')
-        .insert([scoreRecord])
-        .select()
-        .single();
+		try {
+			const { data, error } = await supabase
+				.from('scores')
+				.insert([scoreRecord])
+				.select()
+				.single();
 
-      if (error) {
-        console.error('Error saving score:', error.message);
-        throw new Error(error.message);
-      }
+			if (error) {
+				console.error('Error saving score:', error.message);
+				throw new Error(error.message);
+			}
 
-      // Invalidate the cache for this continent/difficulty
-      this.invalidateCache(scoreData.continent, scoreData.difficulty);
+			// Invalidate the cache for this continent/difficulty
+			this.invalidateCache(scoreData.continent, scoreData.difficulty);
 
-      return data;
-    } catch (error) {
-      console.error('Error in saveScore:', error);
-      throw error;
-    }
-  }
+			return data;
+		} catch (error) {
+			console.error('Error in saveScore:', error);
+			throw error;
+		}
+	}
 
-  /**
-   * Fetch global scores for a specific continent and difficulty
-   */
-  async fetchGlobalScores(continent, difficulty, limit = 50) {
-    if (!isSupabaseInitialized()) {
-      console.warn('Supabase is not initialized. Returning empty scores.');
-      return [];
-    }
+	/**
+	 * Fetch global scores for a specific continent and difficulty
+	 */
+	async fetchGlobalScores(continent, difficulty, limit = 50) {
+		if (!isSupabaseInitialized()) {
+			console.warn('Supabase is not initialized. Returning empty scores.');
+			return [];
+		}
 
-    // Check if we have cached data that's still valid
-    const cacheKey = `${continent}-${difficulty}`;
-    const cachedData = this.globalScoresCache[cacheKey];
+		// Check if we have cached data that's still valid
+		const cacheKey = `${continent}-${difficulty}`;
+		const cachedData = this.globalScoresCache[cacheKey];
 
-    if (cachedData &&
-      cachedData.timestamp &&
-      Date.now() - cachedData.timestamp < this.cacheExpiryTime) {
-      return cachedData.data;
-    }
+		if (cachedData &&
+			cachedData.timestamp &&
+			Date.now() - cachedData.timestamp < this.cacheExpiryTime) {
+			return cachedData.data;
+		}
 
-    try {
-      const { data, error } = await supabase
-        .from('scores')
-        .select(`
+		try {
+			const { data, error } = await supabase
+				.from('scores')
+				.select(`
           id,
           name,
           moves,
@@ -100,89 +100,89 @@ class ScoreService {
           created_at,
           users (full_name, avatar_url)
         `)
-        .eq('continent', continent)
-        .eq('difficulty', difficulty)
-        .order('moves', { ascending: true })
-        .order('time', { ascending: true })
-        .limit(limit);
+				.eq('continent', continent)
+				.eq('difficulty', difficulty)
+				.order('moves', { ascending: true })
+				.order('time', { ascending: true })
+				.limit(limit);
 
-      if (error) {
-        console.error('Error fetching global scores:', error.message);
-        throw new Error(error.message);
-      }
+			if (error) {
+				console.error('Error fetching global scores:', error.message);
+				throw new Error(error.message);
+			}
 
-      // Cache the results
-      this.globalScoresCache[cacheKey] = {
-        data: data,
-        timestamp: Date.now()
-      };
+			// Cache the results
+			this.globalScoresCache[cacheKey] = {
+				data: data,
+				timestamp: Date.now()
+			};
 
-      return data;
-    } catch (error) {
-      console.error('Error in fetchGlobalScores:', error);
-      throw error;
-    }
-  }
+			return data;
+		} catch (error) {
+			console.error('Error in fetchGlobalScores:', error);
+			throw error;
+		}
+	}
 
-  /**
-   * Fetch user's personal scores
-   */
-  async fetchUserScores(userId = null) {
-    if (!isSupabaseInitialized()) {
-      console.warn('Supabase is not initialized. Returning empty scores.');
-      return [];
-    }
+	/**
+	 * Fetch user's personal scores
+	 */
+	async fetchUserScores(userId = null) {
+		if (!isSupabaseInitialized()) {
+			console.warn('Supabase is not initialized. Returning empty scores.');
+			return [];
+		}
 
-    const userIdToUse = userId || authService.getCurrentUser()?.id;
-    if (!userIdToUse) {
-      throw new Error('No user ID provided and no authenticated user');
-    }
+		const userIdToUse = userId || authService.getCurrentUser()?.id;
+		if (!userIdToUse) {
+			throw new Error('No user ID provided and no authenticated user');
+		}
 
-    // Check if we have cached data that's still valid
-    if (this.userScoresCache &&
-      this.userScoresCache.timestamp &&
-      Date.now() - this.userScoresCache.timestamp < this.cacheExpiryTime) {
-      return this.userScoresCache.data;
-    }
+		// Check if we have cached data that's still valid
+		if (this.userScoresCache &&
+			this.userScoresCache.timestamp &&
+			Date.now() - this.userScoresCache.timestamp < this.cacheExpiryTime) {
+			return this.userScoresCache.data;
+		}
 
-    try {
-      const { data, error } = await supabase
-        .from('scores')
-        .select('*')
-        .eq('user_id', userIdToUse)
-        .order('created_at', { ascending: false });
+		try {
+			const { data, error } = await supabase
+				.from('scores')
+				.select('*')
+				.eq('user_id', userIdToUse)
+				.order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching user scores:', error.message);
-        throw new Error(error.message);
-      }
+			if (error) {
+				console.error('Error fetching user scores:', error.message);
+				throw new Error(error.message);
+			}
 
-      // Cache the results
-      this.userScoresCache = {
-        data: data,
-        timestamp: Date.now()
-      };
+			// Cache the results
+			this.userScoresCache = {
+				data: data,
+				timestamp: Date.now()
+			};
 
-      return data;
-    } catch (error) {
-      console.error('Error in fetchUserScores:', error);
-      throw error;
-    }
-  }
+			return data;
+		} catch (error) {
+			console.error('Error in fetchUserScores:', error);
+			throw error;
+		}
+	}
 
-  /**
-   * Fetch top scores for all continents and difficulties
-   */
-  async fetchAllGlobalScores() {
-    if (!isSupabaseInitialized()) {
-      console.warn('Supabase is not initialized. Returning empty scores.');
-      return [];
-    }
+	/**
+	 * Fetch top scores for all continents and difficulties
+	 */
+	async fetchAllGlobalScores() {
+		if (!isSupabaseInitialized()) {
+			console.warn('Supabase is not initialized. Returning empty scores.');
+			return [];
+		}
 
-    try {
-      const { data, error } = await supabase
-        .from('scores')
-        .select(`
+		try {
+			const { data, error } = await supabase
+				.from('scores')
+				.select(`
           id,
           name,
           moves,
@@ -194,247 +194,247 @@ class ScoreService {
           created_at,
           users (full_name, avatar_url)
         `)
-        .order('moves', { ascending: true })
-        .order('time', { ascending: true });
+				.order('moves', { ascending: true })
+				.order('time', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching all global scores:', error.message);
-        throw new Error(error.message);
-      }
+			if (error) {
+				console.error('Error fetching all global scores:', error.message);
+				throw new Error(error.message);
+			}
 
-      return data;
-    } catch (error) {
-      console.error('Error in fetchAllGlobalScores:', error);
-      throw error;
-    }
-  }
+			return data;
+		} catch (error) {
+			console.error('Error in fetchAllGlobalScores:', error);
+			throw error;
+		}
+	}
 
-  /**
-   * Invalidate cache for specific continent/difficulty
-   */
-  invalidateCache(continent, difficulty) {
-    if (continent && difficulty) {
-      const cacheKey = `${continent}-${difficulty}`;
-      delete this.globalScoresCache[cacheKey];
-    } else {
-      // Clear all global scores cache
-      this.globalScoresCache = {};
-    }
+	/**
+	 * Invalidate cache for specific continent/difficulty
+	 */
+	invalidateCache(continent, difficulty) {
+		if (continent && difficulty) {
+			const cacheKey = `${continent}-${difficulty}`;
+			delete this.globalScoresCache[cacheKey];
+		} else {
+			// Clear all global scores cache
+			this.globalScoresCache = {};
+		}
 
-    // Clear user scores cache
-    this.userScoresCache = null;
-  }
+		// Clear user scores cache
+		this.userScoresCache = null;
+	}
 
-  /**
-   * Clear all caches
-   */
-  clearCache() {
-    this.globalScoresCache = {};
-    this.userScoresCache = null;
-  }
+	/**
+	 * Clear all caches
+	 */
+	clearCache() {
+		this.globalScoresCache = {};
+		this.userScoresCache = null;
+	}
 
-  /**
-   * Get user's best score for a specific continent and difficulty
-   */
-  async getUserBestScore(continent, difficulty) {
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
-    }
+	/**
+	 * Get user's best score for a specific continent and difficulty
+	 */
+	async getUserBestScore(continent, difficulty) {
+		if (!supabase) {
+			throw new Error('Supabase client not initialized');
+		}
 
-    const currentUser = authService.getCurrentUser();
-    const userId = currentUser?.id;
-    if (!userId) {
-      throw new Error('User must be authenticated');
-    }
+		const currentUser = authService.getCurrentUser();
+		const userId = currentUser?.id;
+		if (!userId) {
+			throw new Error('User must be authenticated');
+		}
 
-    const { data, error } = await supabase
-      .from('scores')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('continent', continent)
-      .eq('difficulty', difficulty)
-      .order('moves', { ascending: true })
-      .order('time', { ascending: true })
-      .limit(1)
-      .single();
+		const { data, error } = await supabase
+			.from('scores')
+			.select('*')
+			.eq('user_id', userId)
+			.eq('continent', continent)
+			.eq('difficulty', difficulty)
+			.order('moves', { ascending: true })
+			.order('time', { ascending: true })
+			.limit(1)
+			.single();
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
-      console.error('Error fetching user best score:', error.message);
-      throw new Error(error.message);
-    }
+		if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
+			console.error('Error fetching user best score:', error.message);
+			throw new Error(error.message);
+		}
 
-    return data || null;
-  }
+		return data || null;
+	}
 
-  /**
-   * Get user's ranking for a specific continent and difficulty
-   */
-  async getUserRanking(continent, difficulty) {
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
-    }
+	/**
+	 * Get user's ranking for a specific continent and difficulty
+	 */
+	async getUserRanking(continent, difficulty) {
+		if (!supabase) {
+			throw new Error('Supabase client not initialized');
+		}
 
-    const currentUser = authService.getCurrentUser();
-    const userId = currentUser?.id;
-    if (!userId) {
-      throw new Error('User must be authenticated');
-    }
+		const currentUser = authService.getCurrentUser();
+		const userId = currentUser?.id;
+		if (!userId) {
+			throw new Error('User must be authenticated');
+		}
 
-    // First get the user's best score
-    const userBestScore = await this.getUserBestScore(continent, difficulty);
-    if (!userBestScore) {
-      return { rank: -1, totalUsers: 0 }; // -1 means no score
-    }
+		// First get the user's best score
+		const userBestScore = await this.getUserBestScore(continent, difficulty);
+		if (!userBestScore) {
+			return { rank: -1, totalUsers: 0 }; // -1 means no score
+		}
 
-    // Count how many scores are better than the user's score
-    const { count: betterScoresCount, error: countError } = await supabase
-      .from('scores')
-      .select('*', { count: 'exact', head: true })
-      .eq('continent', continent)
-      .eq('difficulty', difficulty)
-      .or(`moves.lt.${userBestScore.moves},and(moves.eq.${userBestScore.moves},time.lt.${userBestScore.time})`);
+		// Count how many scores are better than the user's score
+		const { count: betterScoresCount, error: countError } = await supabase
+			.from('scores')
+			.select('*', { count: 'exact', head: true })
+			.eq('continent', continent)
+			.eq('difficulty', difficulty)
+			.or(`moves.lt.${userBestScore.moves},and(moves.eq.${userBestScore.moves},time.lt.${userBestScore.time})`);
 
-    if (countError) {
-      console.error('Error counting better scores:', countError.message);
-      throw new Error(countError.message);
-    }
+		if (countError) {
+			console.error('Error counting better scores:', countError.message);
+			throw new Error(countError.message);
+		}
 
-    // Get total number of players for this continent/difficulty
-    const { count: totalPlayers, error: totalError } = await supabase
-      .from('scores')
-      .select('*', { count: 'exact', head: true })
-      .eq('continent', continent)
-      .eq('difficulty', difficulty);
+		// Get total number of players for this continent/difficulty
+		const { count: totalPlayers, error: totalError } = await supabase
+			.from('scores')
+			.select('*', { count: 'exact', head: true })
+			.eq('continent', continent)
+			.eq('difficulty', difficulty);
 
-    if (totalError) {
-      console.error('Error counting total players:', totalError.message);
-      throw new Error(totalError.message);
-    }
+		if (totalError) {
+			console.error('Error counting total players:', totalError.message);
+			throw new Error(totalError.message);
+		}
 
-    return {
-      rank: betterScoresCount + 1,
-      totalUsers: totalPlayers
-    };
-  }
+		return {
+			rank: betterScoresCount + 1,
+			totalUsers: totalPlayers
+		};
+	}
 
-  /**
-   * Check if a score is a personal best for the user
-   */
-  async isPersonalBest(userId, newScore) {
-    if (!userId) {
-      return false;
-    }
+	/**
+	 * Check if a score is a personal best for the user
+	 */
+	async isPersonalBest(userId, newScore) {
+		if (!userId) {
+			return false;
+		}
 
-    const currentBest = await this.getUserBestScore(newScore.continent, newScore.difficulty);
+		const currentBest = await this.getUserBestScore(newScore.continent, newScore.difficulty);
 
-    if (!currentBest) {
-      return true; // No previous score, so this is a best
-    }
+		if (!currentBest) {
+			return true; // No previous score, so this is a best
+		}
 
-    // Compare moves first, then time
-    if (newScore.moves < currentBest.moves) {
-      return true;
-    } else if (newScore.moves === currentBest.moves &&
-      this.timeToSeconds(newScore.time) < this.timeToSeconds(currentBest.time)) {
-      return true;
-    }
+		// Compare moves first, then time
+		if (newScore.moves < currentBest.moves) {
+			return true;
+		} else if (newScore.moves === currentBest.moves &&
+			this.timeToSeconds(newScore.time) < this.timeToSeconds(currentBest.time)) {
+			return true;
+		}
 
-    return false;
-  }
+		return false;
+	}
 
-  /**
-   * Convert time string (MM:SS) to seconds for comparison
-   */
-  timeToSeconds(timeStr) {
-    const [minutes, seconds] = timeStr.split(':').map(Number);
-    return minutes * 60 + seconds;
-  }
+	/**
+	 * Convert time string (MM:SS) to seconds for comparison
+	 */
+	timeToSeconds(timeStr) {
+		const [minutes, seconds] = timeStr.split(':').map(Number);
+		return minutes * 60 + seconds;
+	}
 
-  /**
-   * Sync local scores to Supabase
-   */
-  async syncLocalScores() {
-    if (!isSupabaseInitialized()) {
-      return { success: false, message: 'Supabase not initialized' };
-    }
+	/**
+	 * Sync local scores to Supabase
+	 */
+	async syncLocalScores() {
+		if (!isSupabaseInitialized()) {
+			return { success: false, message: 'Supabase not initialized' };
+		}
 
-    const currentUser = authService.getCurrentUser();
-    if (!currentUser || !currentUser.id) {
-      return { success: false, message: 'User not authenticated' };
-    }
+		const currentUser = authService.getCurrentUser();
+		if (!currentUser || !currentUser.id) {
+			return { success: false, message: 'User not authenticated' };
+		}
 
-    const continents = ['africa', 'europe', 'asia', 'america'];
-    let syncedCount = 0;
-    let errors = [];
+		const continents = ['africa', 'europe', 'asia', 'america'];
+		let syncedCount = 0;
+		let errors = [];
 
-    for (const continent of continents) {
-      const continentScoresKey = `highScores_${continent}`;
-      let continentScores = [];
+		for (const continent of continents) {
+			const continentScoresKey = `highScores_${continent}`;
+			let continentScores = [];
 
-      try {
-        const storedScores = localStorage.getItem(continentScoresKey);
-        if (storedScores) {
-          continentScores = JSON.parse(storedScores);
-        }
-      } catch (e) {
-        console.error(`Error parsing scores for ${continent}:`, e);
-        continue;
-      }
+			try {
+				const storedScores = localStorage.getItem(continentScoresKey);
+				if (storedScores) {
+					continentScores = JSON.parse(storedScores);
+				}
+			} catch (e) {
+				console.error(`Error parsing scores for ${continent}:`, e);
+				continue;
+			}
 
-      if (!Array.isArray(continentScores) || continentScores.length === 0) {
-        continue;
-      }
+			if (!Array.isArray(continentScores) || continentScores.length === 0) {
+				continue;
+			}
 
-      let scoresUpdated = false;
+			let scoresUpdated = false;
 
-      for (const score of continentScores) {
-        // If score is already synced, skip it
-        if (score.synced) {
-          continue;
-        }
+			for (const score of continentScores) {
+				// If score is already synced, skip it
+				if (score.synced) {
+					continue;
+				}
 
-        try {
-          // Prepare score data for Supabase
-          const scoreData = {
-            name: score.name,
-            moves: score.moves,
-            time: score.time,
-            difficulty: score.difficulty,
-            region: score.region,
-            player_country: score.playerCountry,
-            continent: score.continent || continent
-          };
+				try {
+					// Prepare score data for Supabase
+					const scoreData = {
+						name: score.name,
+						moves: score.moves,
+						time: score.time,
+						difficulty: score.difficulty,
+						region: score.region,
+						player_country: score.playerCountry,
+						continent: score.continent || continent
+					};
 
-          // Save to Supabase
-          await this.saveScore(scoreData);
+					// Save to Supabase
+					await this.saveScore(scoreData);
 
-          // Mark as synced locally
-          score.synced = true;
-          syncedCount++;
-          scoresUpdated = true;
-        } catch (error) {
-          console.error(`Error syncing score for ${continent}:`, error);
-          errors.push(error.message);
-        }
-      }
+					// Mark as synced locally
+					score.synced = true;
+					syncedCount++;
+					scoresUpdated = true;
+				} catch (error) {
+					console.error(`Error syncing score for ${continent}:`, error);
+					errors.push(error.message);
+				}
+			}
 
-      // Update local storage if any scores were synced
-      if (scoresUpdated) {
-        localStorage.setItem(continentScoresKey, JSON.stringify(continentScores));
-      }
-    }
+			// Update local storage if any scores were synced
+			if (scoresUpdated) {
+				localStorage.setItem(continentScoresKey, JSON.stringify(continentScores));
+			}
+		}
 
-    // Invalidate cache if we synced any scores
-    if (syncedCount > 0) {
-      this.clearCache();
-    }
+		// Invalidate cache if we synced any scores
+		if (syncedCount > 0) {
+			this.clearCache();
+		}
 
-    return {
-      success: errors.length === 0,
-      syncedCount,
-      errors
-    };
-  }
+		return {
+			success: errors.length === 0,
+			syncedCount,
+			errors
+		};
+	}
 }
 
 // Export singleton instance

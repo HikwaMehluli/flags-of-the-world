@@ -71,7 +71,6 @@ To set up your Supabase database for the Flags of the World application, follow 
 
 1. **`users-table.sql`** - Creates the users table and auth triggers
 2. **`scores-table.sql`** - Creates the scores table
-3. **`presence-table.sql`** - Creates the presence table
 4. **`rls-policies.sql`** - Sets up Row Level Security policies and permissions
 
 ## 🔐 Social Login Setup Instructions
