@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Local Stats | Flags of the World</title>
+
+    <meta name="description"
+        content="View your local game statistics in Flags of the World.">
+    <meta name="author" content="HikwaMehluli">
+    <meta name="keywords"
+        content="Game statistics, Flags of the World, local scores">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./img/favicon.png">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Local Stats | Flags of the World">
+    <meta property="og:description"
+        content="View your local game statistics in Flags of the World.">
+    <meta property="og:image" content="https://hikwamehluli.github.io/flags-of-africa/img/seo-image.jpg">
+    <meta property="og:url" content="https://hikwamehluli.github.io/flags-of-africa/profile.html">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Local Stats | Flags of the World">
+    <meta name="twitter:description"
+        content="View your local game statistics in Flags of the World.">
+    <meta name="twitter:image" content="https://hikwamehluli.github.io/flags-of-africa/img/seo-image.jpg">
+    <meta name="twitter:site" content="@HikwaMehluli">
+    <meta name="twitter:creator" content="@HikwaMehluli">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./dist/app.css">
+</head>
+
+<body>
+    <header>
+        <div class="menu-icon" id="menu-icon"><span class="menu-text">MENU</span></div>
+        <div class="theme-switcher" title="Toggle Theme">
+            <button id="theme-toggle" aria-label="Toggle theme">
+                <span class="icon"></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li>
+                <a href="index.html">Play Game</a>
+            </li>
+            <li>
+                <a href="game-rules.html">Game Rules</a>
+            </li>
+            <li>
+                <a href="scores.html">Scores</a>
+            </li>
+            <li>
+                <a class="active" href="profile.html">Stats</a>
+            </li>
+            <li>
+                <a href="fun-facts.html">Fun Facts</a>
+            </li>
+            <li>
+                <a href="privacy-policy.html">Privacy Policy</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <main class="game-container">
+        <section class="game-header">
+            <h1 class="game-title">Local Statistics</h1>
+            <p class="game-description">Your game stats, stored right on this device</p>
+        </section>
+
+        <section class="profile-content">
+            <div class="stats-section">
+                <h2>Career Summary</h2>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Games Played</h3>
+                        <p id="total-games">0</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>Best Moves</h3>
+                        <p id="best-moves">-</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>Best Time</h3>
+                        <p id="best-time">-</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>Total Countries Visited</h3>
+                        <p id="total-countries">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <h2>Per Continent</h2>
+                <div id="continent-stats" class="stats-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+        </section>
+
+        <footer>
+            <p>
+                <a href="privacy-policy.html">Privacy Policy</a> |
+                Created by <a href="https://thatafro.netlify.app" target="_blank"
+                    rel="noopener noreferrer">@thatafro</a>
+            </p>
+            <p>
+                © <span id="year">1986</span> Flags of the World. All rights reserved.
+                <script>
+                    const year = new Date().getFullYear();
+                    document.getElementById("year").innerHTML = year;
+                </script>
+            </p>
+        </footer>
+    </main>
+
+    <script src="./dist/app.js" defer></script>
+</body>
+
+</html>

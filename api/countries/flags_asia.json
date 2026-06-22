@@ -1,0 +1,63 @@
+{
+    "Central Asia": [
+        { "country": "Kazakhstan", "code": "kz", "flag": "<span class=\"fi fi-kz\"></span>" },
+        { "country": "Kyrgyzstan", "code": "kg", "flag": "<span class=\"fi fi-kg\"></span>" },
+        { "country": "Tajikistan", "code": "tj", "flag": "<span class=\"fi fi-tj\"></span>" },
+        { "country": "Turkmenistan", "code": "tm", "flag": "<span class=\"fi fi-tm\"></span>" },
+        { "country": "Uzbekistan", "code": "uz", "flag": "<span class=\"fi fi-uz\"></span>" }
+    ],
+    "Eastern Asia": [
+        { "country": "China", "code": "cn", "flag": "<span class=\"fi fi-cn\"></span>" },
+        { "country": "Hong Kong", "code": "hk", "flag": "<span class=\"fi fi-hk\"></span>" },
+        { "country": "Macao", "code": "mo", "flag": "<span class=\"fi fi-mo\"></span>" },
+        { "country": "Japan", "code": "jp", "flag": "<span class=\"fi fi-jp\"></span>" },
+        { "country": "Mongolia", "code": "mn", "flag": "<span class=\"fi fi-mn\"></span>" },
+        { "country": "North Korea", "code": "kp", "flag": "<span class=\"fi fi-kp\"></span>" },
+        { "country": "South Korea", "code": "kr", "flag": "<span class=\"fi fi-kr\"></span>" },
+        { "country": "Taiwan", "code": "tw", "flag": "<span class=\"fi fi-tw\"></span>" }
+    ],
+    "South-Eastern Asia": [
+        { "country": "Brunei", "code": "bn", "flag": "<span class=\"fi fi-bn\"></span>" },
+        { "country": "Cambodia", "code": "kh", "flag": "<span class=\"fi fi-kh\"></span>" },
+        { "country": "Indonesia", "code": "id", "flag": "<span class=\"fi fi-id\"></span>" },
+        { "country": "Laos", "code": "la", "flag": "<span class=\"fi fi-la\"></span>" },
+        { "country": "Malaysia", "code": "my", "flag": "<span class=\"fi fi-my\"></span>" },
+        { "country": "Myanmar", "code": "mm", "flag": "<span class=\"fi fi-mm\"></span>" },
+        { "country": "Philippines", "code": "ph", "flag": "<span class=\"fi fi-ph\"></span>" },
+        { "country": "Singapore", "code": "sg", "flag": "<span class=\"fi fi-sg\"></span>" },
+        { "country": "Thailand", "code": "th", "flag": "<span class=\"fi fi-th\"></span>" },
+        { "country": "Timor-Leste", "code": "tl", "flag": "<span class=\"fi fi-tl\"></span>" },
+        { "country": "Vietnam", "code": "vn", "flag": "<span class=\"fi fi-vn\"></span>" }
+    ],
+    "Southern Asia": [
+        { "country": "Afghanistan", "code": "af", "flag": "<span class=\"fi fi-af\"></span>" },
+        { "country": "Bangladesh", "code": "bd", "flag": "<span class=\"fi fi-bd\"></span>" },
+        { "country": "Bhutan", "code": "bt", "flag": "<span class=\"fi fi-bt\"></span>" },
+        { "country": "India", "code": "in", "flag": "<span class=\"fi fi-in\"></span>" },
+        { "country": "Iran", "code": "ir", "flag": "<span class=\"fi fi-ir\"></span>" },
+        { "country": "Maldives", "code": "mv", "flag": "<span class=\"fi fi-mv\"></span>" },
+        { "country": "Nepal", "code": "np", "flag": "<span class=\"fi fi-np\"></span>" },
+        { "country": "Pakistan", "code": "pk", "flag": "<span class=\"fi fi-pk\"></span>" },
+        { "country": "Sri Lanka", "code": "lk", "flag": "<span class=\"fi fi-lk\"></span>" }
+    ],
+    "Western Asia": [
+        { "country": "Armenia", "code": "am", "flag": "<span class=\"fi fi-am\"></span>" },
+        { "country": "Azerbaijan", "code": "az", "flag": "<span class=\"fi fi-az\"></span>" },
+        { "country": "Bahrain", "code": "bh", "flag": "<span class=\"fi fi-bh\"></span>" },
+        { "country": "Cyprus", "code": "cy", "flag": "<span class=\"fi fi-cy\"></span>" },
+        { "country": "Georgia", "code": "ge", "flag": "<span class=\"fi fi-ge\"></span>" },
+        { "country": "Iraq", "code": "iq", "flag": "<span class=\"fi fi-iq\"></span>" },
+        { "country": "Israel", "code": "il", "flag": "<span class=\"fi fi-il\"></span>" },
+        { "country": "Jordan", "code": "jo", "flag": "<span class=\"fi fi-jo\"></span>" },
+        { "country": "Kuwait", "code": "kw", "flag": "<span class=\"fi fi-kw\"></span>" },
+        { "country": "Lebanon", "code": "lb", "flag": "<span class=\"fi fi-lb\"></span>" },
+        { "country": "Oman", "code": "om", "flag": "<span class=\"fi fi-om\"></span>" },
+        { "country": "Palestine", "code": "ps", "flag": "<span class=\"fi fi-ps\"></span>" },
+        { "country": "Qatar", "code": "qa", "flag": "<span class=\"fi fi-qa\"></span>" },
+        { "country": "Saudi Arabia", "code": "sa", "flag": "<span class=\"fi fi-sa\"></span>" },
+        { "country": "Syria", "code": "sy", "flag": "<span class=\"fi fi-sy\"></span>" },
+        { "country": "Turkey", "code": "tr", "flag": "<span class=\"fi fi-tr\"></span>" },
+        { "country": "United Arab Emirates", "code": "ae", "flag": "<span class=\"fi fi-ae\"></span>" },
+        { "country": "Yemen", "code": "ye", "flag": "<span class=\"fi fi-ye\"></span>" }
+    ]
+}

@@ -1,0 +1,207 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0;
+    // max-width: 745px;
+    width: 100%;
+}
+
+.menu-icon {
+    background-color: transparent;
+    border: 2px solid var(--secondary-color);
+    cursor: pointer;
+    z-index: 8;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    /* Ensure pseudo-elements are positioned relative to this */
+    transition: var(--transition);
+
+    .menu-text {
+        color: var(--secondary-color);
+        font-size: 0.6rem;
+        /* Smaller font size to fit */
+        font-weight: bold;
+        transition: opacity 0.3s ease;
+        opacity: 1;
+        position: absolute;
+        top: 50%;
+        /* Center vertically */
+        left: 50%;
+        /* Center horizontally */
+        transform: translate(-50%, -50%);
+        /* Adjust for its own size */
+        line-height: 1;
+        white-space: nowrap;
+        /* Prevent text from wrapping */
+        transition: var(--transition);
+    }
+
+    &:before,
+    &:after {
+        content: '';
+        position: absolute;
+        width: 30px;
+        height: 3px;
+        background-color: transparent;
+        transition: var(--transition);
+    }
+
+    &:before {
+        top: 10px;
+        /* Position top line */
+    }
+
+    &:after {
+        bottom: 10px;
+        /* Position bottom line */
+    }
+
+    &.open {
+        .menu-text {
+            opacity: 0;
+        }
+
+        &:before {
+            background-color: var(--secondary-color);
+            top: 50%;
+            transform: translateY(-50%) rotate(45deg);
+        }
+
+        &:after {
+            background-color: var(--secondary-color);
+            bottom: 50%;
+            transform: translateY(50%) rotate(-45deg);
+        }
+    }
+
+    // Over Effect
+    &:hover {
+        background-color: var(--secondary-color);
+
+        .menu-text {
+            color: var(--primary-color);
+        }
+
+        &:before,
+        &:after {
+            background-color: var(--primary-color);
+        }
+    }
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    max-width: 250px;
+    width: 90%;
+    height: 100%;
+    background-color: var(--primary-color);
+    padding-top: 80px;
+    transition: var(--transition);
+    z-index: 6;
+
+    &.open {
+        left: 0;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            a {
+                display: block;
+                padding: 15px 20px;
+                color: var(--secondary-color);
+                text-decoration: none;
+                transition: var(--transition);
+
+                &.active,
+                &:hover {
+                    background-color: var(--secondary-color);
+                    color: var(--primary-color);
+                }
+            }
+        }
+    }
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(.7px);
+    display: none;
+    z-index: 4;
+
+    &.open {
+        display: block;
+    }
+}
+
+
+
+/* ==========================================================================
+   Theme Switcher
+   ========================================================================== */
+.theme-switcher {
+    z-index: 8;
+
+    button {
+        background-color: var(--primary-color);
+        border: 2px solid var(--secondary-color);
+        cursor: pointer;
+        width: 45px;
+        height: 45px;
+        transition: var(--transition);
+
+        .icon {
+            display: block;
+            width: 32px;
+            height: 32px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            transition: var(--transition);
+
+            position: relative;
+            top: -5px;
+            left: -14px;
+        }
+
+        &:hover {
+            background-color: var(--secondary-color);
+            border: 2px solid var(--secondary-color);
+
+            .icon {
+                filter: invert(1);
+            }
+        }
+    }
+}
+
+.theme-switcher button .icon {
+    background-image: url('../icons/svg/light-mode.svg');
+    filter: invert(0);
+    transition: var(--transition);
+}
+
+.dark-mode .theme-switcher button {
+    .icon {
+        background-image: url('../icons/svg/dark-mode.svg');
+        filter: invert(1);
+        transition: var(--transition);
+    }
+
+    &:hover .icon {
+        filter: invert(0);
+    }
+}

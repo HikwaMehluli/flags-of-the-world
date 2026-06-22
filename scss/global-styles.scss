@@ -1,0 +1,52 @@
+:root {
+    --primary-color: #e8e5f2;
+    --secondary-color: #0d0334;
+    --gray-color: #f9f9f9;
+    --transition: all 0.5s ease-in-out;
+}
+
+.dark-mode {
+    --primary-color: #0d0334;
+    --secondary-color: #e8e5f2;
+    --gray-color: #322077;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+body {   
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0 auto;
+    padding: 0 20px 20px 20px;
+    transition: var(--transition);
+}
+
+footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--secondary-color);
+
+    a {
+        color: var(--secondary-color);
+        position: relative;
+        text-decoration: underline;
+        transition: var(--transition);
+
+        &:hover {
+            opacity: .7;
+        }  
+    }
+}
