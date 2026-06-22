@@ -1,0 +1,14 @@
+# Long-lived cache for static flag assets (SVGs never change, JSON rarely changes)
+/api/flags/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/api/countries/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Dist files change on each deploy — moderate cache for freshness balance
+/dist/*
+  Cache-Control: public, max-age=86400
+
+# HTML pages always fresh
+/*.html
+  Cache-Control: public, no-cache, must-revalidate

@@ -136,6 +136,17 @@ All HTML pages include `<base href="/flags-of-the-world/">` in `<head>`. This is
 
 **Local dev:** The `<base>` tag **must be removed or commented out** — `http-server` serves from root (`/`), so an incorrect `<base>` tag would break all icons, JS, and CSS paths. Comment/uncomment the `<base>` line in all 6 HTML files when switching between local dev and deployment.
 
+### **⚡ HTTP Caching via `_headers`** (Deployed to GH Pages)
+
+A `_headers` file at the repo root sets long HTTP cache lifetimes for static assets. This is server-side caching — completely independent of IndexedDB/localStorage, so clearing scores or browser storage won't affect it.
+
+| Path | Cache Policy | Why |
+|------|-------------|-----|
+| `/api/flags/*` | 1 year, immutable | 270+ SVG flags, never change |
+| `/api/countries/*` | 1 year, immutable | Flag JSON data, rarely change |
+| `/dist/*` | 1 day | Rebuilt each deploy, moderate cache |
+| `*.html` | `no-cache` | Always serve fresh HTML |
+
 ### **⚠️ Google Analytics Setup ⚠️** (This is only created github page upload)
 
 GA is injected at build time by Webpack's `DefinePlugin`. The value of `process.env.GA_MEASUREMENT_ID` is replaced with the actual ID (or `''`) during compilation.
