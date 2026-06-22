@@ -119,16 +119,26 @@ npm install
 | `npm start` | HTTP dev server (no cache) |
 | `npm run css-build` | Sass watch → `dist/app.css` (compressed) |
 | `npm run js-build` | Webpack watch → `dist/app.js` (production) |
+| `npm run css:build` | Sass one-shot (CI use) |
+| `npm run js:build` | Webpack one-shot (CI use) |
 
-Both watch commands run in separate terminals.
+Watch commands (`css-build`, `js-build`) run in separate terminals.
 
-### Environment
+### **⚠️ Google Analytics Setup ⚠️** (This is only created github page upload)
 
-Only needed for Google Analytics. Copy `.env.defaults` to `.env` and set:
+GA is injected at build time by Webpack's `DefinePlugin`. The value of `process.env.GA_MEASUREMENT_ID` is replaced with the actual ID (or `''`) during compilation.
 
-```
-GA_MEASUREMENT_ID=G-XXXXXXXXXX
-```
+**Local dev:** GA is a no-op — the env var is unset, so `dist/app.js` gets `''` and no GA scripts load. No `.env` file needed.
+
+**GitHub Pages (production):** The deploy workflow injects `GA_MEASUREMENT_ID` from a repository secret.
+
+#### First-time setup (one-time)
+
+1. **Add a repository secret** — In your repo on GitHub, go to Settings → Secrets and variables → Actions → New repository secret:
+   - **Name:** `GA_MEASUREMENT_ID`
+   - **Secret:** The GA measurement ID (e.g., `G-XXXXXXXXXX`)
+2. **Change Pages source** — In Settings → Pages, set Source to **"GitHub Actions"** instead of "Deploy from a branch". The workflow in `.github/workflows/deploy.yml` handles the rest.
+3. **Push to `main`** — The workflow will build with the GA ID and deploy to Pages.
 
 ## Regions
 

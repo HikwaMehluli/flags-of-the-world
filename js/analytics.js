@@ -2,7 +2,7 @@
  * Google Analytics utility module
  */
 
-const GA_MEASUREMENT_ID = '';
+const GA_MEASUREMENT_ID = process.env.GA_MEASUREMENT_ID || '';
 
 // Define gtag function globally to make it available for export
 function gtag(...args) {

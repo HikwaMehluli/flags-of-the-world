@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 const commonOutputPath = path.resolve(__dirname, 'dist');
 
@@ -17,6 +18,11 @@ const createConfig = (entryFile, outputFilename, name) => ({
             },
         ],
     },
+    plugins: [
+        new webpack.DefinePlugin({
+            'process.env.GA_MEASUREMENT_ID': JSON.stringify(process.env.GA_MEASUREMENT_ID || '')
+        }),
+    ],
     name,
 });
 
