@@ -3,6 +3,8 @@
  * It retrieves high scores from IndexedDB and displays them in a list by continent.
  */
 
+import { showConfirmModal } from './score/confirm-modal.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -39,7 +41,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelectorAll('.btn-clear-scores').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const continent = btn.getAttribute('data-continent');
-                const { showConfirmModal } = await import('./score/confirm-modal.js');
                 const confirmed = await showConfirmModal(`Clear all scores for ${continent}? This cannot be undone.`);
                 if (confirmed) {
                     const { default: scoreManager } = await import('./score/score-manager.js');
@@ -55,7 +56,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const clearAllBtn = document.getElementById('btn-clear-all');
         if (clearAllBtn) {
             clearAllBtn.addEventListener('click', async () => {
-                const { showConfirmModal } = await import('./score/confirm-modal.js');
                 const confirmed = await showConfirmModal('Clear ALL scores across all continents? This cannot be undone.');
                 if (confirmed) {
                     const { default: scoreManager } = await import('./score/score-manager.js');

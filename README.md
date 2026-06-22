@@ -33,7 +33,7 @@ js/
 ├── navigation.js          Sidebar menu toggle
 ├── theme.js               Dark/light theme switcher
 ├── scores-display.js      Scores page — local scores by continent tab
-├── profile-stats.js       Stats page — career summary, per-continent stats
+├── profile-stats.js       Stats page — game summary, per-continent stats
 ├── driver-js-theme.js     Onboarding tour theme helper
 ├── analytics.js           Google Analytics init
 │
