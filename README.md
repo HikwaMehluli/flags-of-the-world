@@ -1,10 +1,16 @@
-# Flags of the World Memory Game - v2.0.0
+# 🌍 Flags of the World Memory Game 🌍
 
-> An exciting and educational journey across the globe!
->
-> Challenge your memory, learn geography, and have fun! — *Hikwa Mehluli*
+![Flags of the World Memory Game Screenshot](./img/seo-image.jpg)
 
-## Features
+## An exciting and educational journey across the globe!
+This project was born out of a desire to make learning about the world's diverse cultures and engaging experience's for ever being.
+
+This memory game is more than just a game; it's an adventure that will test your knowledge and teach you about the beautiful flags of countries and regions from different continents. Get ready to challenge your memory, learn some geography, and have a blast doing it! - Hikwa Mehluli
+
+## 📚 Libraries/Framework & Fetures
+- 🚩 **Flag Icons:** A fantastic collection of SVG flags from [Flag Icons](https://flagicons.lipis.dev/).
+- 💡 **Tippy.js:** For beautiful and accessible tooltips tool. [Tippy.JS](https://atomiks.github.io/tippyjs)
+- 🎨 **SCSS/CSS:** Custom-built styling without heavy frameworks. Crafted with modern CSS practices for optimal performance and maintainability.
 
 - Memory card game with flags from Africa, America, Asia, and Europe
 - 3 difficulty levels (Easy, Medium, Hard)
@@ -15,7 +21,7 @@
 - Onboarding tour (driver.js)
 - Keyboard accessible
 
-## Tech Stack
+## 📷 Tech Stack
 
 - Vanilla JS (ES modules, Webpack-bundled)
 - Sass → CSS (compressed, no sourcemaps)
@@ -24,7 +30,7 @@
 - tippy.js (tooltip library, npm/bundled)
 - Google Analytics (anonymous only) 
 
-## Architecture
+## Architecture (File Tree)
 
 ```
 js/
@@ -71,7 +77,7 @@ api/
     └── ...
 ```
 
-### Score Flow
+### 🎮 Score Flow
 
 ```
 Game Won → Modal (enter name + country) → ScoreManager.validate()
@@ -86,7 +92,7 @@ All data stays on-device. No server, no sync, no accounts.
 
 **Personal Best:** When you beat your previous best score on a continent + difficulty, a celebration fires with a gold badge toast and confetti.
 
-### Pages
+### 🗂️ Pages
 
 | Page | File | Content |
 |------|------|---------|
@@ -97,7 +103,7 @@ All data stays on-device. No server, no sync, no accounts.
 | Fun Facts | `fun-facts.html` | Educational flag facts |
 | Privacy Policy | `privacy-policy.html` | Offline-first privacy policy |
 
-## Development
+## 💻 Development
 
 ### Prerequisites
 
@@ -140,7 +146,8 @@ GA is injected at build time by Webpack's `DefinePlugin`. The value of `process.
 2. **Change Pages source** — In Settings → Pages, set Source to **"GitHub Actions"** instead of "Deploy from a branch". The workflow in `.github/workflows/deploy.yml` handles the rest.
 3. **Push to `main`** — The workflow will build with the GA ID and deploy to Pages.
 
-## Regions
+## 🗺️ Regions included in the game
+The game includes flags from various continents: Africa, Europe, Asia, and the Americas.
 
 ### Africa
 
