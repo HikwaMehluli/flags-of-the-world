@@ -103,6 +103,7 @@ web_modules/
 # AI Agents
 AGENTS.md
 ai/
+nul
 
 # yarn v2
 .yarn/cache
