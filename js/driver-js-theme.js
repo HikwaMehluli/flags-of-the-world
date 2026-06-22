@@ -3,7 +3,7 @@ import "driver.js/dist/driver.css";
 
 // Check if the primary tour element exists before doing anything else.
 // This ensures the tour only runs on the intended page.
-if (document.querySelector(".intro-continent")) {
+if (document.querySelector("#intro-tour-check")) {
 	const tourSeenKey = "driverjs-tour-seen-count";
 	let seenCount = localStorage.getItem(tourSeenKey);
 
@@ -26,7 +26,7 @@ if (document.querySelector(".intro-continent")) {
 			overlayColor: "blue",
 			steps: [
 				{
-					element: ".intro-continent",
+					element: "#continent-select",
 					popover: {
 						title: "Game Play",
 						description:
@@ -34,7 +34,7 @@ if (document.querySelector(".intro-continent")) {
 					},
 				},
 				{
-					element: ".intro-difficulty",
+					element: "#difficulty-select",
 					popover: {
 						title: "Level Difficulty",
 						description:
@@ -42,7 +42,7 @@ if (document.querySelector(".intro-continent")) {
 					},
 				},
 				{
-					element: ".intro-region",
+					element: "#region-select",
 					popover: {
 						title: "Region Selection",
 						description:
