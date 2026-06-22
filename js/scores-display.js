@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         // Clear per-continent listeners
-        document.getElementById('clear-scores').forEach(btn => {
+        document.querySelectorAll('#clear-scores').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const continent = btn.getAttribute('data-continent');
                 const confirmed = await showConfirmModal(`Clear all scores for ${continent}? This cannot be undone.`);
