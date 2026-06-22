@@ -130,6 +130,12 @@ npm install
 
 Watch commands (`css-build`, `js-build`) run in separate terminals.
 
+### **⚠️ `<base>` Tag (GH Pages only) ⚠️**
+
+All HTML pages include `<base href="/flags-of-the-world/">` in `<head>`. This is **required for GitHub Pages** so absolute paths like `/api/flags/dj.svg` resolve correctly under the `https://username.github.io/flags-of-the-world/` subdirectory.
+
+**Local dev:** The `<base>` tag **must be removed or commented out** — `http-server` serves from root (`/`), so an incorrect `<base>` tag would break all icons, JS, and CSS paths. Comment/uncomment the `<base>` line in all 6 HTML files when switching between local dev and deployment.
+
 ### **⚠️ Google Analytics Setup ⚠️** (This is only created github page upload)
 
 GA is injected at build time by Webpack's `DefinePlugin`. The value of `process.env.GA_MEASUREMENT_ID` is replaced with the actual ID (or `''`) during compilation.
