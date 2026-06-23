@@ -1,204 +1,200 @@
 /**
- * This script runs on the scores page when the DOM is fully loaded.
- * It retrieves high scores from IndexedDB and displays them in a list by continent.
+ * scores-display.js — Shows saved scores on the Scores page
+ *
+ * This runs on scores.html. It:
+ *   1. Loads scores from IndexedDB for each continent tab
+ *   2. Lets you filter by player name
+ *   3. Shows the top 100 scores per continent (sorted by moves → time)
+ *   4. Allows clearing scores per continent (with a confirmation modal)
+ *
+ * All score data comes from js/scores.js, and flag data comes from js/flags-data.js.
+ *
+ * @module scores-display
  */
 
-import { showConfirmModal } from './score/confirm-modal.js';
+import { getScores, clearScores, showConfirmModal } from './scores.js';
+import { getAllFlagData, getCountryFlagSync } from './flags-data.js';
+import { showSuccessToast } from './utils/toast.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const continentScoreLists = document.querySelectorAll('.continent-scores-list');
-    const noScoresContainers = document.querySelectorAll('.no-scores-container');
+	const tabButtons = document.querySelectorAll('.tab-button');
+	const tabContents = document.querySelectorAll('.tab-content');
+	const continentScoreLists = document.querySelectorAll('.continent-scores-list');
+	const noScoresContainers = document.querySelectorAll('.no-scores-container');
 
-    if (tabButtons.length > 0 && continentScoreLists.length > 0) {
-        await preloadFlagData();
+	if (tabButtons.length === 0 || continentScoreLists.length === 0) return;
 
-        tabButtons.forEach(button => {
-            button.addEventListener('click', async () => {
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
+	// Preload flag data so sync lookups work later (for player country flags)
+	await getAllFlagData();
 
-                tabContents.forEach(content => {
-                    content.style.display = 'none';
-                });
+	// ---- Tab switching ----
+	tabButtons.forEach(button => {
+		button.addEventListener('click', async () => {
+			tabButtons.forEach(btn => btn.classList.remove('active'));
+			button.classList.add('active');
 
-                const continent = button.getAttribute('data-tab');
-                document.getElementById(`${continent}-tab`).style.display = 'block';
-                await loadLocalScoresForContinent(continent);
-            });
-        });
+			tabContents.forEach(content => { content.style.display = 'none'; });
 
-        // Player filter listeners
-        document.querySelectorAll('.player-filter').forEach(select => {
-            select.addEventListener('change', () => {
-                const continent = select.getAttribute('data-continent');
-                loadLocalScoresForContinent(continent);
-            });
-        });
+			const continent = button.getAttribute('data-tab');
+			document.getElementById(`${continent}-tab`).style.display = 'block';
+			await loadScoresForContinent(continent);
+		});
+	});
 
-        // Clear scores per continent
-        document.querySelectorAll('.clear-scores').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const continent = btn.getAttribute('data-continent');
-                const confirmed = await showConfirmModal(`Clear all scores for ${continent}? This cannot be undone.`);
-                if (confirmed) {
-                    const { default: scoreManager } = await import('./score/score-manager.js');
-                    await scoreManager.clearScores(continent);
-                    const { showSuccessToast } = await import('./utils/toast.js');
-                    showSuccessToast(`Scores for ${continent} cleared.`);
-                    loadLocalScoresForContinent(continent);
-                }
-            });
-        });
+	// ---- Player filter ----
+	document.querySelectorAll('.player-filter').forEach(select => {
+		select.addEventListener('change', () => {
+			loadScoresForContinent(select.getAttribute('data-continent'));
+		});
+	});
 
-        await loadLocalScoresForContinent('africa');
-    }
+	// ---- Clear scores ----
+	document.querySelectorAll('.clear-scores').forEach(btn => {
+		btn.addEventListener('click', async () => {
+			const continent = btn.getAttribute('data-continent');
+			const confirmed = await showConfirmModal(`Clear all scores for ${continent}? This cannot be undone.`);
+			if (confirmed) {
+				await clearScores(continent);
+				showSuccessToast(`Scores for ${continent} cleared.`);
+				loadScoresForContinent(continent);
+			}
+		});
+	});
+
+	// Load default tab (Africa)
+	await loadScoresForContinent('africa');
 });
 
-async function loadLocalScoresForContinent(continent) {
-    try {
-        const { default: scoreManager } = await import('./score/score-manager.js');
-        const continentScores = await scoreManager.getScores(continent);
+// ============================================================
+//  LOAD & DISPLAY SCORES
+// ============================================================
 
-        const scoreList = document.querySelector(`.continent-scores-list[data-continent="${continent}"]`);
-        const noScoresContainer = document.querySelector(`.no-scores-container[data-continent="${continent}"]`);
-        const filterSelect = document.querySelector(`.player-filter[data-continent="${continent}"]`);
-        const scoreControls = filterSelect ? filterSelect.closest('.score-controls') : null;
+/**
+ * Fetch scores from IndexedDB for a given continent and render them.
+ * Also updates the player name filter dropdown and the clear-scores button visibility.
+ *
+ * @param {string} continent - 'africa', 'europe', 'asia', or 'america'
+ */
+async function loadScoresForContinent(continent) {
+	try {
+		const scores = await getScores(continent);
 
-        if (continentScores && continentScores.length > 0) {
-            scoreList.style.display = 'block';
-            noScoresContainer.style.display = 'none';
-            if (scoreControls) scoreControls.style.display = '';
+		const scoreList = document.querySelector(`.continent-scores-list[data-continent="${continent}"]`);
+		const noScores = document.querySelector(`.no-scores-container[data-continent="${continent}"]`);
+		const filterSelect = document.querySelector(`.player-filter[data-continent="${continent}"]`);
+		const scoreControls = filterSelect?.closest('.score-controls');
 
-            populatePlayerFilter(filterSelect, continentScores);
-            const filterValue = filterSelect ? filterSelect.value : '';
-            let filtered = continentScores;
-            if (filterValue) {
-                filtered = filtered.filter(s => s.name === filterValue);
-            }
+		if (scores && scores.length > 0) {
+			// Show scores, hide "no scores" message
+			scoreList.style.display = 'block';
+			noScores.style.display = 'none';
+			if (scoreControls) scoreControls.style.display = '';
 
-            const topScores = filtered.slice(0, 100);
+			// Build the player filter dropdown
+			populateFilterSelect(filterSelect, scores);
 
-            scoreList.innerHTML = topScores.map((score, index) => createScoreListItem(score, index)).join('');
-        } else {
-            scoreList.style.display = 'none';
-            noScoresContainer.style.display = 'block';
-            if (scoreControls) scoreControls.style.display = 'none';
-            noScoresContainer.innerHTML = '<p>No local scores yet. Play a game to set a record!</p><a href="index.html" class="btn-play-game">Play Game</a>';
-        }
-    } catch (error) {
-        console.error(`Error loading local scores for ${continent}:`, error);
-        loadLocalScoresFromLocalStorage(continent);
-    }
+			// Apply the current filter
+			const filterValue = filterSelect ? filterSelect.value : '';
+			const filtered = filterValue ? scores.filter(s => s.name === filterValue) : scores;
+
+			// Top 100
+			const top100 = filtered.slice(0, 100);
+
+			// Render
+			scoreList.innerHTML = top100.map((score, i) => createScoreItem(score, i)).join('');
+		} else {
+			// No scores → show message
+			scoreList.style.display = 'none';
+			noScores.style.display = 'block';
+			if (scoreControls) scoreControls.style.display = 'none';
+			noScores.innerHTML = '<p>No local scores yet. Play a game to set a record!</p><a href="index.html" class="btn-play-game">Play Game</a>';
+		}
+	} catch (error) {
+		console.error(`Error loading scores for ${continent}:`, error);
+	}
 }
 
-function populatePlayerFilter(select, scores) {
-    const currentValue = select.value;
-    select.innerHTML = '<option value="">All Players</option>';
-    const names = [...new Set(scores.map(s => s.name).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-    names.forEach(name => {
-        const opt = document.createElement('option');
-        opt.value = name;
-        opt.innerHTML = name;
-        select.appendChild(opt);
-    });
-    if (currentValue && names.includes(currentValue)) {
-        select.value = currentValue;
-    }
+/**
+ * Fill the player-filter <select> with unique player names from the scores list,
+ * sorted alphabetically. Preserves the currently selected value if it still exists.
+ *
+ * @param {HTMLSelectElement|null} select - The filter dropdown
+ * @param {Array} scores - All scores for this continent
+ */
+function populateFilterSelect(select, scores) {
+	if (!select) return;
+
+	const currentValue = select.value;
+	select.innerHTML = '<option value="">All Players</option>';
+
+	const names = [...new Set(scores.map(s => s.name).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+	names.forEach(name => {
+		const opt = document.createElement('option');
+		opt.value = name;
+		opt.textContent = name;
+		select.appendChild(opt);
+	});
+
+	if (currentValue && names.includes(currentValue)) {
+		select.value = currentValue;
+	}
 }
 
-function loadLocalScoresFromLocalStorage(continent) {
-    const continentScoresKey = `highScores_${continent}`;
-    const continentScores = JSON.parse(localStorage.getItem(continentScoresKey)) || [];
+/**
+ * Create a single score list item (an <li> element as an HTML string).
+ *
+ * @param {Object} score - { name, moves, time, difficulty, region, playerCountry, ... }
+ * @param {number} index - Position in the sorted list (0 = 1st place)
+ * @returns {string} HTML string for the <li>
+ */
+function createScoreItem(score, index) {
+	const rank = index + 1;
 
-    const scoreList = document.querySelector(`.continent-scores-list[data-continent="${continent}"]`);
-    const noScoresContainer = document.querySelector(`.no-scores-container[data-continent="${continent}"]`);
+	// Podium emoji for top 3
+	let rankDisplay;
+	if (rank === 1) rankDisplay = '🥇';
+	else if (rank === 2) rankDisplay = '🥈';
+	else if (rank === 3) rankDisplay = '🥉';
+	else rankDisplay = `${rank}.`;
 
-    if (continentScores.length > 0) {
-        scoreList.style.display = 'block';
-        noScoresContainer.style.display = 'none';
-        scoreList.innerHTML = continentScores.map(createScoreListItem).join('');
-    } else {
-        scoreList.style.display = 'none';
-        noScoresContainer.style.display = 'block';
-        noScoresContainer.innerHTML = '<p>No local scores yet. Play a game to set a record!</p><a href="index.html" class="btn-play-game">Play Game</a>';
-    }
+	// Format region string: "africa - West Africa" → "West Africa"
+	const regionText = formatRegion(score.region);
+
+	// Get player's country flag (sync lookup, works because we preloaded)
+	const flagHtml = score.playerCountry ? getCountryFlagSync(score.playerCountry) : '';
+
+	return `
+		<li>
+			<span class="score-rank">${rankDisplay}</span>
+			<span class="player-name">
+				${score.name}, from ${score.playerCountry || ''} ${flagHtml ? `<span class="player-country-flag">${flagHtml}</span>` : ''}
+			</span>
+			<span class="game-level">
+				Level: ${score.difficulty} - ${regionText}
+			</span>
+			<span class="score-details">
+				Time: ${score.time}, in ${score.moves} moves
+			</span>
+		</li>
+	`;
 }
 
-function createScoreListItem(score, index) {
-    const rank = index + 1;
-    let rankDisplay;
-    if (rank === 1) rankDisplay = '&#x1F947;';
-    else if (rank === 2) rankDisplay = '&#x1F948;';
-    else if (rank === 3) rankDisplay = '&#x1F949;';
-    else rankDisplay = `${rank}.`;
+/**
+ * Convert a region string like "africa - West Africa" to a readable format.
+ * If showContinent is false, only shows the region part.
+ *
+ * @param {string} regionString - e.g. "africa - West Africa"
+ * @returns {string} Formatted region name
+ */
+function formatRegion(regionString) {
+	if (typeof regionString !== 'string' || !regionString) {
+		return 'Unknown Region';
+	}
 
-    const regionText = formatRegion(score.region, false);
-    const playerCountryFlag = score.playerCountry ? getCountryFlagSync(score.playerCountry) : '';
+	const parts = regionString.split(' - ').map(part =>
+		part.charAt(0).toUpperCase() + part.slice(1)
+	);
 
-    return `
-        <li>
-            <span class="score-rank">${rankDisplay}</span>
-            <span class="player-name">
-                ${score.name}, from ${score.playerCountry || ''} ${playerCountryFlag ? `<span class="player-country-flag">${playerCountryFlag}</span>` : ''}
-            </span>
-            <span class="game-level">
-                Level: ${score.difficulty} - ${regionText}
-            </span>
-            <span class="score-details">
-                Time: ${score.time}, in ${score.moves} moves
-            </span>
-        </li>
-    `;
-}
-
-function getCountryFlagSync(countryName) {
-    if (!window.allFlagsData) {
-        return '';
-    }
-
-    for (const continent in window.allFlagsData) {
-        const continentData = window.allFlagsData[continent];
-        for (const region in continentData) {
-            const countries = continentData[region];
-            const country = countries.find(c => c.country === countryName);
-            if (country) {
-                return country.flag;
-            }
-        }
-    }
-
-    return '';
-}
-
-async function preloadFlagData() {
-    window.allFlagsData = {};
-
-    const continents = ['africa', 'europe', 'asia', 'america'];
-
-    for (const continent of continents) {
-        try {
-            const response = await fetch(`api/countries/flags_${continent}.json`);
-            if (response.ok) {
-                window.allFlagsData[continent] = await response.json();
-            }
-        } catch (error) {
-            console.error(`Error loading flags for ${continent}:`, error);
-        }
-    }
-}
-
-function formatRegion(regionString, showContinent = true) {
-    if (typeof regionString !== 'string' || !regionString) {
-        return 'Unknown Region';
-    }
-
-    const parts = regionString.split(' - ').map(part => part.charAt(0).toUpperCase() + part.slice(1));
-
-    if (showContinent) {
-        return parts.join(' - ');
-    } else {
-        return parts.length > 1 ? parts[1] : parts[0];
-    }
+	// Return just the region (e.g. "West Africa"), not the continent
+	return parts.length > 1 ? parts.slice(1).join(' - ') : parts[0];
 }

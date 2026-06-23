@@ -46,14 +46,14 @@ if (document.querySelector("#intro-tour-check")) {
 					popover: {
 						title: "Region Selection",
 						description:
-							"Finally, select the specific region you want to play with.",
+							"Finally, select the specific region you want to play.",
 					},
 				},
 				{
 					popover: {
 						title: "Good Luck",
 						description:
-							"Have fun playing the game and learning about our worlds diversity!",
+							"Have fun playing the game and learning about the worlds diversity!",
 					},
 				},
 			],

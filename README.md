@@ -29,29 +29,16 @@ This memory game is more than just a game; it's an adventure that will test your
 
 ```
 js/
-├── _entry.js              App entry — IndexedDB init, module imports
-├── game.js                Orchestrator — wires state, renderer, matcher, timer
+├── _entry.js              App entry — imports all modules
+├── game.js                Main game class (rendering, card logic, timer, state)
+├── scores.js              IndexedDB storage + validation + personal best
+├── flags-data.js          Shared flag JSON fetching & caching (single source)
+├── scores-display.js      Scores page — local scores by continent tab
 ├── navigation.js          Sidebar menu toggle
 ├── theme.js               Dark/light theme switcher
-├── scores-display.js      Scores page — local scores by continent tab
 ├── driver-js-theme.js     Onboarding tour theme helper
 │
-├── game/
-│   ├── game-state-manager.js   State machine — cards, moves, matched pairs, combo
-│   ├── game-renderer.js        Pure DOM rendering (no logic)
-│   ├── card-matcher.js         Match logic with combo tracking
-│   └── timer.js                MM:SS timer with pause/resume
-│
-├── score/
-│   ├── score-manager.js        Score validation + IndexedDB storage
-│   └── confirm-modal.js        Confirmation modal replacing native confirm()
-│
-├── db/
-│   └── offline-db.js           IndexedDB wrapper (scores store)
-│
 └── utils/
-    ├── time-utils.js           timeToSeconds, secondsToTime
-    ├── country-utils.js        Country dropdown population
     └── toast.js                Toast notification helper
 
 api/
@@ -73,8 +60,8 @@ api/
 ### 🎮 Score Flow
 
 ```
-Game Won → Modal (enter name + country) → ScoreManager.validate()
-  → OfflineDB.addScore() → IndexedDB
+Game Won → Modal (enter name + country) → scores.js validates
+  → IndexedDB addScore()
        ↓
   isPersonalBest() → gold badge toast + confetti
 ```
