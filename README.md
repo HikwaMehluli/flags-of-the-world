@@ -41,7 +41,6 @@ js/
 ├── scores-display.js      Scores page — local scores by continent tab
 ├── profile-stats.js       Stats page — game summary, per-continent stats
 ├── driver-js-theme.js     Onboarding tour theme helper
-├── analytics.js           Google Analytics init
 │
 ├── game/
 │   ├── game-state-manager.js   State machine — cards, moves, matched pairs, combo
@@ -132,7 +131,7 @@ Watch commands (`css-build`, `js-build`) run in separate terminals.
 
 ### **⚠️ `<base>` Tag (GH Pages only) ⚠️**
 
-All HTML pages include `<base href="/flags-of-the-world/">` in `<head>`. This is **required for GitHub Pages** so absolute paths like `/api/flags/dj.svg` resolve correctly under the `https://username.github.io/flags-of-the-world/` subdirectory.
+All HTML pages include `<!--<base href="/flags-of-the-world/">-->` in `<head>`. This is **required for GitHub Pages** so absolute paths like `/api/flags/dj.svg` resolve correctly under the `https://username.github.io/flags-of-the-world/` subdirectory.
 
 **Local dev:** The `<base>` tag **must be removed or commented out** — `http-server` serves from root (`/`), so an incorrect `<base>` tag would break all icons, JS, and CSS paths. Comment/uncomment the `<base>` line in all 6 HTML files when switching between local dev and deployment.
 
@@ -147,21 +146,11 @@ A `_headers` file at the repo root sets long HTTP cache lifetimes for static ass
 | `/dist/*` | 1 day | Rebuilt each deploy, moderate cache |
 | `*.html` | `no-cache` | Always serve fresh HTML |
 
-### **⚠️ Google Analytics Setup ⚠️** (This is only created github page upload)
+### **⚠️ Google Analytics ⚠️**
 
-GA is injected at build time by Webpack's `DefinePlugin`. The value of `process.env.GA_MEASUREMENT_ID` is replaced with the actual ID (or `''`) during compilation.
+A Google tag (gtag.js) with ID `G-DH8L3Z163V` is hardcoded in the `<head>` of every HTML page. It loads on both local dev and production — no CI secrets or environment variables needed.
 
-**Local dev:** GA is a no-op — the env var is unset, so `dist/app.js` gets `''` and no GA scripts load. No `.env` file needed.
-
-**GitHub Pages (production):** The deploy workflow injects `GA_MEASUREMENT_ID` from a repository secret.
-
-#### First-time setup (one-time)
-
-1. **Add a repository secret** — In your repo on GitHub, go to Settings → Secrets and variables → Actions → New repository secret:
-   - **Name:** `GA_MEASUREMENT_ID`
-   - **Secret:** The GA measurement ID (e.g., `G-XXXXXXXXXX`)
-2. **Change Pages source** — In Settings → Pages, set Source to **"GitHub Actions"** instead of "Deploy from a branch". The workflow in `.github/workflows/deploy.yml` handles the rest.
-3. **Push to `main`** — The workflow will build with the GA ID and deploy to Pages.
+The old `js/analytics.js` module (injected via Webpack's `DefinePlugin`) has been removed in favor of this standard snippet. If you don't want GA during local development, comment out or remove the script block from the 6 HTML files.
 
 ## 🗺️ Regions included in the game
 The game includes flags from various continents: Africa, Europe, Asia, and the Americas.

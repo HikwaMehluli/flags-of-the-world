@@ -10,9 +10,9 @@
 }
 
 .content-section h2 {
-    color: #3498db;
+    color: var(--secondary-color);
     margin-top: 2rem;
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid var(--secondary-color);
     padding-bottom: 0.5rem;
 }
 

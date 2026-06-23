@@ -1,6 +1,6 @@
 .driver-popover.driverjs-theme {
-    background-color: #322077;
-    color: #0d0334;
+    background-color: var(--gray-color);
+    color: var(--primary-color);
 }
 
 .driver-popover.driverjs-theme .driver-popover-title {
@@ -10,7 +10,7 @@
 .driver-popover.driverjs-theme .driver-popover-title,
 .driver-popover.driverjs-theme .driver-popover-description,
 .driver-popover.driverjs-theme .driver-popover-progress-text {
-    color: white;
+    color: var(--secondary-color);
 }
 
 .driver-popover.driverjs-theme .driver-popover-progress-text {
@@ -20,20 +20,20 @@
 .driver-popover.driverjs-theme button {
     flex: 1;
     text-align: center;
-    background-color: #0d0334;
-    color: white;
-    border: 2px solid #0d0334;
+    background-color: var(--secondary-color);
+    border: 2px solid var(--secondary-color);
+    color: var(--primary-color);
     text-shadow: none;
     font-size: 14px;
     // padding: 0;
     margin: 5px 5px 0 0;
     border-radius: 6px;
     transition: var(--transition);
-}
 
-.driver-popover.driverjs-theme button:hover {
-    background-color: white;
-    color: #0d0334;
+    &:hover {
+        background-color: var(--primary-color);
+        color: var(--secondary-color);
+    }
 }
 
 .driver-popover.driverjs-theme .driver-popover-navigation-btns {
@@ -42,28 +42,30 @@
 }
 
 .driver-popover.driverjs-theme .driver-popover-close-btn {
-    color: #9b9b9b;
-}
+    background-color: var(--red-color);
+    color: white;
 
-.driver-popover.driverjs-theme .driver-popover-close-btn:hover {
-    color: #000;
+    &:hover {
+        background-color: #080029;
+        color: white;
+    }
 }
 
 // 
 // Arrows
 // 
 .driver-popover.driverjs-theme .driver-popover-arrow-side-left.driver-popover-arrow {
-    border-left-color: white;
+    border-left-color: var(--primary-color);
 }
 
 .driver-popover.driverjs-theme .driver-popover-arrow-side-right.driver-popover-arrow {
-    border-right-color: white;
+    border-right-color: var(--primary-color);
 }
 
 .driver-popover.driverjs-theme .driver-popover-arrow-side-top.driver-popover-arrow {
-    border-top-color: white;
+    border-top-color: var(--primary-color);
 }
 
 .driver-popover.driverjs-theme .driver-popover-arrow-side-bottom.driver-popover-arrow {
-    border-bottom-color: white;
+    border-bottom-color: var(--primary-color);
 }
