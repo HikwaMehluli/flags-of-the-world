@@ -50,7 +50,7 @@ js/
 │   └── offline-db.js           IndexedDB wrapper (scores store)
 │
 └── utils/
-    ├── time-utils.js           timeToSeconds, secondsToTime, formatTime
+    ├── time-utils.js           timeToSeconds, secondsToTime
     ├── country-utils.js        Country dropdown population
     └── toast.js                Toast notification helper
 
