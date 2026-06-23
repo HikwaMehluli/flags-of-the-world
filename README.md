@@ -135,9 +135,14 @@ A `_headers` file at the repo root sets long HTTP cache lifetimes for static ass
 
 ### **⚠️ Google Analytics ⚠️**
 
-A Google tag (gtag.js) with ID `G-DH8L3Z163V` is hardcoded in the `<head>` of every HTML page. It loads on both local dev and production — no CI secrets or environment variables needed.
+A Google tag (gtag.js) with placeholder ID `G-REPLACE_ME` is in the `<head>` of every HTML page. Replace it with your own measurement ID or remove the block before going live.
 
-The old `js/analytics.js` module (injected via Webpack's `DefinePlugin`) has been removed in favor of this standard snippet. If you don't want GA during local development, comment out or remove the script block from the 5 HTML files.
+**Deployment:** The GitHub Actions workflow (`.github/workflows/deploy.yml`) replaces `G-REPLACE_ME` with the real ID from the `GA_ID` repository secret. To set it up:
+1. Go to repo → Settings → Secrets and variables → Actions → New repository secret
+2. Name: `GA_ID`, Value: `G-DH8L3Z163V`
+3. Push to `main` — the Action injects the ID and deploys to `gh-pages`
+
+**Local dev:** The placeholder snippet loads as-is. To disable GA locally, remove or comment out the gtag block from the HTML files.
 
 ## 🗺️ Regions included in the game
 The game includes flags from various continents: Africa, Europe, Asia, and the Americas.
