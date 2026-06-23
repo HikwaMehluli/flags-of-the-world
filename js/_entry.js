@@ -18,6 +18,9 @@
  *   utils/toast.js      Toast notifications (used by game.js)
  */
 
+// Tool Tips, JS from node_modules styling inside scss/tippy.scss
+import tippy from 'tippy.js';
+
 // Sidebar menu toggle (all pages)
 import './navigation.js';
 
