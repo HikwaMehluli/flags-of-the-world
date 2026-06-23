@@ -195,6 +195,18 @@ function formatRegion(regionString) {
 		part.charAt(0).toUpperCase() + part.slice(1)
 	);
 
+	// When the region is "All" (meaning the entire continent was played),
+	// return a continent-level label instead of just "All"
+	if (parts.length > 1 && parts[parts.length - 1] === 'All') {
+		const continentLabels = {
+			africa: 'African Continent',
+			america: 'American Continent',
+			asia: 'Asian Continent',
+			europe: 'European Continent'
+		};
+		return continentLabels[parts[0].toLowerCase()] || parts[0];
+	}
+
 	// Return just the region (e.g. "West Africa"), not the continent
 	return parts.length > 1 ? parts.slice(1).join(' - ') : parts[0];
 }
