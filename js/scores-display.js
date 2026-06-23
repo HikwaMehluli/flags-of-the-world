@@ -52,10 +52,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 	document.querySelectorAll('.clear-scores').forEach(btn => {
 		btn.addEventListener('click', async () => {
 			const continent = btn.getAttribute('data-continent');
-			const confirmed = await showConfirmModal(`Clear all scores for ${continent}? This cannot be undone.`);
+			const makeUpperCase = continent.charAt(0).toUpperCase() + continent.slice(1);
+			const confirmed = await showConfirmModal(`Clear all scores for ${makeUpperCase}? This cannot be undone.`);
 			if (confirmed) {
 				await clearScores(continent);
-				showSuccessToast(`Scores for ${continent} cleared.`);
+				showSuccessToast(`Scores for ${makeUpperCase} cleared.`);
 				loadScoresForContinent(continent);
 			}
 		});
