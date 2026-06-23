@@ -27,8 +27,7 @@
 
 import tippy from 'tippy.js';
 import { getFlags, getAllFlagData, populateCountryDropdown } from './flags-data.js';
-import { saveScore, isPersonalBest, secondsToTime } from './scores.js';
-import { showSuccessToast } from './utils/toast.js';
+import { saveScore, secondsToTime } from './scores.js';
 
 class FlagsofWorld {
 	// ============================================================
@@ -624,7 +623,7 @@ class FlagsofWorld {
 	}
 
 	/**
-	 * Validate and save the score, then check for personal best.
+	 * Validate and save the score to IndexedDB.
 	 */
 	async saveScore(name, moves, time, difficulty, region, playerCountry) {
 		const score = {
@@ -650,46 +649,6 @@ class FlagsofWorld {
 			throw error;
 		}
 
-		// Check if it's a personal best
-		const isPB = await isPersonalBest(score, name);
-		if (isPB) {
-			showSuccessToast('New Personal Best!', 5000);
-			this.showConfetti();
-		}
-	}
-
-	/**
-	 * Create a confetti animation using pure CSS animations.
-	 * Each piece falls from the top of the screen with random position, size, color, and speed.
-	 */
-	showConfetti(duration = 3000) {
-		const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6bff', '#ff9ff3'];
-		const container = document.createElement('div');
-		container.className = 'confetti-container';
-		Object.assign(container.style, {
-			position: 'fixed', top: '0', left: '0', width: '100%', height: '100%',
-			pointerEvents: 'none', zIndex: '9999', overflow: 'hidden'
-		});
-		document.body.appendChild(container);
-
-		for (let i = 0; i < 60; i++) {
-			const piece = document.createElement('div');
-			Object.assign(piece.style, {
-				position: 'absolute',
-				left: `${Math.random() * 100}%`,
-				top: `-${Math.random() * 20}px`,
-				width: `${Math.random() * 8 + 4}px`,
-				height: `${Math.random() * 8 + 4}px`,
-				background: colors[Math.floor(Math.random() * colors.length)],
-				borderRadius: Math.random() > 0.5 ? '50%' : '2px',
-				animation: `confettiFall ${Math.random() * 2 + 2}s linear forwards`,
-				animationDelay: `${Math.random() * 0.5}s`,
-				transform: `rotate(${Math.random() * 360}deg)`
-			});
-			container.appendChild(piece);
-		}
-
-		setTimeout(() => container.remove(), duration);
 	}
 
 	// ============================================================
