@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DH8L3Z163V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-DH8L3Z163V');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Game Rules | Flags of the World</title>
+
+    <meta name="description"
+        content="Learn how to play Flags of the World memory game. Rules, scoring, difficulty levels, combo system, and tips to improve your memory.">
+    <meta name="author" content="HikwaMehluli">
+    <meta name="keywords"
+        content="Game rules, memory game rules, how to play, scoring system, combo system, difficulty levels, Flags of the World, memory game tips">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./img/favicon.png">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Game Rules | Flags of the World">
+    <meta property="og:description"
+        content="Learn how to play Flags of the World memory game. Rules, scoring, difficulty levels, combo system, and tips to improve your memory.">
+    <meta property="og:image" content="https://hikwamehluli.github.io/flags-of-the-world/img/seo-image.jpg">
+    <meta property="og:url" content="https://hikwamehluli.github.io/flags-of-the-world/">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Game Rules | Flags of the World">
+    <meta name="twitter:description"
+        content="Learn how to play Flags of the World memory game. Rules, scoring, difficulty levels, combo system, and tips to improve your memory.">
+    <meta name="twitter:image" content="https://hikwamehluli.github.io/flags-of-the-world/img/seo-image.jpg">
+    <meta name="twitter:site" content="@HikwaMehluli">
+    <meta name="twitter:creator" content="@HikwaMehluli">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./dist/app.css">
+</head>
+
+<body>
+    <header>
+        <div class="menu-icon" id="menu-icon"><span class="menu-text">MENU</span></div>
+        <div class="theme-switcher" title="Toggle Theme">
+            <button id="theme-toggle" aria-label="Toggle theme">
+                <span class="icon"></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li>
+                <a href="index.html">Play Game</a>
+            </li>
+            <li>
+                <a class="active" href="game-rules.html">Game Rules</a>
+            </li>
+            <li>
+                <a href="scores.html">Scores</a>
+            </li>
+            <li>
+                <a href="fun-facts.html">Fun Facts</a>
+            </li>
+            <li>
+                <a href="privacy-policy.html">Privacy Policy</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <main class="game-container">
+        <section class="game-header">
+            <h1 class="game-title">Game Rules</h1>
+            <p class="game-description">How to play, scoring, and tips</p>
+        </section>
+
+        <section class="content-section">
+
+            <div class="fact-card">
+                <h3>Objective</h3>
+                <p>Flip over pairs of cards to find matching flags. Match all pairs to win the game. The fewer moves you make and the faster you finish, the better your score.</p>
+            </div>
+
+            <div class="fact-card">
+                <h3>How to Play</h3>
+                <ol>
+                    <li>Select a continent and difficulty level, then click <strong>Start Game</strong>.</li>
+                    <li>Click a card to flip it and reveal the flag.</li>
+                    <li>Click a second card to try and find its match.</li>
+                    <li>If the flags match, both cards stay face-up. If not, they flip back after a short delay.</li>
+                    <li>Match all pairs to win. Enter your name and country when the win modal appears to save your score.</li>
+                </ol>
+            </div>
+
+            <div class="fact-card">
+                <h3>Difficulty Levels</h3>
+                <ul>
+                    <li><strong>Easy</strong> — 6 pairs (12 cards). Minimum moves to win: 6.</li>
+                    <li><strong>Medium</strong> — 8 pairs (16 cards). Minimum moves to win: 8.</li>
+                    <li><strong>Hard</strong> — 10 pairs (20 cards). Minimum moves to win: 10.</li>
+                </ul>
+                <p>Harder difficulties have more cards to remember, making the game more challenging.</p>
+            </div>
+
+            <div class="fact-card">
+                <h3>Scoring</h3>
+                <p>Scores are ranked by two factors, in order of importance:</p>
+                <ol>
+                    <li><strong>Fewest moves</strong> — The primary ranking. Fewer moves = better score.</li>
+                    <li><strong>Fastest time</strong> — If two players have the same number of moves, the faster time wins.</li>
+                </ol>
+                <p>Each game's score is saved locally on your device using IndexedDB. The Scores page shows the top 100 scores per continent. You can filter by player name using the search box, or clear scores with the provided buttons.</p>
+            </div>
+
+            <div class="fact-card">
+                <h3>Combo System</h3>
+                <p>When you match cards consecutively without a miss, you build a combo streak. Each successful match in a row increases your combo counter. A miss resets it back to zero.</p>
+            </div>
+
+            <div class="fact-card">
+                <h3>Personal Best</h3>
+                <p>Each time you finish a game, your score is compared to your previous best on that continent and difficulty. If you beat your personal best, you'll see a celebration with a gold badge, confetti, and a toast notification.</p>
+            </div>
+
+            <div class="fact-card">
+                <h3>Where Your Data Lives</h3>
+                <p>All game data stays on your device — nothing is sent to a server.</p>
+                <ul>
+                    <li><strong>Scores</strong> — Stored in IndexedDB (FlagsofTheWorld database). Kept forever unless you clear them.</li>
+                    <li><strong>Theme, game state</strong> — Stored in localStorage.</li>
+                </ul>
+                <p>Works on Chrome, Firefox, Safari, and Edge — desktop and mobile. All data is private and offline-only.</p>
+            </div>
+
+        </section>
+
+        <footer>
+            <p>
+                <a href="privacy-policy.html">Privacy Policy</a> |
+                Created by <a href="https://thatafro.netlify.app" target="_blank"
+                    rel="noopener noreferrer">@thatafro</a>
+            </p>
+            <p>
+                &copy; <span id="year">1986</span> Flags of the World. All rights reserved.
+                <script>
+                    const year = new Date().getFullYear();
+                    document.getElementById("year").innerHTML = year;
+                </script>
+            </p>
+        </footer>
+    </main>
+
+    <script src="./dist/app.js" defer></script>
+</body>
+
+</html>

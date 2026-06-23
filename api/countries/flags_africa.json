@@ -1,0 +1,67 @@
+{
+    "North Africa": [
+        { "country": "Algeria", "code": "dz", "flag": "<span class=\"fi fi-dz\"></span>" },
+        { "country": "Egypt", "code": "eg", "flag": "<span class=\"fi fi-eg\"></span>" },
+        { "country": "Libya", "code": "ly", "flag": "<span class=\"fi fi-ly\"></span>" },
+        { "country": "Mauritania", "code": "mr", "flag": "<span class=\"fi fi-mr\"></span>" },
+        { "country": "Morocco", "code": "ma", "flag": "<span class=\"fi fi-ma\"></span>" },
+        { "country": "Western Sahara", "code": "eh", "flag": "<span class=\"fi fi-eh\"></span>" },
+        { "country": "Tunisia", "code": "tn", "flag": "<span class=\"fi fi-tn\"></span>" }
+    ],
+    "Southern Africa": [
+        { "country": "Angola", "code": "ao", "flag": "<span class=\"fi fi-ao\"></span>" },
+        { "country": "Botswana", "code": "bw", "flag": "<span class=\"fi fi-bw\"></span>" },
+        { "country": "Eswatini", "code": "sz", "flag": "<span class=\"fi fi-sz\"></span>" },
+        { "country": "Lesotho", "code": "ls", "flag": "<span class=\"fi fi-ls\"></span>" },
+        { "country": "Malawi", "code": "mw", "flag": "<span class=\"fi fi-mw\"></span>" },
+        { "country": "Mozambique", "code": "mz", "flag": "<span class=\"fi fi-mz\"></span>" },
+        { "country": "Namibia", "code": "na", "flag": "<span class=\"fi fi-na\"></span>" },
+        { "country": "South Africa", "code": "za", "flag": "<span class=\"fi fi-za\"></span>" },
+        { "country": "Zambia", "code": "zm", "flag": "<span class=\"fi fi-zm\"></span>" },
+        { "country": "Zimbabwe", "flag": "<span class=\"fi fi-zw\"></span>" }
+    ],
+    "East Afria": [
+        { "country": "Comoros", "code": "km", "flag": "<span class=\"fi fi-km\"></span>" },
+        { "country": "Djibouti", "code": "dj", "flag": "<span class=\"fi fi-dj\"></span>" },
+        { "country": "Eritrea", "code": "er", "flag": "<span class=\"fi fi-er\"></span>" },
+        { "country": "Ethiopia", "code": "et", "flag": "<span class=\"fi fi-et\"></span>" },
+        { "country": "Kenya", "code": "ke", "flag": "<span class=\"fi fi-ke\"></span>" },
+        { "country": "Madagascar", "code": "mg", "flag": "<span class=\"fi fi-mg\"></span>" },
+        { "country": "Mauritius", "code": "mu", "flag": "<span class=\"fi fi-mu\"></span>" },
+        { "country": "Rwanda", "code": "rw", "flag": "<span class=\"fi fi-rw\"></span>" },
+        { "country": "Seychelles", "code": "sc", "flag": "<span class=\"fi fi-sc\"></span>" },
+        { "country": "Somalia", "code": "so", "flag": "<span class=\"fi fi-so\"></span>" },
+        { "country": "South Sudan", "code": "ss", "flag": "<span class=\"fi fi-ss\"></span>" },
+        { "country": "Sudan", "code": "sd", "flag": "<span class=\"fi fi-sd\"></span>" },
+        { "country": "Tanzania", "code": "tz", "flag": "<span class=\"fi fi-tz\"></span>" },
+        { "country": "Uganda", "code": "ug", "flag": "<span class=\"fi fi-ug\"></span>" }
+    ],
+    "West Africa": [
+        { "country": "Benin", "code": "bj", "flag": "<span class=\"fi fi-bj\"></span>" },
+        { "country": "Burkina Faso", "code": "bf", "flag": "<span class=\"fi fi-bf\"></span>" },
+        { "country": "Cabo Verde", "code": "cv", "flag": "<span class=\"fi fi-cv\"></span>" },
+        { "country": "Côte d'Ivoire", "code": "ci", "flag": "<span class=\"fi fi-ci\"></span>" },
+        { "country": "Gambia", "code": "gm", "flag": "<span class=\"fi fi-gm\"></span>" },
+        { "country": "Ghana", "code": "gh", "flag": "<span class=\"fi fi-gh\"></span>" },
+        { "country": "Guinea-Bissau", "code": "gw", "flag": "<span class=\"fi fi-gw\"></span>" },
+        { "country": "Guinea", "code": "gn", "flag": "<span class=\"fi fi-gn\"></span>" },
+        { "country": "Liberia", "code": "lr", "flag": "<span class=\"fi fi-lr\"></span>" },
+        { "country": "Mali", "code": "ml", "flag": "<span class=\"fi fi-ml\"></span>" },
+        { "country": "Niger", "code": "ne", "flag": "<span class=\"fi fi-ne\"></span>" },
+        { "country": "Nigeria", "code": "ng", "flag": "<span class=\"fi fi-ng\"></span>" },
+        { "country": "Senegal", "code": "sn", "flag": "<span class=\"fi fi-sn\"></span>" },
+        { "country": "Sierra Leone", "code": "sl", "flag": "<span class=\"fi fi-sl\"></span>" },
+        { "country": "Togo", "flag": "<span class=\"fi fi-tg\"></span>" }
+    ],
+    "Central Africa": [
+        { "country": "Burundi", "code": "bi", "flag": "<span class=\"fi fi-bi\"></span>" },
+        { "country": "Cameroon", "code": "cm", "flag": "<span class=\"fi fi-cm\"></span>" },
+        { "country": "Central African Republic", "code": "cf", "flag": "<span class=\"fi fi-cf\"></span>" },
+        { "country": "Chad", "code": "td", "flag": "<span class=\"fi fi-td\"></span>" },
+        { "country": "DR Congo", "code": "cd", "flag": "<span class=\"fi fi-cd\"></span>" },
+        { "country": "Congo Republic", "code": "cg", "flag": "<span class=\"fi fi-cg\"></span>" },
+        { "country": "Equatorial Guinea", "code": "gq", "flag": "<span class=\"fi fi-gq\"></span>" },
+        { "country": "Gabon", "code": "ga", "flag": "<span class=\"fi fi-ga\"></span>" },
+        { "country": "São Tomé and Príncipe", "code": "st", "flag": "<span class=\"fi fi-st\"></span>" }
+    ]
+}

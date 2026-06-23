@@ -1,0 +1,94 @@
+/* ==========================================================================
+   Game Container
+   ========================================================================== */
+.game-container {
+    background-color: var(--primary-color);
+    border: 2px solid var(--secondary-color);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    max-width: 700px;
+    width: 100%;
+    transition: var(--transition);
+}
+
+
+/* ==========================================================================
+   Game Header
+   ========================================================================== */
+.game-header {
+    position: relative;
+    margin-bottom: 20px;
+
+    .game-title {
+        font-size: 2.5em;
+        color: var(--secondary-color);
+        margin: 0;
+        width: 80%;
+    }
+
+    .game-description {
+        color: var(--secondary-color);
+        margin: 0 0 30px 0;
+        width: 100%;
+    }
+}
+
+
+/* Selectors */
+.selectors-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+
+    .selector-group {
+        display: grid;
+
+        &:nth-child(1),
+        &:nth-child(2) {
+            width: calc(50% - 10px); // Two items side-by-side with a 20px gap
+        }
+
+        &:last-child {
+            width: 100%; // Last item takes full width
+        }
+
+        .selector-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+            font-size: 1em;
+        }
+
+        .game-select {
+            background: var(--primary-color);
+            border: 2px solid var(--secondary-color);
+            padding: 15px;
+            border-radius: 0;
+            font-size: 1em;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            color: var(--secondary-color);
+
+            /* Dropdown Arrow */
+            background-image: linear-gradient(45deg, transparent 50%, var(--secondary-color) 50%), linear-gradient(135deg, var(--secondary-color) 50%, transparent 50%);
+            background-position: calc(100% - 20px) calc(1em + 2px), calc(100% - 15px) calc(1em + 2px);
+            background-size: 5px 5px, 5px 5px;
+            background-repeat: no-repeat;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+
+            &:focus {
+                outline: none;
+                border-color: var(--secondary-color);
+                box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+            }
+
+            &:hover {
+                border-color: var(--secondary-color);
+            }
+        }
+    }
+}

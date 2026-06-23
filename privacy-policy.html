@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DH8L3Z163V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-DH8L3Z163V');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Privacy Policy | Flags of the World</title>
+
+    <meta name="description"
+        content="Privacy policy for Flags of the World game. Learn how we collect, use, and protect your personal information.">
+    <meta name="author" content="HikwaMehluli">
+    <meta name="keywords"
+        content="Privacy policy, data protection, Flags of the World, user privacy, information collection, data security">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./img/favicon.png">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Privacy Policy | Flags of the World">
+    <meta property="og:description"
+        content="Privacy policy for Flags of the World game. Learn how we collect, use, and protect your personal information.">
+    <meta property="og:image" content="https://hikwamehluli.github.io/flags-of-the-world/img/seo-image.jpg">
+    <meta property="og:url" content="https://hikwamehluli.github.io/flags-of-the-world/privacy-policy.html">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Privacy Policy | Flags of the World">
+    <meta name="twitter:description"
+        content="Privacy policy for Flags of the World game. Learn how we collect, use, and protect your personal information.">
+    <meta name="twitter:image" content="https://hikwamehluli.github.io/flags-of-the-world/img/seo-image.jpg">
+    <meta name="twitter:site" content="@HikwaMehluli">
+    <meta name="twitter:creator" content="@HikwaMehluli">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./dist/app.css">
+</head>
+
+<body>
+    <header>
+        <div class="menu-icon" id="menu-icon"><span class="menu-text">MENU</span></div>
+        <div class="theme-switcher" title="Toggle Theme">
+            <button id="theme-toggle" aria-label="Toggle theme">
+                <span class="icon"></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li>
+                <a href="index.html">Play Game</a>
+            </li>
+            <li>
+                <a href="game-rules.html">Game Rules</a>
+            </li>
+            <li>
+                <a href="scores.html">Scores</a>
+            </li>
+            <li>
+                <a href="fun-facts.html">Fun Facts</a>
+            </li>
+            <li>
+                <a class="active" href="privacy-policy.html">Privacy Policy</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <main class="game-container">
+        <section class="content-section">
+            <h1>Privacy Policy</h1>
+            <p class="last-updated">Last Updated: 22 June 2026</p>
+
+            <p>At Flags of the World, accessible from https://hikwamehluli.github.io/flags-of-the-world/, one of our main
+                priorities is the privacy of our visitors. This Privacy Policy document contains types of information
+                that is collected and recorded by Flags of the World and how we use it.</p>
+
+            <p>If you have additional questions or require more information about our Privacy Policy, do not hesitate to
+                contact us.</p>
+
+            <h2>What we collect</h2>
+            <p>Flags of the World is an offline-first application. We collect minimal data:</p>
+            <ul>
+                <li><strong>Game Data:</strong> Information about your gameplay including moves, time, difficulty level,
+                    continent, region, and player name when you submit scores. This data is stored locally in your
+                    browser via IndexedDB.</li>
+                <li><strong>Local Preferences:</strong> Theme preference (light/dark mode) stored as a cookie.</li>
+                <li><strong>Technical Data:</strong> Anonymous usage data collected through Google Analytics.</li>
+            </ul>
+
+            <h2>What we do with the information we gather</h2>
+            <p>We use the information we collect in the following ways:</p>
+            <ul>
+                <li><strong>Game Functionality:</strong> To display your local scores and game statistics.</li>
+                <li><strong>Analytics:</strong> To understand how users interact with our game and improve our services
+                    through Google Analytics.</li>
+                <li><strong>Compliance:</strong> To comply with legal obligations and enforce our terms of service.</li>
+            </ul>
+
+            <h2>Data Storage</h2>
+            <p>All game data is stored locally on your device using IndexedDB and localStorage. No personal information
+                is transmitted to external servers except for anonymous Google Analytics data.</p>
+            <p>You can clear your local data at any time by clearing your browser's site data.</p>
+
+            <h2>How we use cookies</h2>
+            <p>Flags of the World does not use cookies for tracking or advertising purposes. We use a single essential
+                cookie for theme preference:</p>
+            <ul>
+                <li><strong>theme_preference:</strong> Stores your theme preference (light/dark mode) for convenience
+                    (expires after 30 days)</li>
+            </ul>
+            <p>We do not use third-party cookies for advertising or tracking purposes.</p>
+
+            <!-- <h2>Contact Us</h2>
+            <p>If you have any questions about this Privacy Policy, please contact us:</p>
+            <ul>
+                <li>By visiting this page on our website: https://hikwamehluli.github.io/flags-of-the-world/</li>
+                <li>By sending an email to: digitalafros@gmail.com</li>
+            </ul> -->
+        </section>
+
+        <footer>
+            <p>
+                <a href="privacy-policy.html">Privacy Policy</a> |
+                Created by <a href="https://thatafro.netlify.app" target="_blank"
+                    rel="noopener noreferrer">@thatafro</a>
+            </p>
+            <p>
+                © <span id="year">1986</span> Flags of the World. All rights reserved.
+                <script>
+                    const year = new Date().getFullYear();
+                    document.getElementById("year").innerHTML = year;
+                </script>
+            </p>
+        </footer>
+    </main>
+
+    <script src="./dist/app.js" defer></script>
+</body>
+
+</html>

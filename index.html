@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DH8L3Z163V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-DH8L3Z163V');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Flags of the World</title>
+
+    <meta name="description"
+        content="This memory game is an adventure that tests your knowledge and teaches you about the beautiful flags of nations and regions from Africa and Europe. Challenge your memory, learn geography, and have fun!">
+    <meta name="author" content="HikwaMehluli">
+    <meta name="keywords"
+        content="Memory game, African Flags, European Flags, Educational, World geography, Flags of the World, Geography game, Learn flags, African countries, European countries, Interactive learning, Fun game, Flag icons, Africa, Europe">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./img/favicon.png">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Flags of the World">
+    <meta property="og:description"
+        content="This memory game is an adventure that tests your knowledge and teaches you about the beautiful flags of nations and regions from Africa and Europe. Challenge your memory, learn geography, and have fun!">
+    <meta property="og:image" content="https://hikwamehluli.github.io/flags-of-the-world/img/seo-image.jpg">
+    <meta property="og:url" content="https://hikwamehluli.github.io/flags-of-the-world/">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Flags of the World">
+    <meta name="twitter:description"
+        content="This memory game is an adventure that tests your knowledge and teaches you about the beautiful flags of nations and regions from Africa and Europe. Challenge your memory, learn geography, and have fun!">
+    <meta name="twitter:image" content="https://hikwamehluli.github.io/flags-of-the-world/img/seo-image.jpg">
+    <meta name="twitter:site" content="@HikwaMehluli">
+    <meta name="twitter:creator" content="@HikwaMehluli">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./dist/app.css">
+</head>
+
+<body>
+    <header>
+        <div class="menu-icon" id="menu-icon"><span class="menu-text">MENU</span></div>
+        <div class="theme-switcher" title="Toggle Theme">
+            <button id="theme-toggle" aria-label="Toggle theme">
+                <span class="icon"></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <ul>
+            <li>
+                <a class="active" href="index.html">Play Game</a>
+            </li>
+            <li>
+                <a href="game-rules.html">Game Rules</a>
+            </li>
+            <li>
+                <a href="scores.html">Scores</a>
+            </li>
+            <li>
+                <a href="fun-facts.html">Fun Facts</a>
+            </li>
+            <li>
+                <a href="privacy-policy.html">Privacy Policy</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <main class="game-container">
+        <section class="game-header">
+
+            <h1 class="game-title">Flags of the World</h1>
+            <p class="game-description">Challenge your memory, learn some geography, and have a blast doing it!</p>
+
+            <div id="intro-tour-check" class="selectors-container">
+                <div class="selector-group">
+                    <div class="selector-title">Select Continent</div>
+                    <select class="game-select" id="continent-select" aria-label="Select Continent">
+                        <option value="africa">Africa</option>
+                        <option value="america">America</option>
+                        <option value="asia">Asia</option>
+                        <option value="europe">Europe</option>
+                    </select>
+                </div>
+
+                <div class="selector-group">
+                    <div class="selector-title">Level Difficulty</div>
+                    <select class="game-select" id="difficulty-select" aria-label="Level Difficulty">
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+
+                <div class="selector-group">
+                    <div class="selector-title">Select Region</div>
+                    <select class="game-select" id="region-select" aria-label="Select Region">
+                        <!-- Dynamically populated -->
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="game-stats">
+            <div class="stat">
+                <div>Moves Played</div>
+                <div id="moves">0</div>
+            </div>
+            <div class="stat">
+                <div>Time Lapsed</div>
+                <div id="time">00:00</div>
+            </div>
+        </section>
+
+        <section class="game-board" id="game-board">
+            <!-- Loads Game Board-->
+        </section>
+
+        <section class="game-controls">
+            <button class="new-game-btn" id="new-game-btn">New Game</button>
+            <button class="new-game-btn" id="restart-btn">Restart game</button>
+        </section>
+
+        <footer>
+            <p>
+                <a href="privacy-policy.html">Privacy Policy</a> |
+                Created by <a href="https://thatafro.netlify.app" target="_blank"
+                    rel="noopener noreferrer">@thatafro</a>
+            </p>
+            <p>
+                © <span id="year">1986</span> Flags of the World. All rights reserved.
+                <script>
+                    const year = new Date().getFullYear();
+                    document.getElementById("year").innerHTML = year;
+                </script>
+            </p>
+        </footer>
+    </main>
+
+    <!-- Modal Congratulations -->
+    <div id="name-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <button class="close-modal" aria-label="Close modal">&times;</button>
+            <h2>Congratulations!</h2>
+            <p>You won in <span id="modal-final-moves">0</span> moves and <span id="modal-final-time">00:00</span>!</p>
+            <p>Enter your name to save your score:</p>
+            <form id="name-form">
+                <input type="text" id="player-name" placeholder="Enter your name" maxlength="20" required autocomplete="name" />
+                <select id="player-country" aria-label="Select Your Country" autocomplete="country">
+                    <option value="">Select your country</option>
+                </select>
+                <button type="submit">Save Score</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="./dist/app.js" defer></script>
+</body>
+
+</html>

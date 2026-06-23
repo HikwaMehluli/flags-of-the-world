@@ -1,0 +1,23 @@
+{
+	"name": "flags-of-the-world",
+	"version": "2.0.0",
+	"license": "MIT",
+	"author": "Hikwa Mehluli",
+	"scripts": {
+		"start": "http-server -c-1",
+		"css-build": "sass --no-source-map --watch scss/_entry.scss:dist/app.css --style compressed",
+		"js-build": "webpack --watch"
+	},
+	"devDependencies": {
+		"css-loader": "^7.1.2",
+		"http-server": "^14.1.1",
+		"sass": "^1.90.0",
+		"style-loader": "^4.0.0",
+		"webpack": "^5.101.0",
+		"webpack-cli": "^6.0.1"
+	},
+	"dependencies": {
+		"driver.js": "^1.4.0",
+		"tippy.js": "^6.3.7"
+	}
+}
