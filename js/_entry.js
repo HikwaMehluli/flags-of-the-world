@@ -6,20 +6,32 @@
  * required DOM elements exist before running, so they only activate
  * on the appropriate page (game board, scores page, etc.).
  *
- * File structure:
- *   _entry.js          ← YOU ARE HERE
- *   game.js             Main memory game (game-board page)
- *   scores.js           Score storage + validation (IndexedDB)
- *   flags-data.js       Flag JSON fetching + caching (shared)
- *   scores-display.js   Scores page (scores.html)
- *   navigation.js       Sidebar menu (all pages)
- *   theme.js            Dark/light mode (all pages)
- *   driver-js-theme.js  Onboarding tour (game-board page only)
- *   utils/toast.js      Toast notifications (used by game.js)
+ * ── Dependency tree ──────────────────────────────────────────────
+ *
+ * _entry.js (entry point - loaded by Webpack)
+ * ├── navigation.js                   (all pages - sidebar menu; no deps)
+ * ├── theme.js                        (all pages - dark/light mode; no deps)
+ * ├── driver-js-theme.js              (game page - onboarding tour)
+ * │   └── driver.js                   (npm)
+ * ├── game.js                         (game page - main game logic)
+ * │   ├── tippy.js                    (npm - card flag tooltips)
+ * │   ├── flags-data.js               (flag JSON fetch + cache)
+ * │   │   └── api/countries/flags_*.json  (remote)
+ * │   ├── scores.js                   (IndexedDB storage + validation)
+ * │   │   └── IndexedDB (FlagsOfTheWorldDB)
+ * │   └── utils/toast.js              (toast notifications)
+ * └── scores-display.js               (scores page - leaderboard)
+ *     ├── scores.js                   (IndexedDB read + clear)
+ *     │   └── IndexedDB (FlagsOfTheWorldDB)
+ *     ├── flags-data.js               (country flag sync lookup)
+ *     │   └── api/countries/flags_*.json  (remote)
+ *     └── utils/toast.js              (success toast on clear)
+ *
+ * Legend:
+ *   └── = imports from
+ *   *    = shared module (imported by >1 file)
+ *   npm  = external package (not a local file)
  */
-
-// Tool Tips, JS from node_modules styling inside scss/tippy.scss
-import tippy from 'tippy.js';
 
 // Sidebar menu toggle (all pages)
 import './navigation.js';
