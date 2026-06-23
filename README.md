@@ -5,7 +5,7 @@
 ## An exciting and educational journey across the globe!
 This project was born out of a desire to make learning about the world's diverse cultures and engaging experience's for ever being.
 
-This memory game is more than just a game; it's an adventure that will test your knowledge and teach you about the beautiful flags of countries and regions from different continents. Get ready to challenge your memory, learn some geography, and have a blast doing it! - Hikwa Mehluli
+This memory game is more than just a game; it's an adventure that will test your knowledge and teach you about the beautiful flags of countries and regions from different continents. Get ready to challenge your memory, learn some geography, and have a blast doing it! - [Hikwa Mehluli.](https://thatafro.netlify.app/)
 
 ## 📷 Features
 - Memory card game with flags from Africa, America, Asia, and Europe
@@ -68,9 +68,9 @@ Game Won → Modal (enter name + country) → scores.js validates
 
 All data stays on-device. No server, no sync, no accounts.
 
-**Scores:** Every score is saved forever in IndexedDB. The Scores page shows the top 100 per continent tab, sorted by fewest moves then fastest time. You can filter by player name via a dropdown (populated alphabetically from stored scores) or clear scores per continent (with a confirmation modal). Each entry shows its rank (🥇🥇🥇 for podium, then `4.`, `5.`, ...). Score controls are hidden when there are no scores to act on.
+**Scores:** Every score is saved forever in IndexedDB. The Scores page shows the top 100 per continent tab, sorted by fewest moves then fastest time. You can filter by player name via a dropdown (populated alphabetically from stored scores) or clear scores per continent (with a confirmation modal). Each entry shows its rank (🥇 🥈 🥉 for podium, then `4.`, `5.`, ...). Score controls are hidden when there are no scores to act on.
 
-**Personal Best:** When you beat your previous best score on a continent + difficulty, a celebration fires with a gold badge toast and confetti.
+**Personal Best:** When you beat your previous best score on a continent + difficulty, a celebration fires with a gold badge 🏆 toast and confetti.
 
 ### 🗂️ Pages
 
@@ -166,4 +166,4 @@ The game includes flags from various continents: Africa, Europe, Asia, and the A
 
 ## License
 
-MIT License. Copyright (c) 2025 Hikwa Mehluli.
+[MIT License.](https://github.com/HikwaMehluli/flags-of-the-world/blob/main/LICENSE) Copyright (c) 2025 [Hikwa Mehluli.](https://thatafro.netlify.app/)
