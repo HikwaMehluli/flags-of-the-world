@@ -382,51 +382,6 @@ async function saveScore(score) {
 	return scoreWithMeta;
 }
 
-/**
- * Get the personal best score for a player on a specific continent+difficulty.
- *
- * "Personal best" means the score with the fewest moves (and fastest time
- * if moves are tied) across all games by this player on this continent+difficulty.
- *
- * @param {string} continent - Continent name
- * @param {string} difficulty - Difficulty level
- * @param {string|null} [playerName=null] - Player name to filter by (null = any player)
- * @returns {Promise<Object|null>} Best score or null if none found
- */
-async function getPersonalBest(continent, difficulty, playerName = null) {
-	const scores = await getScores(continent, difficulty);
-	if (!scores || scores.length === 0) return null;
-
-	// Filter by player name if specified
-	const filtered = playerName
-		? scores.filter(s => s.name && s.name.toLowerCase() === playerName.toLowerCase())
-		: scores;
-
-	return filtered[0] || null; // Already sorted: best is first
-}
-
-/**
- * Check whether a new score is a personal best for that player.
- *
- * @param {Object} newScore - The score just achieved
- * @param {string|null} playerName - Player name to compare against
- * @returns {Promise<boolean>} True if this is a new personal best
- */
-async function isPersonalBest(newScore, playerName = null) {
-	const currentBest = await getPersonalBest(newScore.continent, newScore.difficulty, playerName);
-
-	// No previous score → definitely a personal best
-	if (!currentBest) return true;
-
-	// Compare: fewer moves is better; if equal, faster time is better
-	if (newScore.moves < currentBest.moves) return true;
-	if (newScore.moves === currentBest.moves) {
-		return timeToSeconds(newScore.time) < timeToSeconds(currentBest.time);
-	}
-
-	return false;
-}
-
 // ============================================================
 //  EXPORTS
 // ============================================================
@@ -435,7 +390,6 @@ export {
 	saveScore,
 	getScores,
 	clearScores,
-	isPersonalBest,
 	showConfirmModal,
 	secondsToTime,
 	timeToSeconds

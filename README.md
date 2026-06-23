@@ -11,7 +11,6 @@ This memory game is more than just a game; it's an adventure that will test your
 - Memory card game with flags from Africa, America, Asia, and Europe
 - 3 difficulty levels (Easy, Medium, Hard)
 - Local scores stored in IndexedDB (offline-only, no server)
-- Personal best score detection with celebratory badge
 - Dark/light theme toggle
 - Onboarding tour (driver.js)
 
@@ -31,7 +30,7 @@ This memory game is more than just a game; it's an adventure that will test your
 js/
 ├── _entry.js              App entry — imports all modules
 ├── game.js                Main game class (rendering, card logic, timer, state)
-├── scores.js              IndexedDB storage + validation + personal best
+├── scores.js              IndexedDB storage + validation
 ├── flags-data.js          Shared flag JSON fetching & caching (single source)
 ├── scores-display.js      Scores page — local scores by continent tab
 ├── navigation.js          Sidebar menu toggle
@@ -61,16 +60,12 @@ api/
 
 ```
 Game Won → Modal (enter name + country) → scores.js validates
-  → IndexedDB addScore()
-       ↓
-  isPersonalBest() → gold badge toast + confetti
+  → IndexedDB addScore() → modal closes
 ```
 
 All data stays on-device. No server, no sync, no accounts.
 
 **Scores:** Every score is saved forever in IndexedDB. The Scores page shows the top 100 per continent tab, sorted by fewest moves then fastest time. You can filter by player name via a dropdown (populated alphabetically from stored scores) or clear scores per continent (with a confirmation modal). Each entry shows its rank (🥇 🥈 🥉 for podium, then `4.`, `5.`, ...). Score controls are hidden when there are no scores to act on.
-
-**Personal Best:** When you beat your previous best score on a continent + difficulty, a celebration fires with a gold badge 🏆 toast and confetti.
 
 ### 🗂️ Pages
 
