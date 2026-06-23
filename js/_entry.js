@@ -1,4 +1,3 @@
-import "./analytics.js";
 import "./driver-js-theme.js";
 import "./game.js";
 import "./navigation.js";
