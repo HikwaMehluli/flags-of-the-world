@@ -5,7 +5,7 @@
 ## An exciting and educational journey across the globe!
 This project was born out of a desire to make learning about the world's diverse cultures and engaging experience's for ever being.
 
-This memory game is more than just a game; it's an adventure that will test your knowledge and teach you about the beautiful flags of countries and regions from different continents. Get ready to challenge your memory, learn some geography, and have a blast doing it! - Hikwa Mehluli
+This memory game is more than just a game; it's an adventure that will test your knowledge and teach you about the beautiful flags of countries and regions from different continents. Get ready to challenge your memory, learn some geography, and have a blast doing it! - [Hikwa Mehluli.](https://thatafro.netlify.app/)
 
 ## 📷 Features
 - Memory card game with flags from Africa, America, Asia, and Europe
@@ -166,4 +166,4 @@ The game includes flags from various continents: Africa, Europe, Asia, and the A
 
 ## License
 
-MIT License. Copyright (c) 2025 Hikwa Mehluli.
+[MIT License.](https://github.com/HikwaMehluli/flags-of-the-world/blob/main/LICENSE) Copyright (c) 2025 [Hikwa Mehluli.](https://thatafro.netlify.app/)
