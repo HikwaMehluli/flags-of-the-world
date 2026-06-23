@@ -1,7 +1,6 @@
 import "./driver-js-theme.js";
 import "./game.js";
 import "./navigation.js";
-import "./profile-stats.js";
 import "./scores-display.js";
 import "./theme.js";
 

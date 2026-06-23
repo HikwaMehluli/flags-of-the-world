@@ -216,25 +216,6 @@ class ScoreManager {
 	}
 
 	/**
-	 * Get all scores across all continents
-	 *
-	 * @returns {Promise<Array>} All scores
-	 */
-	async getAllScores() {
-		const allScores = [];
-		const continents = ['africa', 'europe', 'asia', 'america'];
-
-		for (const continent of continents) {
-			const scores = await this.getScores(continent);
-			if (scores && Array.isArray(scores)) {
-				allScores.push(...scores);
-			}
-		}
-
-		return allScores;
-	}
-
-	/**
 	 * Clear scores for specific continent
 	 *
 	 * @param {string} continent - Continent name
@@ -274,46 +255,6 @@ class ScoreManager {
 		return success;
 	}
 
-	/**
-	 * Get score statistics
-	 *
-	 * @returns {Promise<Object>} Statistics object
-	 */
-	async getStats() {
-		const allScores = await this.getAllScores();
-		const continents = ['africa', 'europe', 'asia', 'america'];
-
-		const stats = {
-			totalScores: allScores.length,
-			byContinent: {},
-			byDifficulty: {
-				easy: 0,
-				medium: 0,
-				hard: 0
-			},
-			bestScores: {}
-		};
-
-		// Count by continent
-		for (const continent of continents) {
-			const scores = await this.getScores(continent);
-			stats.byContinent[continent] = scores ? scores.length : 0;
-
-			// Get best score for each continent
-			if (scores && scores.length > 0) {
-				stats.bestScores[continent] = scores[0];
-			}
-		}
-
-		// Count by difficulty
-		allScores.forEach(score => {
-			if (stats.byDifficulty.hasOwnProperty(score.difficulty)) {
-				stats.byDifficulty[score.difficulty]++;
-			}
-		});
-
-		return stats;
-	}
 }
 
 // Export singleton instance

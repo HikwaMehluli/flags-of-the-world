@@ -7,28 +7,23 @@ This project was born out of a desire to make learning about the world's diverse
 
 This memory game is more than just a game; it's an adventure that will test your knowledge and teach you about the beautiful flags of countries and regions from different continents. Get ready to challenge your memory, learn some geography, and have a blast doing it! - Hikwa Mehluli
 
-## 📚 Libraries/Framework & Fetures
-- 🚩 **Flag Icons:** A fantastic collection of SVG flags from [Flag Icons](https://flagicons.lipis.dev/).
-- 💡 **Tippy.js:** For beautiful and accessible tooltips tool. [Tippy.JS](https://atomiks.github.io/tippyjs)
-- 🎨 **SCSS/CSS:** Custom-built styling without heavy frameworks. Crafted with modern CSS practices for optimal performance and maintainability.
-
+## 📷 Features
 - Memory card game with flags from Africa, America, Asia, and Europe
 - 3 difficulty levels (Easy, Medium, Hard)
-- Combo tracking for consecutive matches
 - Local scores stored in IndexedDB (offline-only, no server)
-- Personal best detection with celebratory badge
+- Personal best score detection with celebratory badge
 - Dark/light theme toggle
 - Onboarding tour (driver.js)
-- Keyboard accessible
 
-## 📷 Tech Stack
+## 📚 Libraries & Tech Stack
 
-- Vanilla JS (ES modules, Webpack-bundled)
-- Sass → CSS (compressed, no sourcemaps)
-- IndexedDB (via custom `OfflineDB` wrapper)
-- localStorage (theme, game state)
-- tippy.js (tooltip library, npm/bundled)
-- Google Analytics (anonymous only) 
+- 🚩 **Flag Icons** — SVG flag collection from [Flag Icons](https://flagicons.lipis.dev/)
+- 💡 **Tippy.js** — Tooltips from [Tippy.JS](https://atomiks.github.io/tippyjs)
+- ⚡ **Vanilla JS** — ES modules, Webpack-bundled via single config
+- 🎨 **Sass/SCSS** — Custom styling, compressed output, no sourcemaps
+- 🗄️ **IndexedDB** — Offline score storage via custom `OfflineDB` wrapper
+- 💾 **localStorage** — Theme & game state persistence
+- 📊 **Google Analytics** — Anonymous usage data only
 
 ## Architecture (File Tree)
 
@@ -39,7 +34,6 @@ js/
 ├── navigation.js          Sidebar menu toggle
 ├── theme.js               Dark/light theme switcher
 ├── scores-display.js      Scores page — local scores by continent tab
-├── profile-stats.js       Stats page — game summary, per-continent stats
 ├── driver-js-theme.js     Onboarding tour theme helper
 │
 ├── game/
@@ -98,7 +92,6 @@ All data stays on-device. No server, no sync, no accounts.
 | Play Game | `index.html` | Main memory game board |
 | Game Rules | `game-rules.html` | Rules, scoring, combos explained |
 | Scores | `scores.html` | Local scores by continent tab |
-| Stats | `profile.html` | Career stats, per-continent breakdown |
 | Fun Facts | `fun-facts.html` | Educational flag facts |
 | Privacy Policy | `privacy-policy.html` | Offline-first privacy policy |
 
@@ -129,12 +122,6 @@ npm install
 
 Watch commands (`css-build`, `js-build`) run in separate terminals.
 
-### **⚠️ `<base>` Tag (GH Pages only) ⚠️**
-
-All HTML pages include `<!--<base href="/flags-of-the-world/">-->` in `<head>`. This is **required for GitHub Pages** so absolute paths like `/api/flags/dj.svg` resolve correctly under the `https://username.github.io/flags-of-the-world/` subdirectory.
-
-**Local dev:** The `<base>` tag **must be removed or commented out** — `http-server` serves from root (`/`), so an incorrect `<base>` tag would break all icons, JS, and CSS paths. Comment/uncomment the `<base>` line in all 6 HTML files when switching between local dev and deployment.
-
 ### **⚡ HTTP Caching via `_headers`** (Deployed to GH Pages)
 
 A `_headers` file at the repo root sets long HTTP cache lifetimes for static assets. This is server-side caching — completely independent of IndexedDB/localStorage, so clearing scores or browser storage won't affect it.
@@ -150,7 +137,7 @@ A `_headers` file at the repo root sets long HTTP cache lifetimes for static ass
 
 A Google tag (gtag.js) with ID `G-DH8L3Z163V` is hardcoded in the `<head>` of every HTML page. It loads on both local dev and production — no CI secrets or environment variables needed.
 
-The old `js/analytics.js` module (injected via Webpack's `DefinePlugin`) has been removed in favor of this standard snippet. If you don't want GA during local development, comment out or remove the script block from the 6 HTML files.
+The old `js/analytics.js` module (injected via Webpack's `DefinePlugin`) has been removed in favor of this standard snippet. If you don't want GA during local development, comment out or remove the script block from the 5 HTML files.
 
 ## 🗺️ Regions included in the game
 The game includes flags from various continents: Africa, Europe, Asia, and the Americas.
