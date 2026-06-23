@@ -1,151 +1,84 @@
 /**
- * Toast notification system for user feedback
+ * toast.js — Toast notification system
+ *
+ * Shows small pop-up messages that auto-dismiss.
+ * Only used for the "New Personal Best!" celebration.
+ *
  * @module utils/toast
  */
 
 let toastContainer = null;
 
 /**
- * Initialize toast container
+ * Create the container element that holds all toasts.
+ * Only called once — subsequent calls are no-ops.
  */
-function initToastContainer() {
-  if (!toastContainer) {
-    toastContainer = document.createElement('div');
-    toastContainer.className = 'toast-container';
-    toastContainer.setAttribute('aria-live', 'polite');
-    document.body.appendChild(toastContainer);
-  }
+function initContainer() {
+	if (toastContainer) return;
+	toastContainer = document.createElement('div');
+	toastContainer.className = 'toast-container';
+	toastContainer.setAttribute('aria-live', 'polite');
+	document.body.appendChild(toastContainer);
 }
 
 /**
- * Show toast notification
- * @param {string} message - Toast message
- * @param {string} [type='info'] - Toast type (success, error, warning, info)
- * @param {number} [duration=5000] - Auto-dismiss duration in ms
- * @param {Function} [onAction] - Action button callback
- * @param {string} [actionText] - Action button text
- * @returns {HTMLElement} Toast element
+ * Show a toast notification.
+ *
+ * @param {string} message - The text to display
+ * @param {'success'|'error'|'warning'|'info'} [type='info'] - Visual style
+ * @param {number} [duration=5000] - Auto-dismiss time in ms (0 = sticky)
+ * @returns {HTMLElement} The toast DOM element
  */
-export function showToast(message, type = 'info', duration = 5000, onAction = null, actionText = null) {
-  initToastContainer();
+export function showToast(message, type = 'info', duration = 5000) {
+	initContainer();
 
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  toast.setAttribute('role', 'alert');
+	const toast = document.createElement('div');
+	toast.className = `toast toast-${type}`;
+	toast.setAttribute('role', 'alert');
 
-  const icon = getToastIcon(type);
+	const icon = { success: '✓', error: '✕', warning: '⚠', info: 'ℹ' }[type] || 'ℹ';
 
-  toast.innerHTML = `
-    <span class="toast-icon">${icon}</span>
-    <span class="toast-message">${message}</span>
-    ${actionText ? `<button class="toast-action">${actionText}</button>` : ''}
-    <button class="toast-dismiss" aria-label="Close">&times;</button>
-  `;
+	toast.innerHTML = `
+		<span class="toast-icon">${icon}</span>
+		<span class="toast-message">${message}</span>
+		<button class="toast-dismiss" aria-label="Close">&times;</button>
+	`;
 
-  toastContainer.appendChild(toast);
+	toastContainer.appendChild(toast);
 
-  // Animate in
-  requestAnimationFrame(() => {
-    toast.classList.add('show');
-  });
+	// Animate in (CSS transition)
+	requestAnimationFrame(() => toast.classList.add('show'));
 
-  // Action button
-  if (onAction && actionText) {
-    const actionBtn = toast.querySelector('.toast-action');
-    actionBtn.addEventListener('click', () => {
-      onAction();
-      hideToast(toast);
-    });
-  }
+	// Dismiss button
+	toast.querySelector('.toast-dismiss').onclick = () => hideToast(toast);
 
-  // Dismiss button
-  const dismissBtn = toast.querySelector('.toast-dismiss');
-  dismissBtn.addEventListener('click', () => {
-    hideToast(toast);
-  });
+	// Auto-dismiss (if duration > 0)
+	if (duration > 0) {
+		setTimeout(() => hideToast(toast), duration);
+	}
 
-  // Auto-dismiss
-  if (duration > 0) {
-    setTimeout(() => {
-      hideToast(toast);
-    }, duration);
-  }
-
-  return toast;
+	return toast;
 }
 
 /**
- * Hide toast notification
- * @param {HTMLElement} toast - Toast element
+ * Hide and remove a toast with a fade-out animation.
+ *
+ * @param {HTMLElement} toast - The toast element to hide
  */
 export function hideToast(toast) {
-  if (!toast) return;
-
-  toast.classList.remove('show');
-  toast.classList.add('hide');
-
-  setTimeout(() => {
-    toast.remove();
-  }, 300);
+	if (!toast || !toast.parentNode) return;
+	toast.classList.remove('show');
+	toast.classList.add('hide');
+	setTimeout(() => toast.remove(), 300);
 }
 
 /**
- * Show success toast
- * @param {string} message - Message
- * @param {number} [duration=3000] - Duration
+ * Convenience: show a success toast (used when player gets a personal best).
+ *
+ * @param {string} message - Success message
+ * @param {number} [duration=3000] - How long to show it
+ * @returns {HTMLElement}
  */
 export function showSuccessToast(message, duration = 3000) {
-  return showToast(message, 'success', duration);
-}
-
-/**
- * Show error toast
- * @param {string} message - Message
- * @param {number} [duration=10000] - Duration
- * @param {Function} [onRetry] - Retry callback
- */
-export function showErrorToast(message, duration = 10000, onRetry = null) {
-  return showToast(message, 'error', duration, onRetry, 'Retry');
-}
-
-/**
- * Show warning toast
- * @param {string} message - Message
- * @param {number} [duration=5000] - Duration
- */
-export function showWarningToast(message, duration = 5000) {
-  return showToast(message, 'warning', duration);
-}
-
-/**
- * Show info toast
- * @param {string} message - Message
- * @param {number} [duration=5000] - Duration
- */
-export function showInfoToast(message, duration = 5000) {
-  return showToast(message, 'info', duration);
-}
-
-/**
- * Get icon for toast type
- * @param {string} type - Toast type
- * @returns {string} Icon emoji
- */
-function getToastIcon(type) {
-  const icons = {
-    success: '✓',
-    error: '✕',
-    warning: '⚠',
-    info: 'ℹ'
-  };
-  return icons[type] || icons.info;
-}
-
-/**
- * Clear all toasts
- */
-export function clearAllToasts() {
-  if (toastContainer) {
-    toastContainer.innerHTML = '';
-  }
+	return showToast(message, 'success', duration);
 }
