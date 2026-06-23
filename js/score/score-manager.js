@@ -236,25 +236,6 @@ class ScoreManager {
 		}
 	}
 
-	/**
-	 * Clear all scores
-	 *
-	 * @returns {boolean} True if cleared successfully
-	 */
-	async clearAllScores() {
-		const continents = ['africa', 'europe', 'asia', 'america'];
-		let success = true;
-
-		for (const continent of continents) {
-			const result = await this.clearScores(continent);
-			if (!result) {
-				success = false;
-			}
-		}
-
-		return success;
-	}
-
 }
 
 // Export singleton instance

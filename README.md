@@ -81,7 +81,7 @@ Game Won → Modal (enter name + country) → ScoreManager.validate()
 
 All data stays on-device. No server, no sync, no accounts.
 
-**Scores:** Every score is saved forever in IndexedDB. The Scores page shows the top 100 per continent tab, sorted by fewest moves then fastest time. You can filter by player name via a dropdown (populated alphabetically from stored scores), clear scores per continent (with a confirmation modal), or clear all scores. Each entry shows its rank (🥇🥇🥇 for podium, then `4.`, `5.`, ...). Score controls and the clear-all button are hidden when there are no scores to act on.
+**Scores:** Every score is saved forever in IndexedDB. The Scores page shows the top 100 per continent tab, sorted by fewest moves then fastest time. You can filter by player name via a dropdown (populated alphabetically from stored scores) or clear scores per continent (with a confirmation modal). Each entry shows its rank (🥇🥇🥇 for podium, then `4.`, `5.`, ...). Score controls are hidden when there are no scores to act on.
 
 **Personal Best:** When you beat your previous best score on a continent + difficulty, a celebration fires with a gold badge toast and confetti.
 

@@ -37,8 +37,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
 
-        // Clear per-continent listeners
-        document.querySelectorAll('#clear-scores').forEach(btn => {
+        // Clear scores per continent
+        document.querySelectorAll('.clear-scores').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const continent = btn.getAttribute('data-continent');
                 const confirmed = await showConfirmModal(`Clear all scores for ${continent}? This cannot be undone.`);
@@ -52,28 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
 
-        // Clear all listener
-        const clearAllBtn = document.getElementById('btn-clear-all');
-        if (clearAllBtn) {
-            clearAllBtn.addEventListener('click', async () => {
-                const confirmed = await showConfirmModal('Clear ALL scores across all continents? This cannot be undone.');
-                if (confirmed) {
-                    const { default: scoreManager } = await import('./score/score-manager.js');
-                    await scoreManager.clearAllScores();
-                    const { showSuccessToast } = await import('./utils/toast.js');
-                    showSuccessToast('All scores cleared.');
-                    document.querySelectorAll('.continent-scores-list').forEach(list => list.innerHTML = '');
-                    const activeTab = document.querySelector('.tab-button.active');
-                    if (activeTab) {
-                        const continent = activeTab.getAttribute('data-tab');
-                        loadLocalScoresForContinent(continent);
-                    }
-                }
-            });
-        }
-
         await loadLocalScoresForContinent('africa');
-        updateClearAllVisibility();
     }
 });
 
@@ -108,19 +87,10 @@ async function loadLocalScoresForContinent(continent) {
             if (scoreControls) scoreControls.style.display = 'none';
             noScoresContainer.innerHTML = '<p>No local scores yet. Play a game to set a record!</p><a href="index.html" class="btn-play-game">Play Game</a>';
         }
-        updateClearAllVisibility();
     } catch (error) {
         console.error(`Error loading local scores for ${continent}:`, error);
         loadLocalScoresFromLocalStorage(continent);
     }
-}
-
-function updateClearAllVisibility() {
-    const clearAllBtn = document.getElementById('btn-clear-all');
-    if (!clearAllBtn) return;
-    const lists = document.querySelectorAll('.continent-scores-list');
-    const hasAnyScores = Array.from(lists).some(list => list.children.length > 0);
-    clearAllBtn.closest('.clear-all-container').style.display = hasAnyScores ? '' : 'none';
 }
 
 function populatePlayerFilter(select, scores) {
@@ -154,7 +124,6 @@ function loadLocalScoresFromLocalStorage(continent) {
         noScoresContainer.style.display = 'block';
         noScoresContainer.innerHTML = '<p>No local scores yet. Play a game to set a record!</p><a href="index.html" class="btn-play-game">Play Game</a>';
     }
-    updateClearAllVisibility();
 }
 
 function createScoreListItem(score, index) {
