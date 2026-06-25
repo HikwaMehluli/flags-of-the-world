@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	});
 
 	// ---- Clear scores ----
-	document.querySelectorAll('.clear-scores').forEach(btn => {
+	document.querySelectorAll('#clear-scores').forEach(btn => {
 		btn.addEventListener('click', async () => {
 			const continent = btn.getAttribute('data-continent');
 			const makeUpperCase = continent.charAt(0).toUpperCase() + continent.slice(1);

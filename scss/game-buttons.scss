@@ -1,0 +1,53 @@
+/* ==========================================================================
+   Game Buttons
+   ========================================================================== */
+.btn {
+    background-color: var(--secondary-color);
+    border: 1px solid var(--secondary-color);
+    color: var(--primary-color);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 7.5px 20px;
+    font-size: 1rem;
+    text-transform: capitalize;
+    transition: var(--transition);
+
+    &:hover {
+        background-color: var(--primary-color);
+        border: 1px solid var(--secondary-color);
+        color: var(--secondary-color);
+    }
+}
+
+.btn-danger {
+    background-color: var(--red-color);
+    border: 1px solid var(--red-color);
+    color: white;
+
+    &:hover {
+        background-color: var(--primary-color);
+        border: 1px solid var(--secondary-color);
+        color: var(--secondary-color);
+    }
+}
+
+
+// Buttons In Game Mode
+.game-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    width: 100%;
+    margin: 0 auto;
+
+    .btn {
+        padding: 15px;
+        font-size: 1.1em;
+    }
+}
+
+@media (max-width: 600px) {
+    .game-buttons {
+        gap: 10px;
+    }
+}

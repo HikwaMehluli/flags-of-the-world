@@ -93,40 +93,8 @@ label,
     text-align: start;
 }
 
-// Buttons
-.btn,
-.modal-content button {
-    background-color: var(--secondary-color);
-    border: 1px solid var(--secondary-color);
-    color: var(--primary-color);
-    border-radius: 5px;
-    cursor: pointer;
+// Button/s
+.modal-content .btn {
     padding: 7.5px 20px;
     font-size: 1rem;
-    text-transform: capitalize;
-    transition: var(--transition);
-
-    &:hover {
-        background-color: var(--primary-color);
-        border: 1px solid var(--secondary-color);
-        color: var(--secondary-color);
-    }
-}
-
-.btn-danger {
-    background-color: var(--red-color);
-    border: 1px solid var(--red-color);
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    padding: 10px 20px;
-    font-size: 1rem;
-    text-transform: capitalize;
-    transition: var(--transition);
-
-    &:hover {
-        background-color: var(--primary-color);
-        border: 1px solid var(--secondary-color);
-        color: var(--secondary-color);
-    }
 }

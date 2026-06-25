@@ -13,6 +13,7 @@ This memory game is more than just a game; it's an adventure that will test your
 - Local scores stored in IndexedDB (offline-only, no server)
 - Dark/light theme toggle
 - Onboarding tour (driver.js)
+- Tippy.js tooltips on flag cards
 
 ## 📚 Libraries & Tech Stack
 
@@ -20,8 +21,8 @@ This memory game is more than just a game; it's an adventure that will test your
 - 💡 **Tippy.js** — Tooltips from [Tippy.JS](https://atomiks.github.io/tippyjs)
 - ⚡ **Vanilla JS** — ES modules, Webpack-bundled via single config
 - 🎨 **Sass/SCSS** — Custom styling, compressed output, no sourcemaps
-- 🗄️ **IndexedDB** — Offline score storage via custom `OfflineDB` wrapper
-- 💾 **localStorage** — Theme & game state persistence
+- 🗄️ **IndexedDB** — Offline score storage via custom wrapper in `scores.js`
+- 💾 **localStorage** — Theme persistence (dark mode only)
 - 📊 **Google Analytics** — Anonymous usage data only
 
 ## Architecture (File Tree)
