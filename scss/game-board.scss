@@ -3,10 +3,18 @@
    ========================================================================== */
 .game-board {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     margin-bottom: 20px;
-    min-height: 400px; /* Minimum height for easiest difficulty (3x4 grid) */
+    min-height: 400px;
+    /* Minimum height for easiest difficulty (3x4 grid) */
+}
+
+@media (max-width: 412px) {
+    .game-board {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
 }
 
 .card {

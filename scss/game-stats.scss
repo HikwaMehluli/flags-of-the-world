@@ -13,9 +13,16 @@
     color: var(--primary-color);
     padding: 10px 20px;
     min-width: 100px;
-    font-size: 1.2em;
+    font-size: 1.2rem;
     text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+@media (max-width: 600px) {
+    .stat {
+        padding: 8px;
+        font-size: 1rem;
+    }
 }
