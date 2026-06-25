@@ -2,14 +2,70 @@
 @use 'driver-js-theme';
 @use 'flag-icons';
 @use 'game-board';
-@use 'game-controls';
+@use 'game-buttons';
 @use 'game-header';
 @use 'game-stats';
-@use 'global-styles';
-@use 'media-queries';
 @use 'modal';
 @use 'navigation';
 @use 'scores';
 @use 'tippy';
 @use 'utils/toast';
 @use 'utils/alerts';
+
+
+:root {
+    --primary-color: #f6f4ff;
+    --secondary-color: #080029;
+    --gray-color: #e9e9f4;
+
+    --red-color: #c72d47;
+    --green-color: #137b13;
+    --transition: all 0.5s ease-in-out;
+}
+
+.dark-mode {
+    --primary-color: #171520;
+    --secondary-color: #f6f4ff;
+    --gray-color: #2c2c36;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0 auto;
+    padding: 0 20px 20px 20px;
+    transition: var(--transition);
+}
+
+footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--secondary-color);
+
+    a {
+        color: var(--secondary-color);
+        position: relative;
+        text-decoration: underline;
+        transition: var(--transition);
+
+        &:hover {
+            opacity: .7;
+        }
+    }
+}
