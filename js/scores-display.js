@@ -42,14 +42,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 	});
 
 	// ---- Player filter ----
-	document.querySelectorAll('#player-filter').forEach(select => {
+	document.querySelectorAll('[id^="player-filter-"]').forEach(select => {
 		select.addEventListener('change', () => {
 			loadScoresForContinent(select.getAttribute('data-continent'));
 		});
 	});
 
 	// ---- Clear scores ----
-	document.querySelectorAll('#clear-scores').forEach(btn => {
+	document.querySelectorAll('[id^="clear-scores-"]').forEach(btn => {
 		btn.addEventListener('click', async () => {
 			const continent = btn.getAttribute('data-continent');
 			const makeUpperCase = continent.charAt(0).toUpperCase() + continent.slice(1);
@@ -77,12 +77,13 @@ document.addEventListener('DOMContentLoaded', async () => {
  * @param {string} continent - 'africa', 'europe', 'asia', or 'america'
  */
 async function loadScoresForContinent(continent) {
+	const continentName = continent.charAt(0).toUpperCase() + continent.slice(1);
 	try {
 		const scores = await getScores(continent);
 
 		const scoreList = document.querySelector(`.continent-scores-list[data-continent="${continent}"]`);
 		const noScores = document.querySelector(`.no-scores-container[data-continent="${continent}"]`);
-		const filterSelect = document.querySelector(`#player-filter[data-continent="${continent}"]`);
+		const filterSelect = document.getElementById(`player-filter-${continent}`);
 		const scoreControls = filterSelect?.closest('.score-controls');
 
 		if (scores && scores.length > 0) {
@@ -108,7 +109,7 @@ async function loadScoresForContinent(continent) {
 			scoreList.style.display = 'none';
 			noScores.style.display = 'block';
 			if (scoreControls) scoreControls.style.display = 'none';
-			noScores.innerHTML = '<p>No local scores yet. Play a game to set a record!</p><a href="index.html" class="btn-play-game">Play Game</a>';
+			noScores.innerHTML = `<p>No ${continentName} scores yet. </p><a href="index.html" class="btn">Play Game</a>`;
 		}
 	} catch (error) {
 		console.error(`Error loading scores for ${continent}:`, error);
