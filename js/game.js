@@ -227,9 +227,9 @@ class FlagsofWorld {
 	 */
 	getDifficultySettings() {
 		const settings = {
-			easy:   { rows: 3, cols: 4, pairs: 6 },
-			medium: { rows: 4, cols: 4, pairs: 8 },
-			hard:   { rows: 5, cols: 4, pairs: 10 }
+			easy: { pairs: 6 },
+			medium: { pairs: 8 },
+			hard: { pairs: 10 }
 		};
 		return settings[this.difficulty] || settings.easy;
 	}
@@ -323,7 +323,7 @@ class FlagsofWorld {
 		modal.style.display = 'block';
 		modal.innerHTML = `
 			<div class="modal-content">
-				<p>Combining flags from multiple regions in this continent to ensure game completion.</p>
+				<p>Not enough flags for this level, so we have randonly selected other flags from the same continent to ensure game completion.</p>
 				<button id="notification-close-btn">Continue</button>
 			</div>
 		`;
@@ -358,20 +358,16 @@ class FlagsofWorld {
 			// Generate the shuffled card pairs
 			this.cards = await this.generateCards();
 
-			// Set up the grid columns based on difficulty
-			const { cols } = this.getDifficultySettings();
-			this.gameBoard.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-			this.gameBoard.innerHTML = '';
 
-		// Create a card element for each position on the board
-		// Note: createCardElement() already appends to this.gameBoard
-		this.cardElements = [];
-		this.cards.forEach((card, index) => {
-			const el = this.createCardElement(card, index);
-			if (el) {
-				this.cardElements.push(el);
-			}
-		});
+			// Create a card element for each position on the board
+			// Note: createCardElement() already appends to this.gameBoard
+			this.cardElements = [];
+			this.cards.forEach((card, index) => {
+				const el = this.createCardElement(card, index);
+				if (el) {
+					this.cardElements.push(el);
+				}
+			});
 
 			// Reset the display
 			this.updateMoveDisplay();
