@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-	// Get references to the menu icon, sidebar, overlay, and game container elements
+	// Get references to the menu icon, sidebar, and overlay elements
 	const menuIcon = document.getElementById('menu-icon');
 	const sidebar = document.getElementById('sidebar');
 	const overlay = document.getElementById('overlay');
-	const gameContainer = document.querySelector('.game-container');
 
 	// Check if the menu icon exists to avoid errors on pages where it might be absent
 	if (menuIcon) {
@@ -24,10 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			menuIcon.classList.remove('open');
 			sidebar.classList.remove('open');
 			overlay.classList.remove('open');
-			// Also, remove the blur effect from the game container if it exists
-			if (gameContainer) {
-				gameContainer.classList.remove('blur');
-			}
 		});
 	}
 });

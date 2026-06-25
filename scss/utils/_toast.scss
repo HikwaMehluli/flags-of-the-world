@@ -100,21 +100,6 @@
 		color: #1f2937;
 	}
 
-	.toast-action {
-		padding: 0.25rem 0.75rem;
-		background: #3b82f6;
-		color: white;
-		border: none;
-		border-radius: 0.25rem;
-		font-size: 0.75rem;
-		cursor: pointer;
-		white-space: nowrap;
-
-		&:hover {
-			background: #2563eb;
-		}
-	}
-
 	.toast-dismiss {
 		background: none;
 		border: none;

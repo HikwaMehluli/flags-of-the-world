@@ -1,10 +1,7 @@
-.fib, .fi {
+.fi {
   background-size: contain;
   background-position: 50%;
   background-repeat: no-repeat;
-}
-
-.fi {
   position: relative;
   display: inline-block;
   width: 1.333333em;
@@ -13,10 +10,6 @@
 
 .fi:before {
   content: " ";
-}
-
-.fi.fis {
-  width: 1em;
 }
 
 .fi-xx {
