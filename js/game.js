@@ -7,7 +7,7 @@
  *   2. Card generation (fetching flag data, shuffling, creating pairs)
  *   3. Board rendering (creating card elements in the DOM)
  *   4. Game logic (flipping cards, matching, timer, moves)
- *   5. Game end (win modal, score saving, personal best, confetti)
+ *   5. Game end (win modal, score saving)
  *
  * Before this rewrite, the game logic was split across 5 separate files:
  *   game-state-manager.js, game-renderer.js, card-matcher.js, timer.js, game.js
@@ -50,7 +50,6 @@ class FlagsofWorld {
 		this.totalPairs = 6;       // Depends on difficulty
 		this.gameStarted = false;  // Timer starts on first flip
 		this.gameWon = false;
-		this.combo = 0;            // Consecutive matches (resets on mismatch)
 
 		// --- Timer state ---
 		this.elapsedSeconds = 0;
@@ -512,18 +511,12 @@ class FlagsofWorld {
 		if (card1.country === card2.country) {
 			// ---- MATCH ----
 			this.matchedPairs++;
-			this.combo++;
 
 			// Add matched class (cards stay flipped)
 			el1.classList.add('matched');
 			el2.classList.add('matched');
 
 			this.matchedIndices.push(i1, i2);
-
-			// Combo notification for consecutive matches
-			if (this.combo >= 3) {
-				this.showComboNotification(this.combo);
-			}
 
 			// Check if ALL pairs are matched → game won!
 			if (this.matchedPairs === this.totalPairs) {
@@ -533,7 +526,6 @@ class FlagsofWorld {
 			}
 		} else {
 			// ---- MISMATCH ----
-			this.combo = 0;
 
 			// Flip both cards back after a brief delay
 			setTimeout(() => {
@@ -544,26 +536,6 @@ class FlagsofWorld {
 
 		// Reset flipped cards for the next turn
 		this.flippedIndices = [];
-	}
-
-	/**
-	 * Show a brief combo notification (e.g. "Combo x3!").
-	 */
-	showComboNotification(combo) {
-		// Remove any existing notification
-		const existing = document.querySelector('.game-notification');
-		if (existing) existing.remove();
-
-		const note = document.createElement('div');
-		note.className = 'game-notification game-notification-success';
-		note.textContent = `Combo x${combo}!`;
-		document.body.appendChild(note);
-
-		setTimeout(() => note.classList.add('show'), 10);
-		setTimeout(() => {
-			note.classList.remove('show');
-			setTimeout(() => note.remove(), 300);
-		}, 2000);
 	}
 
 	// ============================================================
@@ -587,7 +559,7 @@ class FlagsofWorld {
 	}
 
 	// ============================================================
-	//  7. GAME END — Win modal, score saving, personal best, confetti
+	//  7. GAME END — Win modal, score saving
 	// ============================================================
 
 	/**
@@ -666,7 +638,6 @@ class FlagsofWorld {
 		this.matchedPairs = 0;
 		this.gameStarted = false;
 		this.gameWon = false;
-		this.combo = 0;
 		this.elapsedSeconds = 0;
 
 		this.updateMoveDisplay();

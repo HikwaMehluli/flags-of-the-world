@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	});
 
 	// ---- Player filter ----
-	document.querySelectorAll('.player-filter').forEach(select => {
+	document.querySelectorAll('#player-filter').forEach(select => {
 		select.addEventListener('change', () => {
 			loadScoresForContinent(select.getAttribute('data-continent'));
 		});
@@ -82,7 +82,7 @@ async function loadScoresForContinent(continent) {
 
 		const scoreList = document.querySelector(`.continent-scores-list[data-continent="${continent}"]`);
 		const noScores = document.querySelector(`.no-scores-container[data-continent="${continent}"]`);
-		const filterSelect = document.querySelector(`.player-filter[data-continent="${continent}"]`);
+		const filterSelect = document.querySelector(`#player-filter[data-continent="${continent}"]`);
 		const scoreControls = filterSelect?.closest('.score-controls');
 
 		if (scores && scores.length > 0) {
